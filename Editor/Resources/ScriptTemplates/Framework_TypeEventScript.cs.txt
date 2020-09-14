@@ -1,0 +1,11 @@
+﻿#*EVENT*#
+using UnityEngine;
+
+using Scripts.Framework.EventSystem;
+/* TODO: Add using to import type used in the event listener */
+
+namespace #NAMESPACE#
+{
+	[CreateAssetMenu(fileName = "#SCRIPTNAME#Event", menuName = "Scriptable/EventSystem/#SCRIPTNAME#Event")]
+	public class #SCRIPTNAME#Event : Event<#SCRIPTNAME#> { }
+}

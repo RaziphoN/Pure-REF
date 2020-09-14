@@ -1,0 +1,31 @@
+﻿#*EVENTLISTENER*#
+using UnityEngine;
+using UnityEngine.Events;
+
+using Scripts.Framework.EventSystem;
+/* TODO: Add using to import type used in the event */
+
+namespace #NAMESPACE#
+{
+	[System.Serializable]
+	public class #SCRIPTNAME#UnityEvent : UnityEvent<#SCRIPTNAME#> { }
+
+	public class #SCRIPTNAME#EventListener : EventListener<#SCRIPTNAME#>
+	{
+		[Tooltip("Event to register with.")]
+		[SerializeField] private #SCRIPTNAME#Event[] eventList = null;
+
+		[Tooltip("Response to invoke when Event is raised.")]
+		[SerializeField] private #SCRIPTNAME#UnityEvent callback = null;
+
+		protected override void LinkEvents()
+		{
+			events = eventList;
+		}
+
+		protected override void LinkResponse()
+		{
+			response = callback;
+		}
+	}
+}

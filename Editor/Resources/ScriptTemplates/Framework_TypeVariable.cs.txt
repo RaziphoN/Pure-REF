@@ -1,0 +1,26 @@
+﻿#*VARIABLE*#
+using UnityEngine;
+
+using Scripts.Framework.Data.Variables;
+using Scripts.Framework.Data.References;
+
+/* TODO: Add using to import type used in the variable */
+
+namespace #NAMESPACE#
+{
+	[CreateAssetMenu(fileName = "#SCRIPTNAME#Variable", menuName = "Scriptable/Data/Variable/#SCRIPTNAME#Variable")]
+	public class #SCRIPTNAME#Variable : Variable<#SCRIPTNAME#>
+	{
+	}
+
+	/*
+		// TODO: Move to some editor script to implement drawer for reference
+		[CustomPropertyDrawer(typeof(#SCRIPTNAME#Reference))]
+		public class #SCRIPTNAME#ReferenceDrawer : CustomReferenceDrawer<#SCRIPTNAME#Reference, #SCRIPTNAME#Variable, #SCRIPTNAME#> { }
+	*/
+
+	[System.Serializable]
+	public class #SCRIPTNAME#Reference : Reference<#SCRIPTNAME#, #SCRIPTNAME#Variable>
+	{
+	}
+}
