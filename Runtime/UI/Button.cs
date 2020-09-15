@@ -15,6 +15,7 @@ namespace REF.Runtime.UI
 			style?.Apply(this);
 		}
 
+#if UNITY_EDITOR
 		protected override void OnValidate()
 		{
 			base.OnValidate();
@@ -24,5 +25,6 @@ namespace REF.Runtime.UI
 				style.Apply(this);
 			}
 		}
+#endif
 	}
 }

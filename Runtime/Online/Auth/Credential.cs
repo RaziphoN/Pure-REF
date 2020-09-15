@@ -95,27 +95,27 @@ namespace REF.Runtime.Online.Auth
 			return provider;
 		}
 
-		internal string GetToken()
+		public string GetToken()
 		{
 			return token;
 		}
 
-		internal string GetNonce()
+		public string GetNonce()
 		{
 			return nonce;
 		}
 
-		internal string GetEmail()
+		public string GetEmail()
 		{
 			return email;
 		}
 
-		internal string GetPassword()
+		public string GetPassword()
 		{
 			return password;
 		}
 
-		internal string GetPhoneNumber()
+		public string GetPhoneNumber()
 		{
 			return phoneNumber;
 		}
