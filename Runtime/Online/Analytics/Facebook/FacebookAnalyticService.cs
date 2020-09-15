@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_ANALYTICS && REF_FACEBOOK_ANALYTICS && REF_USE_FACEBOOK
+
+using UnityEngine;
 
 using REF.Runtime.Online.Service.Facebook;
 
@@ -111,3 +113,5 @@ namespace REF.Runtime.Online.Analytics.Facebook
 		}
 	}
 }
+
+#endif

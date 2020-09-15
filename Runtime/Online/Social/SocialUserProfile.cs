@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.Social
+﻿#if REF_ONLINE_SOCIAL
+
+namespace REF.Runtime.Online.Social
 {
 	public class SocialUserProfile : ISocialUserProfile
 	{
@@ -37,3 +39,5 @@
 		}
 	}
 }
+
+#endif

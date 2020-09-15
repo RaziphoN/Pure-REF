@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿#if REF_ONLINE_ANALYTICS
+
+using System.Linq;
 using System.Collections.Generic;
 
 using REF.Runtime.Online.Service;
@@ -204,3 +206,5 @@ namespace REF.Runtime.Online.Analytics
 		}
 	}
 }
+
+#endif

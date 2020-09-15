@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_SOCIAL && REF_FACEBOOK_SOCIAL && REF_USE_FACEBOOK
+
+using UnityEngine;
 
 using System.Linq;
 using System.Collections.Generic;
@@ -141,3 +143,5 @@ namespace REF.Runtime.Online.Social.Facebook
 		}
 	}
 }
+
+#endif

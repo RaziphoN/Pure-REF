@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_PUSH_NOTIFICATION && REF_FIREBASE_PUSH_NOTIFICATION && REF_USE_FIREBASE
+
+using UnityEngine;
 
 using System.Threading.Tasks;
 
@@ -69,3 +71,5 @@ namespace REF.Runtime.Online.Notifications
 		}
 	}
 }
+
+#endif

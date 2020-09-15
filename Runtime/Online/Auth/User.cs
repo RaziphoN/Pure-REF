@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if REF_ONLINE_AUTH
+
+using System.Collections.Generic;
 
 namespace REF.Runtime.Online.Auth
 {
@@ -128,3 +130,5 @@ namespace REF.Runtime.Online.Auth
 		}
 	}
 }
+
+#endif

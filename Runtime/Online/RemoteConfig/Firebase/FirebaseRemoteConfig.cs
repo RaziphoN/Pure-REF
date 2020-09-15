@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_REMOTE_CONFIG && REF_FIREBASE_REMOTE_CONFIG && REF_USE_FIREBASE
+
+using UnityEngine;
 
 using System;
 using System.Collections.Generic;
@@ -146,3 +148,5 @@ namespace REF.Runtime.Online.RemoteConfig
 		}
 	}
 }
+
+#endif

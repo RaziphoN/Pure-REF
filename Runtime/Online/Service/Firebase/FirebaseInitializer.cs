@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿#if REF_USE_FIREBASE
+
+using System.Threading.Tasks;
 
 using Firebase;
 
@@ -65,3 +67,5 @@ namespace REF.Runtime.Online
 		}
 	}
 }
+
+#endif

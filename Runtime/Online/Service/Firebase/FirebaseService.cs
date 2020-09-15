@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.Service
+﻿#if REF_USE_FIREBASE
+
+namespace REF.Runtime.Online.Service
 {
 	public abstract class FirebaseService : OnlineService
 	{
@@ -60,3 +62,5 @@
 		}
 	}
 }
+
+#endif

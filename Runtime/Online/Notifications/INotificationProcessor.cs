@@ -1,4 +1,5 @@
-﻿
+﻿#if REF_ONLINE_PUSH_NOTIFICATION
+
 using REF.Runtime.Notifications;
 
 namespace REF.Runtime.Online.Notifications
@@ -11,3 +12,5 @@ namespace REF.Runtime.Online.Notifications
 		void Handle(INotification notification);
 	}
 }
+
+#endif

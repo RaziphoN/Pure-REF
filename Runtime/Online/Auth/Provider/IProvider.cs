@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.Auth.Provider
+﻿#if REF_ONLINE_AUTH
+
+namespace REF.Runtime.Online.Auth.Provider
 {
 	public interface IProvider
 	{
@@ -6,3 +8,5 @@
 		Credential ToCredential();
 	}
 }
+
+#endif

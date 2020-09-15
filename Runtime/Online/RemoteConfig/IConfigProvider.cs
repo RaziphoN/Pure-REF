@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if REF_ONLINE_REMOTE_CONFIG
+
+using System.Collections.Generic;
 
 namespace REF.Runtime.Online.RemoteConfig
 {
@@ -11,3 +13,5 @@ namespace REF.Runtime.Online.RemoteConfig
 		IDictionary<string, Value> GetData();
 	}
 }
+
+#endif

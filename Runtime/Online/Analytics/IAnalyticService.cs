@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.Analytics
+﻿#if REF_ONLINE_ANALYTICS
+
+namespace REF.Runtime.Online.Analytics
 {
 	public interface IAnalyticService : IOnlineService
 	{
@@ -10,3 +12,5 @@
 		void SendEvent(string name, Parameter[] parameters);
 	}
 }
+
+#endif

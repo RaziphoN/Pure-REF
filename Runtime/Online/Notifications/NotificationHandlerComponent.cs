@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_PUSH_NOTIFICATION
+
+using UnityEngine;
 
 using System.Collections.Generic;
 
@@ -36,3 +38,5 @@ namespace REF.Runtime.Online.Notifications
 		}
 	}
 }
+
+#endif

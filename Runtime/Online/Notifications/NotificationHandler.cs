@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿#if REF_ONLINE_PUSH_NOTIFICATION
+
+using System.Linq;
 using System.Collections.Generic;
 
 using REF.Runtime.Notifications;
@@ -60,3 +62,5 @@ namespace REF.Runtime.Online.Notifications
 		}
 	}
 }
+
+#endif

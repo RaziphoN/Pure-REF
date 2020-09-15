@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.RemoteConfig
+﻿#if REF_ONLINE_REMOTE_CONFIG
+
+namespace REF.Runtime.Online.RemoteConfig
 {
 	public interface IConfigModifier
 	{
@@ -8,3 +10,5 @@
 		void SetValue(string key, Value value);
 	}
 }
+
+#endif

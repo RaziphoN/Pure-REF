@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_CRASH_REPORT && REF_FIREBASE_CRASH_REPORT && REF_USE_FIREBASE
+
+using UnityEngine;
 
 using REF.Runtime.Online.Service;
 
@@ -47,3 +49,5 @@ namespace REF.Runtime.Online.CrashReports
 		}
 	}
 }
+
+#endif

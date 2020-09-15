@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if REF_ONLINE_REMOTE_CONFIG
+
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace REF.Runtime.Online.RemoteConfig
@@ -107,3 +109,5 @@ namespace REF.Runtime.Online.RemoteConfig
 		}
 	}
 }
+
+#endif

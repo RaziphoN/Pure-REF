@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿#if REF_ONLINE_ANALYTICS && REF_FIREBASE_ANALYTICS && REF_USE_FIREBASE
+
+using System.Linq;
 
 using REF.Runtime.Online.Service;
 
@@ -95,3 +97,5 @@ namespace REF.Runtime.Online.Analytics
 		}
 	}
 }
+
+#endif

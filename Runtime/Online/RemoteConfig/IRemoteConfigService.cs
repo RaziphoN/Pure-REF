@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.RemoteConfig
+﻿#if REF_ONLINE_REMOTE_CONFIG
+
+namespace REF.Runtime.Online.RemoteConfig
 {
 	public interface IRemoteConfigService : IOnlineService
 	{
@@ -10,3 +12,5 @@
 		void Fetch(System.Action callback = null);
 	}
 }
+
+#endif

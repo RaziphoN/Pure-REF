@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.DynamicLinks
+﻿#if REF_ONLINE_DYNAMIC_LINK
+
+namespace REF.Runtime.Online.DynamicLinks
 {
 	public class AndroidLinkParams
 	{
@@ -11,3 +13,5 @@
 		public string FallbackUri { get; set; }
 	}
 }
+
+#endif

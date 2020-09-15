@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.CrashReports
+﻿#if REF_ONLINE_CRASH_REPORT
+
+namespace REF.Runtime.Online.CrashReports
 {
 	public interface ICrashReportService : IOnlineService
 	{
@@ -9,3 +11,5 @@
 		void LogException(System.Exception exception);
 	}
 }
+
+#endif

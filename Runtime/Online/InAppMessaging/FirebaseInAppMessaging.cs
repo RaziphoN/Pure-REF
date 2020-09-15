@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_IN_APP_MESSAGING && REF_ONLINE_IN_APP_MESSAGING && REF_USE_FIREBASE
+
+using UnityEngine;
 
 using REF.Runtime.Online.Service;
 
@@ -13,3 +15,5 @@ namespace REF.Runtime.Online.InAppMessaging
 		}
 	}
 }
+
+#endif

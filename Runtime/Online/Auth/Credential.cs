@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_AUTH
+
+using UnityEngine;
 
 namespace REF.Runtime.Online.Auth
 {
@@ -119,3 +121,5 @@ namespace REF.Runtime.Online.Auth
 		}
 	}
 }
+
+#endif

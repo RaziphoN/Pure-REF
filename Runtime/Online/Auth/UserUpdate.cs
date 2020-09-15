@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.Auth
+﻿#if REF_ONLINE_AUTH
+
+namespace REF.Runtime.Online.Auth
 {
 	public class UserUpdate
 	{
@@ -7,3 +9,5 @@
 		public System.Uri PhotoUri { get; set; }
 	}
 }
+
+#endif

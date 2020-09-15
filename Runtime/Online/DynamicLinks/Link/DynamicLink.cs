@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if REF_ONLINE_DYNAMIC_LINK
+
+using System.Collections.Generic;
 
 namespace REF.Runtime.Online.DynamicLinks
 {
@@ -16,3 +18,5 @@ namespace REF.Runtime.Online.DynamicLinks
 		public IDictionary<string, string> Data { get; set; }
 	}
 }
+
+#endif

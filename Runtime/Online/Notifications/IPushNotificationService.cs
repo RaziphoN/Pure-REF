@@ -1,4 +1,6 @@
-﻿using REF.Runtime.Notifications;
+﻿#if REF_ONLINE_PUSH_NOTIFICATION
+
+using REF.Runtime.Notifications;
 
 namespace REF.Runtime.Online.Notifications
 {
@@ -10,3 +12,5 @@ namespace REF.Runtime.Online.Notifications
 		string GetToken();
 	}
 }
+
+#endif

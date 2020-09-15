@@ -1,4 +1,5 @@
-﻿
+﻿#if REF_ONLINE_AUTH
+
 namespace REF.Runtime.Online.Auth
 {
 	public interface IAuthService : IOnlineService
@@ -16,3 +17,5 @@ namespace REF.Runtime.Online.Auth
 		void SignOut();
 	}
 }
+
+#endif

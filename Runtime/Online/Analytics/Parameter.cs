@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.Analytics
+﻿#if REF_ONLINE_ANALYTICS
+
+namespace REF.Runtime.Online.Analytics
 {
 	public class Parameter
 	{
@@ -12,3 +14,5 @@
 		public Value Value;
 	}
 }
+
+#endif

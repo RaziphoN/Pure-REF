@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.DynamicLinks
+﻿#if REF_ONLINE_DYNAMIC_LINK
+
+namespace REF.Runtime.Online.DynamicLinks
 {
 	public interface ILinkProcessor
 	{
@@ -8,3 +10,5 @@
 		void Handle(System.Uri link);
 	}
 }
+
+#endif

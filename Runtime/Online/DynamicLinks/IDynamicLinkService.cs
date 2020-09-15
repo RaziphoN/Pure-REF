@@ -1,4 +1,5 @@
-﻿
+﻿#if REF_ONLINE_DYNAMIC_LINK
+
 namespace REF.Runtime.Online.DynamicLinks
 {
 	public interface IDynamicLinkService : IOnlineService
@@ -8,3 +9,5 @@ namespace REF.Runtime.Online.DynamicLinks
 		void RequestShortLink(DynamicLink longLink, System.Action<System.Uri> onLinkCreated, System.Action onRequestFailed = null);
 	}
 }
+
+#endif

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_AUTH && REF_FIREBASE_AUTH && REF_USE_FIREBASE
+
+using UnityEngine;
 
 using REF.Runtime.Online.Service;
 
@@ -394,3 +396,5 @@ namespace REF.Runtime.Online.Auth
 		}
 	}
 }
+
+#endif

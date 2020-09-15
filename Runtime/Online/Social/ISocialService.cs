@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if REF_ONLINE_SOCIAL
+
+using System.Collections.Generic;
 
 namespace REF.Runtime.Online.Social
 {
@@ -15,3 +17,5 @@ namespace REF.Runtime.Online.Social
 		void SignOut();
 	}
 }
+
+#endif

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_USE_FIREBASE
+
+using UnityEngine;
 
 namespace REF.Runtime.Online.Service.Firebase
 {
@@ -15,3 +17,5 @@ namespace REF.Runtime.Online.Service.Firebase
 		}
 	}
 }
+
+#endif

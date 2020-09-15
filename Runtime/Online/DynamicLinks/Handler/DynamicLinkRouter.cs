@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿#if REF_ONLINE_DYNAMIC_LINK
+
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System;
@@ -58,3 +60,5 @@ namespace REF.Runtime.Online.DynamicLinks
 		}
 	}
 }
+
+#endif

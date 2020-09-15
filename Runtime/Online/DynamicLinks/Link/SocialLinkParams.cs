@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.DynamicLinks
+﻿#if REF_ONLINE_DYNAMIC_LINK
+
+namespace REF.Runtime.Online.DynamicLinks
 {
 	public class SocialLinkParams
 	{
@@ -7,3 +9,5 @@
 		public string ImageUrl { get; set; }
 	}
 }
+
+#endif

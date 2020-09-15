@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_SOCIAL
+
+using UnityEngine;
 
 namespace REF.Runtime.Online.Social
 {
@@ -9,3 +11,5 @@ namespace REF.Runtime.Online.Social
 		string GetAvatarUrl();
 	}
 }
+
+#endif

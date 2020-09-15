@@ -1,4 +1,5 @@
-﻿
+﻿#if REF_ONLINE_REMOTE_CONFIG
+
 namespace REF.Runtime.Online.RemoteConfig
 {
 	public interface IValueConverter<T>
@@ -6,3 +7,5 @@ namespace REF.Runtime.Online.RemoteConfig
 		T Convert(Value value);
 	}
 }
+
+#endif

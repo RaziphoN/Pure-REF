@@ -1,4 +1,4 @@
-﻿
+﻿#if REF_USE_FACEBOOK
 
 namespace REF.Runtime.Online.Service.Facebook
 {
@@ -50,3 +50,5 @@ namespace REF.Runtime.Online.Service.Facebook
 		}
 	}
 }
+
+#endif

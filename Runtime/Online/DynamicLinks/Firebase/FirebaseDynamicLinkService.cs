@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_ONLINE_DYNAMIC_LINK && REF_FIREBASE_DYNAMIC_LINK && REF_USE_FIREBASE
+
+using UnityEngine;
 
 using System.Collections.Generic;
 
@@ -191,3 +193,5 @@ namespace REF.Runtime.Online.DynamicLinks
 		}
 	}
 }
+
+#endif

@@ -5,17 +5,14 @@ using System.Collections.Generic;
 
 namespace REF.Runtime.Core
 {
-	public class App : MonoBehaviour
+	public abstract class App : MonoBehaviour
 	{
 		private static App instance;
 		
 		protected IService[] services = null;
 
-		// TODO: Add here your services to services array (initialization happens after Awake, so managers could be mono behaviours)
-		protected virtual void Initialize()
-		{
-			
-		}
+		// TODO: Add here your services to services array (initialization happens at Start, so managers could initialize something in Awake in case of MonoBehaviour)
+		protected abstract void Assign();
 
 		public static App Instance { get { return instance; } }
 
@@ -45,18 +42,11 @@ namespace REF.Runtime.Core
 
 		public bool Has<T>() where T : IService
 		{
-			if (services == null)
-			{
-				return false;
-			}
+			var service = Get<T>();
 
-			for (int idx = 0; idx < services.Length; ++idx)
+			if (service != null)
 			{
-				var service = services[idx];
-				if (service is T)
-				{
-					return true;
-				}
+				return true;
 			}
 
 			return false;
@@ -72,7 +62,11 @@ namespace REF.Runtime.Core
 			for (int idx = 0; idx < services.Length; ++idx)
 			{
 				var service = services[idx];
-				if (service.GetType().IsAssignableFrom(typeof(T)))
+
+				var genericType = typeof(T);
+				var serviceType = service.GetType();
+
+				if (genericType.IsAssignableFrom(serviceType))
 				{
 					return (T)service;
 				}
@@ -88,7 +82,7 @@ namespace REF.Runtime.Core
 
 		private IEnumerator Start()
 		{
-			Initialize();
+			Assign();
 
 			if (services != null)
 			{

@@ -1,4 +1,6 @@
-﻿using Facebook.Unity;
+﻿#if REF_USE_FACEBOOK
+
+using Facebook.Unity;
 
 namespace REF.Runtime.Online.Service.Facebook
 {
@@ -44,3 +46,5 @@ namespace REF.Runtime.Online.Service.Facebook
 		}
 	}
 }
+
+#endif
