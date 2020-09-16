@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Scripts.Framework.EventSystem
+namespace REF.Runtime.EventSystem.Static
 {
 	public class Event<T> : EventBase
 	{

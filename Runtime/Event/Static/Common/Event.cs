@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace Scripts.Framework.EventSystem.Common
+namespace REF.Runtime.EventSystem.Static
 {
 	[CreateAssetMenu(fileName = "Event", menuName = "REF/EventSystem/Event")]
 	public class Event : EventBase
