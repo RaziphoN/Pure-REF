@@ -162,5 +162,17 @@ namespace REF.Runtime.Core
 				}
 			}
 		}
+
+		private void OnDestroy()
+		{
+			for (int idx = services.Length - 1; idx < services.Length; --idx)
+			{
+				var service = services[idx];
+				if (service.IsInitialized())
+				{
+					service.Release(null);
+				}
+			}
+		}
 	}
 }

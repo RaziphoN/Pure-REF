@@ -9,9 +9,9 @@ namespace REF.Runtime.Core
 		public virtual bool IsSupported() { return true; }
 		public virtual bool IsInitialized() { return initialized; }
 
-		public virtual void PreInitialize(System.Action callback) { callback?.Invoke(); SetInitialized(false); }
+		public virtual void PreInitialize(System.Action callback) { SetInitialized(false); callback?.Invoke(); }
 		public virtual void Initialize(System.Action callback) { callback?.Invoke(); }
-		public virtual void PostInitialize(System.Action callback) { callback?.Invoke(); SetInitialized(false); }
+		public virtual void PostInitialize(System.Action callback) { SetInitialized(true); callback?.Invoke(); }
 		public virtual void Release(System.Action callback) { callback?.Invoke(); SetInitialized(false); }
 
 		public virtual void Update() { }
