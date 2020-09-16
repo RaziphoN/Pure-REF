@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Scripts.Framework.EventSystem.Common
+namespace REF.Runtime.EventSystem.Static
 {
 	[CreateAssetMenu(fileName = "GameObjectEvent", menuName = "REF/EventSystem/GameObjectEvent")]
 	public class GameObjectEvent : Event<GameObject> { }

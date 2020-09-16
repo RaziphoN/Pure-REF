@@ -1,18 +1,18 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace Scripts.Framework.EventSystem.Common
+namespace REF.Runtime.EventSystem.Static
 {
 	[System.Serializable]
-	public class GameObjectUnityEvent : UnityEvent<GameObject> { }
+	public class BoolUnityEvent : UnityEvent<bool> { }
 
-	public class GameObjectEventListener : EventListener<GameObject>
+	public class BoolEventListener : EventListener<bool>
 	{
 		[Tooltip("Event to register with.")]
-		[SerializeField] private GameObjectEvent[] eventList = null;
+		[SerializeField] private BoolEvent[] eventList = null;
 
 		[Tooltip("Response to invoke when Event is raised.")]
-		[SerializeField] private GameObjectUnityEvent callback = null;
+		[SerializeField] private BoolUnityEvent callback = null;
 
 		protected override void LinkEvents()
 		{

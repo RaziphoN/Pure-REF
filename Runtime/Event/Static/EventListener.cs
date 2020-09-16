@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 using System.Linq;
 
-namespace Scripts.Framework.EventSystem
+namespace REF.Runtime.EventSystem.Static
 {
 	public abstract class EventListener<T> : MonoBehaviour
 	{
