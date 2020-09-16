@@ -16,7 +16,7 @@
 			return id;
 		}
 
-		public void Raise(IEventPayload ev)
+		public void Invoke(IEventPayload ev)
 		{
 			if (ev is T)
 			{
