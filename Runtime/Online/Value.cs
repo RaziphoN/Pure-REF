@@ -49,6 +49,11 @@ namespace REF.Runtime.Online
 			SetString(value);
 		}
 
+		public void SetValueType(Type type)
+		{
+			this.type = type;
+		}
+
 		public Type GetValueType()
 		{
 			return type;
