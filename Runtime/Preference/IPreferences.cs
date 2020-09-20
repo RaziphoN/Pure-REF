@@ -1,11 +1,15 @@
-﻿namespace REF.Runtime.Preference
-{
-	public interface IPreferences
-	{
-		void Register(IPreferenceable obj);
-		void Unregister(IPreferenceable obj);
+﻿using REF.Runtime.Serialization;
 
-		void Load();
+namespace REF.Runtime.Preference
+{
+	public interface IPreferences : ISaver
+	{
+		ISerializer GetSerializer();
+
+		void Register(string key, ISerializable obj);
+		void Unregister(string key);
+
 		void Save();
+		void Load();
 	}
 }

@@ -2,7 +2,7 @@
 
 using REF.Runtime.UI;
 
-namespace REF.Editor.Editor.UI
+namespace REF.Editor.UI
 {
 	[CanEditMultipleObjects]
 	[CustomEditor(typeof(Toggle))]

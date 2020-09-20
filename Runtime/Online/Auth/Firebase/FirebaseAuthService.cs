@@ -3,6 +3,7 @@
 using UnityEngine;
 
 using REF.Runtime.Online.Service;
+using REF.Runtime.Diagnostic;
 
 using Firebase.Auth;
 using Firebase.Extensions;
@@ -15,7 +16,8 @@ namespace REF.Runtime.Online.Auth
 	public class FirebaseAuthService : FirebaseService, IAuthService
 	{
 		private FirebaseUser internalFirebaseUser;
-		private User internalUser;
+		[SerializeField] private User internalUser;
+		private bool isSignedIn = false;
 
 		public override void Release(System.Action callback)
 		{
@@ -27,7 +29,7 @@ namespace REF.Runtime.Online.Auth
 
 		public bool IsSignedIn()
 		{
-			return internalUser != null;
+			return isSignedIn;
 		}
 
 		public void ChangeUserInfo(UserUpdate update, System.Action OnSuccess = null, System.Action OnFail = null)
@@ -67,6 +69,7 @@ namespace REF.Runtime.Online.Auth
 				}
 				else
 				{
+					this.Log("Failed to update user profile: {0}", task.Exception.Message);
 					OnFail?.Invoke();
 				}
 			});
@@ -86,12 +89,14 @@ namespace REF.Runtime.Online.Auth
 		{
 			if (!IsInitialized() || !IsSignedIn())
 			{
+				this.Log("You didn't initialize auth service or you aren't logged in!");
 				OnFailed?.Invoke();
 				return;
 			}
 
 			if (!credential.IsValid())
 			{
+				this.Log("Coudn't link account, because credential is invalid");
 				OnFailed?.Invoke();
 				return;
 			}
@@ -109,6 +114,7 @@ namespace REF.Runtime.Online.Auth
 					}
 					else
 					{
+						this.Log("Failed to link account: {0}", task.Exception.Message);
 						OnFailed?.Invoke();
 					}
 				});
@@ -123,6 +129,7 @@ namespace REF.Runtime.Online.Auth
 		{
 			if (!IsInitialized() || !IsSignedIn())
 			{
+				this.Log("You didn't initialize auth service or you aren't logged in!");
 				OnFailed?.Invoke();
 				return;
 			}
@@ -146,12 +153,14 @@ namespace REF.Runtime.Online.Auth
 					}
 					else
 					{
+						this.Log("Failed to re-authenticate: {0}", task.Exception.Message);
 						OnFailed?.Invoke();
 					}
 				});
 			}
 			else
 			{
+				this.Log("Failed to re-authenticate, because credential is null!");
 				OnFailed?.Invoke();
 			}
 		}
@@ -160,18 +169,21 @@ namespace REF.Runtime.Online.Auth
 		{
 			if (!IsInitialized())
 			{
+				this.Log("You didn't initialize auth service");
 				OnFailed?.Invoke();
 				return;
 			}
 
 			if (IsSignedIn())
 			{
+				this.Log("You already signed in!");
 				OnFailed?.Invoke();
 				return;
 			}
 
 			if (!credential.IsValid())
 			{
+				this.Log("Coudn't sign-in, because credential is invalid!");
 				OnFailed.Invoke();
 				return;
 			}
@@ -189,6 +201,7 @@ namespace REF.Runtime.Online.Auth
 					}
 					else
 					{
+						this.Log("Failed to create a user: {0}", creationTask.Exception.Message);
 						OnFailed?.Invoke();
 					}
 				});
@@ -203,19 +216,22 @@ namespace REF.Runtime.Online.Auth
 		{
 			if (!IsInitialized())
 			{
+				this.Log("You didn't initialize auth service");
 				OnFailed?.Invoke();
 				return;
 			}
 
 			if (IsSignedIn())
 			{
+				this.Log("You already signed in!");
 				OnFailed?.Invoke();
 				return;
 			}
 
 			if (!credential.IsValid())
 			{
-				OnFailed?.Invoke();
+				this.Log("Coudn't sign-in, because credential is invalid!");
+				OnFailed.Invoke();
 				return;
 			}
 
@@ -229,8 +245,10 @@ namespace REF.Runtime.Online.Auth
 				return;
 			}
 
+
 			var auth = FirebaseAuth.DefaultInstance;
 			auth.SignOut();
+			isSignedIn = false;
 		}
 
 		protected override void FinalizeInit(bool successful, System.Action callback)
@@ -251,9 +269,13 @@ namespace REF.Runtime.Online.Auth
 
 			firebaseUser.TokenAsync(false).ContinueWithOnMainThread((task) =>
 			{
-				if (!task.IsCompleted && task.Exception == null)
+				if (task.IsCompleted && task.Exception == null)
 				{
 					user.SetToken(task.Result);
+				}
+				else
+				{
+					this.Log("Failed to request user token: {0}", task.Exception.Message);
 				}
 
 				internalUser?.SetToken(task.Result);
@@ -276,6 +298,7 @@ namespace REF.Runtime.Online.Auth
 					}
 					else
 					{
+						this.Log("Failed to sign-in: {0}", task.Exception.Message);
 						OnFailed?.Invoke();
 					}
 				});
@@ -292,11 +315,11 @@ namespace REF.Runtime.Online.Auth
 						{
 							if (task.IsCompleted && task.Exception == null)
 							{
-								var user = FromFirebaseUser(task.Result);
-								OnSignedIn?.Invoke(user);
+								RequestTokenInternal(internalFirebaseUser, OnSignedIn);
 							}
 							else
 							{
+								this.Log("Failed to sign-in: {0}", task.Exception.Message);
 								OnFailed?.Invoke();
 							}
 						});
@@ -309,11 +332,11 @@ namespace REF.Runtime.Online.Auth
 						{
 							if (task.IsCompleted && task.Exception == null)
 							{
-								var user = FromFirebaseUser(task.Result);
-								OnSignedIn?.Invoke(user);
+								RequestTokenInternal(internalFirebaseUser, OnSignedIn);
 							}
 							else
 							{
+								this.Log("Failed to sign-in: {0}", task.Exception.Message);
 								OnFailed?.Invoke();
 							}
 						});
@@ -322,6 +345,7 @@ namespace REF.Runtime.Online.Auth
 
 					default:
 					{
+						this.Log("Failed to sign-in, provider is not supported!");
 						OnFailed?.Invoke();
 					}
 					break;
@@ -335,9 +359,9 @@ namespace REF.Runtime.Online.Auth
 
 			if (auth.CurrentUser != internalFirebaseUser)
 			{
-				bool signedIn = internalFirebaseUser != auth.CurrentUser && auth.CurrentUser != null;
-				
-				if (!signedIn && internalFirebaseUser != null)
+				isSignedIn = internalFirebaseUser != auth.CurrentUser && auth.CurrentUser != null;
+
+				if (!isSignedIn && internalFirebaseUser != null)
 				{
 					internalUser = null;
 					internalFirebaseUser = null;
@@ -345,7 +369,7 @@ namespace REF.Runtime.Online.Auth
 
 				internalFirebaseUser = auth.CurrentUser;
 
-				if (signedIn)
+				if (isSignedIn)
 				{
 					internalUser = FromFirebaseUser(internalFirebaseUser);
 				}
@@ -360,7 +384,7 @@ namespace REF.Runtime.Online.Auth
 			user.SetPhoneNumber(firebaseUser.PhoneNumber);
 			user.SetPhotoUri(firebaseUser.PhotoUrl);
 			user.SetUid(firebaseUser.UserId);
-			
+
 			return user;
 		}
 
@@ -394,6 +418,14 @@ namespace REF.Runtime.Online.Auth
 
 			return null;
 		}
+
+#if UNITY_EDITOR
+		[ContextMenu("Sign Out")]
+		private void SignOutEditor()
+		{
+			SignOut();
+		}
+#endif
 	}
 }
 

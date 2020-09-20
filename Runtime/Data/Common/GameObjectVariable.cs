@@ -10,5 +10,6 @@ namespace REF.Runtime.Data
 	[System.Serializable]
 	public class GameObjectReference : Reference<GameObject, GameObjectVariable>
 	{
+		public GameObjectReference(GameObject value) : base(value) { }
 	}
 }

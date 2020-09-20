@@ -3,10 +3,16 @@
 using System.Collections;
 using System.Collections.Generic;
 
+using REF.Runtime.Diagnostic;
+
 namespace REF.Runtime.Core
 {
 	public abstract class App : MonoBehaviour
 	{
+		public event System.Action OnPreInitialized;
+		public event System.Action OnInitialized;
+		public event System.Action OnPostInitialized;
+
 		private static App instance;
 		
 		protected IService[] services = null;
@@ -59,16 +65,19 @@ namespace REF.Runtime.Core
 				return default(T);
 			}
 
-			for (int idx = 0; idx < services.Length; ++idx)
+			if (services != null)
 			{
-				var service = services[idx];
-
-				var genericType = typeof(T);
-				var serviceType = service.GetType();
-
-				if (genericType.IsAssignableFrom(serviceType))
+				for (int idx = 0; idx < services.Length; ++idx)
 				{
-					return (T)service;
+					var service = services[idx];
+
+					var genericType = typeof(T);
+					var serviceType = service.GetType();
+
+					if (genericType.IsAssignableFrom(serviceType))
+					{
+						return (T)service;
+					}
 				}
 			}
 
@@ -99,78 +108,110 @@ namespace REF.Runtime.Core
 				}
 
 				// pre-init
+				RefDebug.SetColor(Color.red);
+
 				for (int idx = 0; idx < supportedServices.Count; ++idx)
 				{
 					var service = supportedServices[idx];
 					bool ended = false;
 					service.PreInitialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
+
+					this.Log($"[{service.GetType().Name}] - PreInitialized");
 				}
 
+				OnPreInitialized?.Invoke();
+
 				// init
+				RefDebug.SetColor(Color.yellow);
+
 				for (int idx = 0; idx < supportedServices.Count; ++idx)
 				{
 					var service = supportedServices[idx];
 					bool ended = false;
 					service.Initialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
+
+					this.Log($"[{service.GetType().Name}] - Initialized");
 				}
 
+				OnInitialized?.Invoke();
+
 				// post-init
+				RefDebug.SetColor(Color.green);
+
 				for (int idx = 0; idx < supportedServices.Count; ++idx)
 				{
 					var service = supportedServices[idx];
 					bool ended = false;
 					service.PostInitialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
+
+					this.Log($"[{service.GetType().Name}] - PostInitialized");
 				}
+
+				RefDebug.SetColor(Color.white);
+
+				OnPostInitialized?.Invoke();
 			}
 		}
 
 		private void OnApplicationFocus(bool focus)
 		{
-			for (int idx = 0; idx < services.Length; ++idx)
+			if (services != null)
 			{
-				var service = services[idx];
-				if (service.IsInitialized())
+				for (int idx = 0; idx < services.Length; ++idx)
 				{
-					service.OnApplicationFocus(focus);
+					var service = services[idx];
+					if (service.IsInitialized())
+					{
+						service.OnApplicationFocus(focus);
+					}
 				}
 			}
 		}
 
 		private void OnApplicationPause(bool pause)
 		{
-			for (int idx = 0; idx < services.Length; ++idx)
+			if (services != null)
 			{
-				var service = services[idx];
-				if (service.IsInitialized())
+				for (int idx = 0; idx < services.Length; ++idx)
 				{
-					service.OnApplicationPause(pause);
+					var service = services[idx];
+					if (service.IsInitialized())
+					{
+						service.OnApplicationPause(pause);
+					}
 				}
 			}
 		}
 
 		private void OnApplicationQuit()
 		{
-			for (int idx = 0; idx < services.Length; ++idx)
+			if (services != null)
 			{
-				var service = services[idx];
-				if (service.IsInitialized())
+				for (int idx = 0; idx < services.Length; ++idx)
 				{
-					service.OnApplicationQuit();
+					var service = services[idx];
+					if (service.IsInitialized())
+					{
+						service.OnApplicationQuit();
+					}
 				}
 			}
 		}
 
 		private void OnDestroy()
 		{
-			for (int idx = services.Length - 1; idx < services.Length; --idx)
+			if (services != null)
 			{
-				var service = services[idx];
-				if (service.IsInitialized())
+				for (int idx = services.Length - 1; idx >= 0; --idx)
 				{
-					service.Release(null);
+					var service = services[idx];
+					if (service.IsInitialized())
+					{
+						service.Release(null);
+					}
 				}
 			}
 		}

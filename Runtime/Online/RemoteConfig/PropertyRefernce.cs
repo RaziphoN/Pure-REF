@@ -1,18 +1,36 @@
 ﻿#if REF_ONLINE_REMOTE_CONFIG
 
-using System.Collections.Generic;
-
 using REF.Runtime.Core;
 
 namespace REF.Runtime.Online.RemoteConfig
 {
 	[System.Serializable]
-	public class PropertyReference
+	public class RemoteValueReference
 	{
-		private string key;
+		public event System.Action<Value> OnValueChanged;
 
-		public PropertyReference(string key)
+		private string key = string.Empty;
+		private Value cachedValue = null;
+		private IRemoteConfigService source = null;
+
+		public static RemoteValueReference Create(string key, IRemoteConfigService source)
 		{
+			var reference = new RemoteValueReference(key, source);
+			reference.Assign(source.Config);
+			source.OnConfigFetched += reference.OnConfigChanged;
+
+			return reference;
+		}
+
+		public static void Remove(RemoteValueReference reference)
+		{
+			reference.source.OnConfigFetched -= reference.OnConfigChanged;
+		}
+
+		private RemoteValueReference(string key, IRemoteConfigService source)
+		{
+			this.key = key;
+			this.source = source;
 		}
 
 		public void Link(string key)
@@ -22,29 +40,7 @@ namespace REF.Runtime.Online.RemoteConfig
 
 		public Value GetValue()
 		{
-			if (App.Instance == null)
-			{
-				return null;
-			}
-
-			var remoteConfigService = App.Instance.Get<IRemoteConfigService>();
-			if (remoteConfigService == null)
-			{
-				return null;
-			}
-
-			var config = remoteConfigService.Config;
-			if (config == null)
-			{
-				return null;
-			}
-
-			if (!config.HasKey(key))
-			{
-				return null;
-			}
-
-			return config.GetValue(key);
+			return cachedValue;
 		}
 
 		public bool GetBool(bool fallback = false)
@@ -93,6 +89,30 @@ namespace REF.Runtime.Online.RemoteConfig
 			}
 
 			return fallback;
+		}
+
+		private bool Assign(IConfig config)
+		{
+			if (config != null && config.HasKey(key))
+			{
+				var value = config.GetValue(key);
+
+				if (!cachedValue.Equals(value))
+				{
+					cachedValue = value;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		private void OnConfigChanged(IConfig config)
+		{
+			if (Assign(config))
+			{
+				OnValueChanged?.Invoke(cachedValue);
+			}
 		}
 	}
 }

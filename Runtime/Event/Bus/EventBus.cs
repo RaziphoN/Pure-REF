@@ -5,8 +5,8 @@ namespace REF.Runtime.EventSystem.Bus
 {
 	public class EventBus : IEventBus
 	{
-		private static readonly IDictionary<System.Type, IList<ISubscription>> subscriptions = new Dictionary<System.Type, IList<ISubscription>>();
-		private static readonly object lockingObj = new object();
+		private readonly IDictionary<System.Type, IList<ISubscription>> subscriptions = new Dictionary<System.Type, IList<ISubscription>>();
+		private readonly object lockingObj = new object();
 
 		public string Subscribe<T>(System.Action<T> action) where T : IEventPayload
 		{
@@ -31,7 +31,7 @@ namespace REF.Runtime.EventSystem.Bus
 				else
 				{
 					var subs = subscriptions[type];
-					var sameSubscription = subs.Single((sub) =>
+					var sameSubscription = subs?.SingleOrDefault((sub) =>
 					{
 						if (sub is Subscription<T>)
 						{
@@ -73,7 +73,11 @@ namespace REF.Runtime.EventSystem.Bus
 				}
 
 				var subs = subscriptions[type];
-				var foundSub = subs.Single((sub) => { return sub.GetType() == typeof(Subscription<T>); });
+				var foundSub = subs?.SingleOrDefault((sub) => 
+				{
+					var subT = sub as Subscription<T>;
+					return subT.Same(action);
+				});
 
 				if (foundSub != null)
 				{
@@ -95,7 +99,7 @@ namespace REF.Runtime.EventSystem.Bus
 				
 				foreach (var value in values)
 				{
-					var subscription = value.Single((sub) => { return sub.GetId() == id; });
+					var subscription = value?.SingleOrDefault((sub) => { return sub.GetId() == id; });
 					if (subscription != null)
 					{
 						value.Remove(subscription);

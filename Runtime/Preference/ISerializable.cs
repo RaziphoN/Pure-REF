@@ -2,10 +2,8 @@
 
 namespace REF.Runtime.Preference
 {
-	public interface IPreferenceable
+	public interface ISerializable
 	{
-		string GetSerializationKey();
-
 		byte[] Serialize(ISerializer serializer);
 		void Deserialize(ISerializer serializer, byte[] data);
 	}

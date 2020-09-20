@@ -10,5 +10,6 @@ namespace REF.Runtime.Data
 	[System.Serializable]
 	public class TransformReference : Reference<Transform, TransformVariable>
 	{
+		public TransformReference(Transform value) : base(value) { }
 	}
 }

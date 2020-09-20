@@ -10,5 +10,6 @@ namespace REF.Runtime.Data
 	[System.Serializable]
 	public class BoolReference : Reference<bool, BoolVariable>
 	{
+		public BoolReference(bool value) : base(value) { }
 	}
 }

@@ -10,5 +10,6 @@ namespace REF.Runtime.Data
 	[System.Serializable]
 	public class RectTransformReference : Reference<RectTransform, RectTransformVariable>
 	{
+		public RectTransformReference(RectTransform value) : base(value) { }
 	}
 }

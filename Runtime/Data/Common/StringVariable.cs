@@ -10,5 +10,6 @@ namespace REF.Runtime.Data
 	[System.Serializable]
 	public class StringReference : Reference<string, StringVariable>
 	{
+		public StringReference(string value) : base(value) { }
 	}
 }

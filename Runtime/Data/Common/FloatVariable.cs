@@ -10,5 +10,6 @@ namespace REF.Runtime.Data
 	[System.Serializable]
 	public class FloatReference : Reference<float, FloatVariable>
 	{
+		public FloatReference(float value) : base(value) { }
 	}
 }

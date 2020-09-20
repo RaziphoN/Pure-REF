@@ -12,46 +12,63 @@ namespace REF.Runtime.Preference
 		[SerializeField] private Saver saver;
 		[SerializeField] private Serializer serializer;
 
-		private List<IPreferenceable> preferenceObjects = new List<IPreferenceable>();
+		private IDictionary<string, ISerializable> serializables = new Dictionary<string, ISerializable>();
+
+		public ISerializer GetSerializer()
+		{
+			return serializer;
+		}
+
+		public bool HasKey(string key)
+		{
+			return saver.HasKey(key);
+		}
+
+		public void Save(string key, byte[] data)
+		{
+			saver.Save(key, data);
+		}
+
+		public byte[] Load(string key)
+		{
+			return saver.Load(key);
+		}
 
 		public void Save()
 		{
-			for (int idx = 0; idx < preferenceObjects.Count; ++idx)
+			foreach (var serializable in serializables)
 			{
-				var obj = preferenceObjects[idx];
-				
+				var obj = serializable.Value;
 				var data = obj.Serialize(serializer);
-				var key = obj.GetSerializationKey();
 
-				saver.Save(key, data);
+				saver.Save(serializable.Key, data);
 			}
 		}
 
 		public void Load()
 		{
-			for (int idx = 0; idx < preferenceObjects.Count; ++idx)
+			foreach (var serializable in serializables)
 			{
-				var obj = preferenceObjects[idx];
-				var key = obj.GetSerializationKey();
+				var obj = serializable.Value;
+				var data = saver.Load(serializable.Key);
 
-				var data = saver.Load(key);
 				obj.Deserialize(serializer, data);
 			}
 		}
 
-		public void Register(IPreferenceable obj)
+		public void Register(string key, ISerializable obj)
 		{
-			if (!preferenceObjects.Contains(obj))
+			if (!serializables.ContainsKey(key))
 			{
-				preferenceObjects.Add(obj);
+				serializables.Add(key, obj);
 			}
 		}
 
-		public void Unregister(IPreferenceable obj)
+		public void Unregister(string key)
 		{
-			if (preferenceObjects.Contains(obj))
+			if (serializables.ContainsKey(key))
 			{
-				preferenceObjects.Remove(obj);
+				serializables.Remove(key);
 			}
 		}
 	}

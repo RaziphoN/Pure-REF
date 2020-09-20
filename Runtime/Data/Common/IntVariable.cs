@@ -10,5 +10,6 @@ namespace REF.Runtime.Data
 	[System.Serializable]
 	public class IntReference : Reference<int, IntVariable>
 	{
+		public IntReference(int value) : base(value) { }
 	}
 }

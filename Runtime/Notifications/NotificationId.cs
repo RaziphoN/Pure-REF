@@ -42,6 +42,11 @@
 			return false;
 		}
 
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+
 		public bool IsValid()
 		{
 			return AndroidId != -1 || !string.IsNullOrEmpty(iOSId);

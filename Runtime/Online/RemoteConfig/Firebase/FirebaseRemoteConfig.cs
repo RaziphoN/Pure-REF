@@ -14,15 +14,12 @@ namespace REF.Runtime.Online.RemoteConfig
 	[CreateAssetMenu(fileName = "FirebaseRemoteConfigService", menuName = "REF/Online/Remote Config/Firebase Remote Config")]
 	public class FirebaseRemoteConfig : FirebaseService, IRemoteConfigService
 	{
+		[SerializeField] ScriptableConfig config;
+
 		public event Action<IConfig> OnConfigFetched;
 		public event Action OnConfigFetchFailed;
 
-		public IConfig Config { get; } = new Config();
-
-		public FirebaseRemoteConfig(IConfig config)
-		{
-			Config = config;
-		}
+		public IConfig Config { get { return config; } }
 
 		public void Fetch(System.Action callback = null)
 		{
@@ -47,9 +44,13 @@ namespace REF.Runtime.Online.RemoteConfig
 			UpdateLocalConfig(); // Firebase save it's last fetched config internally, so we force to update our on init to match last fetched remote config
 
 			if (successful)
-				Fetch();
+			{
+				Fetch(callback);
+			}
 			else
+			{
 				callback?.Invoke();
+			}
 		}
 
 		private void Apply(System.Threading.Tasks.Task fetchTask)

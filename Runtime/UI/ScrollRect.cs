@@ -10,9 +10,9 @@ namespace REF.Runtime.UI
 	{
 		[SerializeField] private ScrollRectStyleObject style;
 
-		protected override void Awake()
+		protected override void Start()
 		{
-			base.Awake();
+			base.Start();
 			style?.Apply(this);
 		}
 

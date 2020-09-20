@@ -27,7 +27,12 @@
 
 		public bool Same(Subscription<T> other)
 		{
-			return this.callback == other.callback;
+			return Same(other.callback);
+		}
+
+		public bool Same(System.Action<T> callback)
+		{
+			return this.callback == callback;
 		}
 	}
 }

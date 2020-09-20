@@ -10,5 +10,6 @@ namespace REF.Runtime.Data
 	[System.Serializable]
 	public class DoubleReference : Reference<double, DoubleVariable>
 	{
+		public DoubleReference(double value) : base(value) { }
 	}
 }

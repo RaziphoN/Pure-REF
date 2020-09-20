@@ -4,6 +4,7 @@ using System.Text;
 
 namespace REF.Runtime.Serialization
 {
+	[CreateAssetMenu(fileName = "UnitySerializer", menuName = "REF/Game Data/Default Unity Serializer")]
 	public class UnitySerializer : Serializer
 	{
 		public override byte[] Serialize(object obj)

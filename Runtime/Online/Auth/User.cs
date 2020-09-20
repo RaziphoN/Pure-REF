@@ -1,17 +1,19 @@
 ﻿#if REF_ONLINE_AUTH
+using UnityEngine;
 
 using System.Collections.Generic;
 
 namespace REF.Runtime.Online.Auth
 {
+	[System.Serializable]
 	public class User
 	{
-		private ProviderType provider;
-		private string displayName;
-		private string id;
-		private string token; // token is more universal than id (at least in Firebase)
-		private string email;
-		private string phoneNumber;
+		[SerializeField] private ProviderType provider;
+		[SerializeField] private string displayName;
+		[SerializeField] private string id;
+		[SerializeField] private string token; // token is more universal than id (at least in Firebase)
+		[SerializeField] private string email;
+		[SerializeField] private string phoneNumber;
 		private System.Uri photoUri;
 		private IDictionary<string, string> data = new Dictionary<string, string>();
 

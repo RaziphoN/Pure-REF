@@ -15,6 +15,10 @@ namespace REF.Runtime.Data
 		[SerializeField] private VariableT reference;
 		[SerializeField] private T constant;
 
+		public Reference() { }
+
+		public Reference(T value) { Const = value; }
+
 		public ReferenceType Type
 		{
 			get { return type; }
