@@ -128,7 +128,12 @@ namespace REF.Runtime.Diagnostic
 				}
 			}
 
+#if UNITY_EDITOR
 			var formatted = string.Format("<color=#{0:X2}{1:X2}{2:X2}>[{3}] - {4}</color>", (byte)(color.r * 255f), (byte)(color.g * 255f), (byte)(color.b * 255f), tag, format);
+#else
+			var formatted = string.Format("[{3}] - {4}", (byte)(color.r * 255f), (byte)(color.g * 255f), (byte)(color.b * 255f), tag, format);
+#endif
+
 			UnityEngine.Debug.LogFormat(ConvertLevel(this.level), stacktrace ? LogOption.None : LogOption.NoStacktrace, context, formatted, args);
 		}
 

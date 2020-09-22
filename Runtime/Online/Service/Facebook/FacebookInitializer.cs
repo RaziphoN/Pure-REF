@@ -8,7 +8,7 @@ namespace REF.Runtime.Online.Service.Facebook
 	{
 		public static event System.Action<bool> OnInitialized;
 
-		private static bool shouldInitialize = false;
+		private static bool shouldInitialize = true;
 		private static bool initialized = false;
 
 		public static bool IsInitialized()

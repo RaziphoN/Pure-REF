@@ -125,6 +125,51 @@ namespace REF.Runtime.Online
 			return stringValue;
 		}
 
+		public Value Clone()
+		{
+			Value copy = new Value(false);
+			copy.type = type;
+			copy.boolValue = boolValue;
+			copy.doubleValue = doubleValue;
+			copy.longValue = longValue;
+			copy.stringValue = stringValue;
+
+			return copy;
+		}
+
+		public bool Equals(Value other)
+		{
+			if (type != other.type)
+			{
+				return false;
+			}
+
+			switch (type)
+			{
+				case Type.Bool:
+				{
+					return boolValue == other.boolValue;
+				}
+
+				case Type.Long:
+				{
+					return longValue == other.longValue;
+				}
+
+				case Type.Double:
+				{
+					return doubleValue == other.doubleValue;
+				}
+
+				case Type.String:
+				{
+					return stringValue == other.stringValue;
+				}
+			}
+
+			return false;
+		}
+
 		public override string ToString()
 		{
 			switch (type)

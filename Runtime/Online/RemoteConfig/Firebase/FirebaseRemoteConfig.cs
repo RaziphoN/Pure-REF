@@ -135,7 +135,7 @@ namespace REF.Runtime.Online.RemoteConfig
 
 		private void UpdateLocalConfig()
 		{
-			if (IsInitialized())
+			if (FirebaseInitializer.AllowApiCalls)
 			{
 				IEnumerable<string> keys = Firebase.RemoteConfig.FirebaseRemoteConfig.Keys;
 

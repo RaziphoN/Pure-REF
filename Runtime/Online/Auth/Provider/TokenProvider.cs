@@ -16,7 +16,7 @@ namespace REF.Runtime.Online.Auth.Provider
 			return credential;
 		}
 
-		protected void SetToken(string token)
+		public void SetToken(string token)
 		{
 			this.token = token;
 		}

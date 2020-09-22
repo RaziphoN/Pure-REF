@@ -17,8 +17,14 @@ namespace REF.Runtime.Core
 		
 		protected IService[] services = null;
 
+		[SerializeField] private string version = string.Empty;
+		[SerializeField] private string build = string.Empty;
+
+		public string Version { get { return version; } set { version = value; } }
+		public string Build { get { return build; } set { build = value; } }
+
 		// TODO: Add here your services to services array (initialization happens at Start, so managers could initialize something in Awake in case of MonoBehaviour)
-		protected abstract void Assign();
+		public abstract void Assign();
 
 		public static App Instance { get { return instance; } }
 
@@ -108,8 +114,6 @@ namespace REF.Runtime.Core
 				}
 
 				// pre-init
-				RefDebug.SetColor(Color.red);
-
 				for (int idx = 0; idx < supportedServices.Count; ++idx)
 				{
 					var service = supportedServices[idx];
@@ -117,14 +121,12 @@ namespace REF.Runtime.Core
 					service.PreInitialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
 
-					this.Log($"[{service.GetType().Name}] - PreInitialized");
+					this.Log(Color.red, $"[{service.GetType().Name}] - PreInitialized");
 				}
 
 				OnPreInitialized?.Invoke();
 
 				// init
-				RefDebug.SetColor(Color.yellow);
-
 				for (int idx = 0; idx < supportedServices.Count; ++idx)
 				{
 					var service = supportedServices[idx];
@@ -132,14 +134,12 @@ namespace REF.Runtime.Core
 					service.Initialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
 
-					this.Log($"[{service.GetType().Name}] - Initialized");
+					this.Log(Color.yellow, $"[{service.GetType().Name}] - Initialized");
 				}
 
 				OnInitialized?.Invoke();
 
 				// post-init
-				RefDebug.SetColor(Color.green);
-
 				for (int idx = 0; idx < supportedServices.Count; ++idx)
 				{
 					var service = supportedServices[idx];
@@ -147,11 +147,8 @@ namespace REF.Runtime.Core
 					service.PostInitialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
 
-					this.Log($"[{service.GetType().Name}] - PostInitialized");
+					this.Log(Color.green, $"[{service.GetType().Name}] - PostInitialized");
 				}
-
-				RefDebug.SetColor(Color.white);
-
 				OnPostInitialized?.Invoke();
 			}
 		}

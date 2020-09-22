@@ -97,9 +97,9 @@ namespace REF.Runtime.Online.RemoteConfig
 			{
 				var value = config.GetValue(key);
 
-				if (!cachedValue.Equals(value))
+				if (cachedValue == null || !cachedValue.Equals(value))
 				{
-					cachedValue = value;
+					cachedValue = value.Clone();
 					return true;
 				}
 			}
