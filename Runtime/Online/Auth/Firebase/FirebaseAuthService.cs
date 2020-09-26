@@ -15,17 +15,11 @@ namespace REF.Runtime.Online.Auth
 	[CreateAssetMenu(fileName = "FirebaseAuthService", menuName = "REF/Online/Auth/Firebase Auth")]
 	public class FirebaseAuthService : FirebaseService, IAuthService
 	{
-		private FirebaseUser internalFirebaseUser;
+		public event System.Action OnTokenChanged;
+
 		[SerializeField] private User internalUser;
+		private FirebaseUser internalFirebaseUser;
 		private bool isSignedIn = false;
-
-		public override void Release(System.Action callback)
-		{
-			var auth = FirebaseAuth.DefaultInstance;
-			auth.StateChanged -= OnAuthStateChangedHandler;
-
-			base.Release(callback);
-		}
 
 		public bool IsSignedIn()
 		{
@@ -94,13 +88,6 @@ namespace REF.Runtime.Online.Auth
 				return;
 			}
 
-			if (!credential.IsValid())
-			{
-				this.Log("Coudn't link account, because credential is invalid");
-				OnFailed?.Invoke();
-				return;
-			}
-
 			var creds = ToFirebaseCredential(credential);
 
 			if (creds != null)
@@ -110,6 +97,7 @@ namespace REF.Runtime.Online.Auth
 					if (task.IsCompleted && task.Exception == null)
 					{
 						internalFirebaseUser = task.Result;
+						internalUser?.SetProvider(credential.GetProviderId());
 						RequestTokenInternal(internalFirebaseUser, OnLinked);
 					}
 					else
@@ -149,7 +137,8 @@ namespace REF.Runtime.Online.Auth
 							internalUser?.SetKey(obj.Key, obj.Value.ToString());
 						}
 
-						OnSucess?.Invoke();
+						internalUser?.SetProvider(credential.GetProviderId());
+						RequestTokenInternal(internalFirebaseUser, (user) => { OnSucess?.Invoke(); });
 					}
 					else
 					{
@@ -181,22 +170,17 @@ namespace REF.Runtime.Online.Auth
 				return;
 			}
 
-			if (!credential.IsValid())
-			{
-				this.Log("Coudn't sign-in, because credential is invalid!");
-				OnFailed.Invoke();
-				return;
-			}
-
-			var provider = credential.GetProvider();
+			var provider = credential.GetProviderId();
 			var auth = FirebaseAuth.DefaultInstance;
 
-			if (provider == ProviderType.EmailPassword)
+			if (provider == "EmailPassword")
 			{
 				auth.CreateUserWithEmailAndPasswordAsync(credential.GetEmail(), credential.GetPassword()).ContinueWithOnMainThread((creationTask) =>
 				{
 					if (creationTask.IsCompleted && creationTask.Exception == null)
 					{
+						isSignedIn = true;
+						internalUser?.SetProvider(credential.GetProviderId());
 						RequestTokenInternal(creationTask.Result, OnSignedIn);
 					}
 					else
@@ -228,13 +212,6 @@ namespace REF.Runtime.Online.Auth
 				return;
 			}
 
-			if (!credential.IsValid())
-			{
-				this.Log("Coudn't sign-in, because credential is invalid!");
-				OnFailed.Invoke();
-				return;
-			}
-
 			SignInInternal(credential, OnSignedIn, OnFailed);
 		}
 
@@ -251,34 +228,44 @@ namespace REF.Runtime.Online.Auth
 			isSignedIn = false;
 		}
 
+		public override void Release(System.Action callback)
+		{
+			var auth = FirebaseAuth.DefaultInstance;
+			auth.StateChanged -= OnAuthStateChangedHandler;
+			auth.IdTokenChanged -= OnIdTokenChangedHandler;
+
+			base.Release(callback);
+		}
+
 		protected override void FinalizeInit(bool successful, System.Action callback)
 		{
 			if (successful)
 			{
 				var auth = FirebaseAuth.DefaultInstance;
 				auth.StateChanged += OnAuthStateChangedHandler;
+				auth.IdTokenChanged += OnIdTokenChangedHandler;
 				OnAuthStateChangedHandler(this, null);
 			}
 
 			callback?.Invoke();
 		}
 
-		private void RequestTokenInternal(FirebaseUser firebaseUser, System.Action<User> OnComplete)
+		private void RequestTokenInternal(FirebaseUser firebaseUser, System.Action<User> OnComplete, bool refresh = false)
 		{
 			var user = FromFirebaseUser(firebaseUser);
 
-			firebaseUser.TokenAsync(false).ContinueWithOnMainThread((task) =>
+			firebaseUser.TokenAsync(refresh).ContinueWithOnMainThread((task) =>
 			{
 				if (task.IsCompleted && task.Exception == null)
 				{
 					user.SetToken(task.Result);
+					internalUser?.SetToken(task.Result);
 				}
 				else
 				{
 					this.Log("Failed to request user token: {0}", task.Exception.Message);
 				}
 
-				internalUser?.SetToken(task.Result);
 				OnComplete?.Invoke(user);
 			});
 		}
@@ -294,6 +281,8 @@ namespace REF.Runtime.Online.Auth
 				{
 					if (task.IsCompleted && task.Exception == null)
 					{
+						isSignedIn = true;
+						internalUser?.SetProvider(credential.GetProviderId());
 						RequestTokenInternal(internalFirebaseUser, OnSignedIn);
 					}
 					else
@@ -305,33 +294,18 @@ namespace REF.Runtime.Online.Auth
 			}
 			else
 			{
-				var provider = credential.GetProvider();
+				var provider = credential.GetProviderId();
 
 				switch (provider)
 				{
-					case ProviderType.Anonymous:
+					case "Anonymouse":
 					{
 						auth.SignInAnonymouslyAsync().ContinueWithOnMainThread((task) =>
 						{
 							if (task.IsCompleted && task.Exception == null)
 							{
-								RequestTokenInternal(internalFirebaseUser, OnSignedIn);
-							}
-							else
-							{
-								this.Log("Failed to sign-in: {0}", task.Exception.Message);
-								OnFailed?.Invoke();
-							}
-						});
-					}
-					break;
-
-					case ProviderType.Custom:
-					{
-						auth.SignInWithCustomTokenAsync(credential.GetToken()).ContinueWithOnMainThread((task) =>
-						{
-							if (task.IsCompleted && task.Exception == null)
-							{
+								isSignedIn = true;
+								internalUser?.SetProvider(credential.GetProviderId());
 								RequestTokenInternal(internalFirebaseUser, OnSignedIn);
 							}
 							else
@@ -345,11 +319,31 @@ namespace REF.Runtime.Online.Auth
 
 					default:
 					{
-						this.Log("Failed to sign-in, provider is not supported!");
-						OnFailed?.Invoke();
+						auth.SignInWithCustomTokenAsync(credential.GetToken()).ContinueWithOnMainThread((task) =>
+						{
+							if (task.IsCompleted && task.Exception == null)
+							{
+								isSignedIn = true;
+								internalUser?.SetProvider(credential.GetProviderId());
+								RequestTokenInternal(internalFirebaseUser, OnSignedIn);
+							}
+							else
+							{
+								this.Log("Failed to sign-in: {0}", task.Exception.Message);
+								OnFailed?.Invoke();
+							}
+						});
 					}
 					break;
 				}
+			}
+		}
+
+		private void OnIdTokenChangedHandler(object sender, System.EventArgs e)
+		{
+			if (internalFirebaseUser != null && IsSignedIn() && IsInitialized())
+			{
+				RequestTokenInternal(internalFirebaseUser, (user) => { OnTokenChanged?.Invoke(); }, true);
 			}
 		}
 
@@ -384,36 +378,34 @@ namespace REF.Runtime.Online.Auth
 			user.SetPhoneNumber(firebaseUser.PhoneNumber);
 			user.SetPhotoUri(firebaseUser.PhotoUrl);
 			user.SetUid(firebaseUser.UserId);
+			user.SetProvider(firebaseUser.ProviderId);
 
 			return user;
 		}
 
 		private FirebaseCredential ToFirebaseCredential(Credential credential)
 		{
-			var provider = credential.GetProvider();
+			var provider = credential.GetProviderId();
 
 			switch (provider)
 			{
-				case ProviderType.EmailPassword:
+				case "EmailPassword":
 				{
 					var creds = EmailAuthProvider.GetCredential(credential.GetEmail(), credential.GetPassword());
 					return creds;
 				}
-				break;
 
-				case ProviderType.Facebook:
+				case "facebook.com":
 				{
 					var creds = FacebookAuthProvider.GetCredential(credential.GetToken());
 					return creds;
 				}
-				break;
 
-				case ProviderType.Apple:
+				case "Apple":
 				{
 					var creds = OAuthProvider.GetCredential("apple.com", credential.GetToken(), credential.GetNonce(), null);
 					return creds;
 				}
-				break;
 			}
 
 			return null;

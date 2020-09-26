@@ -4,6 +4,8 @@ namespace REF.Runtime.Online.Auth
 {
 	public interface IAuthService : IOnlineService
 	{
+		event System.Action OnTokenChanged;
+
 		bool IsSignedIn();
 		User GetUser();
 

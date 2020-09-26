@@ -1,123 +1,134 @@
 ﻿#if REF_ONLINE_AUTH
-
 using UnityEngine;
+
+using System.Linq;
+using System.Collections.Generic;
+
+using REF.Runtime.Preference;
+using REF.Runtime.Serialization;
 
 namespace REF.Runtime.Online.Auth
 {
-	public enum ProviderType
-	{
-		Unknown,
-		Anonymous,
-		EmailPassword,
-		Custom,
-
-		Facebook,
-		Apple,
-		// TODO: Add here
-	}
-
 	[System.Serializable]
-	public class Credential
+	public class Credential : ISerializable
 	{
-		[SerializeField] private ProviderType provider = ProviderType.Unknown;
-		[SerializeField] private string token;
-		[SerializeField] private string nonce;
-		[SerializeField] private string email;
-		[SerializeField] private string phoneNumber;
-		[SerializeField] private string password;
+		[SerializeField] private string providerId;
+		private Dictionary<string, string> data = new Dictionary<string, string>();
 
-		public bool IsValid()
+		public byte[] Serialize(ISerializer serializer)
 		{
-			switch (provider)
+			Serializable serializable = new Serializable();
+			serializable.ProviderId = providerId;
+
+			foreach (var record in data)
 			{
-				case ProviderType.Unknown:
-				{
-					return false;
-				}
-				break;
+				var serializableRecord = new Record();
+				serializableRecord.Key = record.Key;
+				serializableRecord.Value = record.Value;
 
-				case ProviderType.Anonymous:
-				{
-					return true;
-				}
-				break;
-
-				case ProviderType.Custom:
-				case ProviderType.Facebook:
-				{
-					return !string.IsNullOrEmpty(token);
-				}
-				break;
-
-				case ProviderType.Apple:
-				{
-					return !string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(nonce);
-				}
-				break;
-
-				case ProviderType.EmailPassword:
-				{
-					return !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password);
-				}
-				break;
+				serializable.Data.Add(serializableRecord);
 			}
 
-			Debug.LogError("Unknown credential type, probably isn't implemented");
-			return false;
+			return serializer.Serialize(serializable);
 		}
 
-		public void SetUpAnonymous()
+		public void Deserialize(ISerializer serializer, byte[] data)
 		{
-			this.provider = ProviderType.Anonymous;
-		}
+			var serializable = serializer.Deserialize<Serializable>(data);
+			
+			this.providerId = serializable.ProviderId;
+			this.data.Clear();
 
-		public void SetUpEmailPassword(string email, string password)
-		{
-			this.provider = ProviderType.EmailPassword;
-			this.email = email;
-			this.password = password;
-		}
-
-		public void SetUpToken(ProviderType provider, string token, string nonce = null)
-		{
-			if (provider == ProviderType.Anonymous || provider == ProviderType.EmailPassword)
+			foreach (var record in serializable.Data)
 			{
-				return;
+				this.data.Add(record.Key, record.Value);
 			}
 
-			this.provider = provider;
-			this.token = token;
-			this.nonce = null;
 		}
 
-		public ProviderType GetProvider()
+		public string GetProviderId()
 		{
-			return provider;
+			return providerId;
+		}
+
+		public void SetProviderId(string providerId)
+		{
+			this.providerId = providerId;
+		}
+
+		public bool HasKey(string key)
+		{
+			return data.ContainsKey(key);
+		}
+
+		public void SetData(string key, string data)
+		{
+			this.data.Add(key, data);
+		}
+
+		public string GetData(string key)
+		{
+			return data[key];
+		}
+
+		public void SetToken(string token)
+		{
+			SetData("token", token);
 		}
 
 		public string GetToken()
 		{
-			return token;
+			return data["token"];
+		}
+
+		public void SetNonce(string nonce)
+		{
+			SetData("nonce", nonce);
 		}
 
 		public string GetNonce()
 		{
-			return nonce;
+			return GetData("nonce");
+		}
+
+		public void SetEmail(string email)
+		{
+			SetData("email", email);
 		}
 
 		public string GetEmail()
 		{
-			return email;
+			return GetData("email");
+		}
+
+		public void SetPassword(string password)
+		{
+			SetData("password", password);
 		}
 
 		public string GetPassword()
 		{
-			return password;
+			return GetData("password");
 		}
 
-		public string GetPhoneNumber()
+		public bool Equals(Credential other)
 		{
-			return phoneNumber;
+			return providerId == other.providerId
+				&& data.Count == other.data.Count && !data.Except(other.data).Any();
+		}
+
+		[System.Serializable]
+		private class Record
+		{
+			public string Key;
+			public string Value;
+		}
+
+		[System.Serializable]
+		private class Serializable
+		{
+			public List<Record> Data = new List<Record>();
+			public string ProviderId;
 		}
 	}
 }

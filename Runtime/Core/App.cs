@@ -153,6 +153,21 @@ namespace REF.Runtime.Core
 			}
 		}
 
+		private void Update()
+		{
+			if (services != null)
+			{
+				for (int idx = 0; idx < services.Length; ++idx)
+				{
+					var service = services[idx];
+					if (service.IsInitialized())
+					{
+						service.Update();
+					}
+				}
+			}
+		}
+
 		private void OnApplicationFocus(bool focus)
 		{
 			if (services != null)

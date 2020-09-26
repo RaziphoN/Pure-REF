@@ -8,19 +8,14 @@ namespace REF.Runtime.Online.Auth
 	[System.Serializable]
 	public class User
 	{
-		[SerializeField] private ProviderType provider;
+		[SerializeField] private string providerId;
 		[SerializeField] private string displayName;
 		[SerializeField] private string id;
-		[SerializeField] private string token; // token is more universal than id (at least in Firebase)
+		[SerializeField] private string token;
 		[SerializeField] private string email;
 		[SerializeField] private string phoneNumber;
 		private System.Uri photoUri;
 		private IDictionary<string, string> data = new Dictionary<string, string>();
-
-		public bool IsAnonymous()
-		{
-			return provider == ProviderType.Anonymous;
-		}
 
 		public void SetData(IDictionary<string, string> data)
 		{
@@ -46,9 +41,9 @@ namespace REF.Runtime.Online.Auth
 			}
 		}
 
-		public void SetProvider(ProviderType type)
+		public void SetProvider(string providerId)
 		{
-			provider = type;
+			this.providerId = providerId;
 		}
 
 		public void SetDisplayName(string name)
@@ -81,9 +76,9 @@ namespace REF.Runtime.Online.Auth
 			this.email = email;
 		}
 
-		public ProviderType GetProvider()
+		public string GetProvider()
 		{
-			return provider;
+			return providerId;
 		}
 
 		public string GetDisplayName()
