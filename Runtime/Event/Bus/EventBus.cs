@@ -119,7 +119,7 @@ namespace REF.Runtime.EventSystem.Bus
 				{
 					var list = subscriptions[type];
 
-					for (int idx = list.Count - 1; idx >= 0; --idx)
+					for (int idx = list.Count - 1; idx >= 0 && idx < list.Count; --idx)
 					{
 						var sub = list[idx];
 						sub.Invoke(ev);
