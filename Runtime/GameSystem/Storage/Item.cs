@@ -1,14 +1,9 @@
 ﻿namespace REF.Runtime.GameSystem.Storage
 {
-	public enum ItemType
-	{
-		Count
-	}
-
 	public interface IItem
 	{
-		void SetItemType(ItemType type);
-		ItemType GetItemType();
+		void SetItemType(string type);
+		string GetItemType();
 
 		void SetQuantity(int quantity);
 		int GetQuantity();

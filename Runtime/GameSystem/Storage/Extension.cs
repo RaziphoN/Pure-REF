@@ -15,22 +15,22 @@ namespace REF.Runtime.GameSystem.Storage
 			return items.FirstOrDefault((item) => { return item.IsSame(source); });
 		}
 
-		public static bool HasItemOfType<T>(this IList<T> items, ItemType type) where T : IItem
+		public static bool HasItemOfType<T>(this IList<T> items, string type) where T : IItem
 		{
 			return items.Any((item) => { return item.GetItemType() == type; });
 		}
 
-		public static T GetItemOfType<T>(this IList<T> items, ItemType type) where T : IItem
+		public static T GetItemOfType<T>(this IList<T> items, string type) where T : IItem
 		{
 			return items.FirstOrDefault((item) => { return item.GetItemType() == type; });
 		}
 
-		public static IList<T> GetItemsOfType<T>(this IList<T> items, ItemType type) where T : IItem
+		public static IList<T> GetItemsOfType<T>(this IList<T> items, string type) where T : IItem
 		{
 			return (IList<T>)items.Where((item) => { return item.GetItemType() == type; });
 		}
 
-		public static int GetItemCountOfType<T>(this IList<T> items, ItemType type) where T : IItem
+		public static int GetItemQuantityOfType<T>(this IList<T> items, string type) where T : IItem
 		{
 			int count = 0;
 
@@ -47,7 +47,7 @@ namespace REF.Runtime.GameSystem.Storage
 			return count;
 		}
 
-		public static int GetTotalItemCount<T>(this IList<T> items) where T : IItem
+		public static int GetTotalItemQuantity<T>(this IList<T> items) where T : IItem
 		{
 			int count = 0;
 

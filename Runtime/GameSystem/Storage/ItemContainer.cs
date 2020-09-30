@@ -7,49 +7,55 @@ namespace REF.Runtime.GameSystem.Storage
 {
 	public interface IItemContainer
 	{
-		bool HasItem(IItem item);
-		bool HasItems(IItemContainer container);
-		bool HasItemOfType(ItemType type);
-		IItem GetItemOfType(ItemType type);
-		IList<IItem> GetItemsOfType(ItemType type);
+		bool Contains(IItem item);
+		bool Contains(IItemContainer container);
+		bool ContainsItemOfType(string type);
+		
+		IItem GetItemOfType(string type);
+		IList<IItem> GetItemsOfType(string type);
 		IList<IItem> GetItems();
+		IItem GetItem(int idx);
 
-		int GetItemCountOfType(ItemType type);
-		int GetTotalItemCount();
+		int GetItemQuantityOfType(string type);
+		int GetTotalItemQuantity();
+		int GetItemCount();
 
 		void Stack();
 		void AddItem(IItem item);
-		void AddItemsFrom(ItemContainer container);
-		void AddItemAndStack(IItem item);
+		void AddItems(IItemContainer container);
+		
 		void Remove(IItem item);
 		void Remove(IItemContainer container);
-		void RemoveAllItemOfType(ItemType type);
-		int GetItemCount();
-		IItem GetItem(int idx);
+		void RemoveAllItemOfType(string type);
+
 		IItemContainer Clone();
 	}
 
-	public interface IItemContainer<T> : IItemContainer where T : IItem
+	public interface IItemContainer<T> where T : IItem
 	{
-		bool HasItem(T item);
-		bool HasItems(IItemContainer<T> container);
-		bool HasItemOfType(ItemType type);
-		T GetItemOfType(ItemType type);
-		IList<T> GetItemsOfType(ItemType type);
+		bool Contains(T item);
+		bool Contains(IItemContainer<T> container);
+		bool ContainsItemOfType(string type);
+		
+		T GetItemOfType(string type);
+		T GetItem(int idx);
+		IList<T> GetItemsOfType(string type);
 		IList<T> GetItems();
 
-		int GetItemCountOfType(ItemType type);
-		int GetTotalItemCount();
+		int GetItemQuantityOfType(string type);
+		int GetTotalItemQuantity();
+		int GetItemCount();
 
 		void Stack();
+
 		void AddItem(T item);
 		void AddItemsFrom(IItemContainer<T> container);
 		void AddItemAndStack(T item);
+
 		void Remove(T item);
 		void Remove(IItemContainer<T> container);
-		void RemoveAllItemOfType(ItemType type);
-		int GetItemCount();
-		T GetItem(int idx);
+		void RemoveAllItemOfType(string type);
+
 		IItemContainer<T> Clone();
 	}
 
@@ -58,28 +64,28 @@ namespace REF.Runtime.GameSystem.Storage
 	{
 		[SerializeField] private IList<IItem> items = new List<IItem>();
 
-		public bool HasItem(IItem item)
+		public bool Contains(IItem item)
 		{
 			return items.HasItem(item);
 		}
 
-		public bool HasItems(IItemContainer container)
+		public bool Contains(IItemContainer container)
 		{
 			var content = container.GetItems();
-			return content.All((item) => { return HasItem(item); });
+			return content.All((item) => { return Contains(item); });
 		}
 
-		public bool HasItemOfType(ItemType type)
+		public bool ContainsItemOfType(string type)
 		{
 			return items.HasItemOfType(type);
 		}
 
-		public IItem GetItemOfType(ItemType type)
+		public IItem GetItemOfType(string type)
 		{
 			return items.GetItemOfType(type);
 		}
 
-		public IList<IItem> GetItemsOfType(ItemType type)
+		public IList<IItem> GetItemsOfType(string type)
 		{
 			return items.GetItemsOfType(type);
 		}
@@ -89,37 +95,21 @@ namespace REF.Runtime.GameSystem.Storage
 			return items;
 		}
 
-		public int GetItemCountOfType(ItemType type)
+		public int GetItemQuantityOfType(string type)
 		{
-			return items.GetItemCountOfType(type);
+			return items.GetItemQuantityOfType(type);
 		}
 
-		public int GetTotalItemCount()
+		public int GetTotalItemQuantity()
 		{
-			return items.GetTotalItemCount();
+			return items.GetTotalItemQuantity();
 		}
 
-		public void AddItemsFrom(ItemContainer container)
+		public void AddItems(IItemContainer container)
 		{
 			for (int i = 0; i < container.GetItemCount(); ++i)
 			{
 				AddItem(container.GetItem(i).Clone());
-			}
-		}
-
-		public void AddItemAndStack(IItem item)
-		{
-			var existItem = items.FirstOrDefault((rewardItem) => { return rewardItem.GetItemType() == item.GetItemType(); });
-
-			if (existItem != null)
-			{
-				int count = existItem.GetQuantity();
-				count += item.GetQuantity();
-				existItem.SetQuantity(count);
-			}
-			else
-			{
-				AddItem(item.Clone());
 			}
 		}
 
@@ -130,7 +120,7 @@ namespace REF.Runtime.GameSystem.Storage
 
 		public void Remove(IItem item)
 		{
-			if (HasItem(item))
+			if (Contains(item))
 			{
 				var invItem = items.GetSameItemFromIList<IItem>(item);
 
@@ -154,7 +144,7 @@ namespace REF.Runtime.GameSystem.Storage
 			}
 		}
 
-		public void RemoveAllItemOfType(ItemType type)
+		public void RemoveAllItemOfType(string type)
 		{
 			for (int i = GetItemCount() - 1; i >= 0; --i)
 			{
@@ -231,28 +221,28 @@ namespace REF.Runtime.GameSystem.Storage
 	{
 		[SerializeField] private IList<T> items = new List<T>();
 
-		public bool HasItem(T item)
+		public bool Contains(T item)
 		{
 			return items.HasItem(item);
 		}
 
-		public bool HasItems(IItemContainer<T> container)
+		public bool Contains(IItemContainer<T> container)
 		{
 			var content = container.GetItems();
-			return content.All((item) => { return HasItem(item); });
+			return content.All((item) => { return Contains(item); });
 		}
 
-		public bool HasItemOfType(ItemType type)
+		public bool ContainsItemOfType(string type)
 		{
 			return items.HasItemOfType(type);
 		}
 
-		public T GetItemOfType(ItemType type)
+		public T GetItemOfType(string type)
 		{
 			return items.GetItemOfType(type);
 		}
 
-		public IList<T> GetItemsOfType(ItemType type)
+		public IList<T> GetItemsOfType(string type)
 		{
 			return items.GetItemsOfType(type);
 		}
@@ -262,14 +252,14 @@ namespace REF.Runtime.GameSystem.Storage
 			return items;
 		}
 
-		public int GetItemCountOfType(ItemType type)
+		public int GetItemQuantityOfType(string type)
 		{
-			return items.GetItemCountOfType(type);
+			return items.GetItemQuantityOfType(type);
 		}
 
-		public int GetTotalItemCount()
+		public int GetTotalItemQuantity()
 		{
-			return items.GetTotalItemCount();
+			return items.GetTotalItemQuantity();
 		}
 
 		public void AddItemsFrom(IItemContainer<T> container)
@@ -303,7 +293,7 @@ namespace REF.Runtime.GameSystem.Storage
 
 		public void Remove(T item)
 		{
-			if (HasItem(item))
+			if (Contains(item))
 			{
 				var invItem = items.GetSameItemFromIList<T>(item);
 
@@ -327,7 +317,7 @@ namespace REF.Runtime.GameSystem.Storage
 			}
 		}
 
-		public void RemoveAllItemOfType(ItemType type)
+		public void RemoveAllItemOfType(string type)
 		{
 			for (int i = GetItemCount() - 1; i >= 0; --i)
 			{
@@ -462,31 +452,6 @@ namespace REF.Runtime.GameSystem.Storage
 				var item = container.GetItem(idx);
 				Remove(item);
 			}
-		}
-
-		IItem IItemContainer.GetItemOfType(ItemType type)
-		{
-			return items.GetItemOfType<T>(type);
-		}
-
-		IList<IItem> IItemContainer.GetItemsOfType(ItemType type)
-		{
-			return (IList<IItem>)items.GetItemsOfType<T>(type);
-		}
-
-		IList<IItem> IItemContainer.GetItems()
-		{
-			return (IList<IItem>)GetItems();
-		}
-
-		IItem IItemContainer.GetItem(int idx)
-		{
-			return GetItem(idx);
-		}
-
-		IItemContainer IItemContainer.Clone()
-		{
-			return Clone();
 		}
 	}
 }

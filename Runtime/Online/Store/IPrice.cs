@@ -15,7 +15,6 @@ namespace REF.Runtime.Online.Store
 
 	public interface IItemPrice : IPrice
 	{
-		IItemContainer GetPrice();
 		IItemContainer<T> GetPrice<T>() where T : IItem;
 	}
 
