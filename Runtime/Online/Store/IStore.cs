@@ -13,6 +13,7 @@ namespace REF.Runtime.Online.Store
 		string GetStoreId();
 
 		void Buy(IProduct product, System.Action<ITransaction> OnSuccess, System.Action OnNotEnoughResources, System.Action<ITransaction> OnFailed);
+		void Restore(System.Action<IList<IProduct>> OnSuccess, System.Action OnFailed);
 
 		IProduct GetProductById(string id);
 		IProduct GetProductByStoreId(string storeId);

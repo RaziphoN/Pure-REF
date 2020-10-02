@@ -5,7 +5,7 @@ namespace REF.Runtime.GameSystem.Storage
 {
 	public static class ItemExt
 	{
-		public static bool HasItem<T>(this IList<T> items, IItem item) where T : IItem
+		public static bool ContainsItem<T>(this IList<T> items, T item) where T : IItem
 		{
 			return items.Any((invItem) => { return invItem.IsSame(item) && invItem.GetQuantity() >= item.GetQuantity() && invItem.GetQuantity() > 0; });
 		}
@@ -15,7 +15,7 @@ namespace REF.Runtime.GameSystem.Storage
 			return items.FirstOrDefault((item) => { return item.IsSame(source); });
 		}
 
-		public static bool HasItemOfType<T>(this IList<T> items, string type) where T : IItem
+		public static bool ContainsItemOfType<T>(this IList<T> items, string type) where T : IItem
 		{
 			return items.Any((item) => { return item.GetItemType() == type; });
 		}
@@ -27,7 +27,7 @@ namespace REF.Runtime.GameSystem.Storage
 
 		public static IList<T> GetItemsOfType<T>(this IList<T> items, string type) where T : IItem
 		{
-			return (IList<T>)items.Where((item) => { return item.GetItemType() == type; });
+			return items.Where((item) => { return item.GetItemType() == type; }).ToList();
 		}
 
 		public static int GetItemQuantityOfType<T>(this IList<T> items, string type) where T : IItem
@@ -58,6 +58,43 @@ namespace REF.Runtime.GameSystem.Storage
 			}
 
 			return count;
+		}
+	}
+
+	public static class ItemContainerExt
+	{
+		public static bool ContainsItem<T, U>(this IList<U> items, T item) where T : IItem where U : IItemContainer<T>
+		{
+			return items.Any((container) => { return container.ContainsItem(item); });
+		}
+
+		public static bool ContainsItemOfType<T, U>(this IList<U> items, string type) where T : IItem where U : IItemContainer<T>
+		{
+			return items.Any((container) => { return container.ContainsItemOfType(type); });
+		}
+
+		public static int GetItemQuantityOfType<T, U>(this IList<U> items, string type) where T : IItem where U : IItemContainer<T>
+		{
+			int quantity = 0;
+
+			foreach (var container in items)
+			{
+				quantity += container.GetItemQuantityOfType(type);
+			}
+
+			return quantity;
+		}
+
+		public static int GetTotalItemQuantity<T, U>(this IList<U> items) where T : IItem where U : IItemContainer<T>
+		{
+			int quantity = 0;
+
+			foreach (var container in items)
+			{
+				quantity += container.GetTotalItemQuantity();
+			}
+
+			return quantity;
 		}
 	}
 }
