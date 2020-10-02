@@ -26,6 +26,7 @@ namespace REF.Runtime.Preference
 		public override void Save(string key, byte[] data)
 		{
 			PlayerPrefs.SetString(key, Encoding.Default.GetString(data));
+			PlayerPrefs.Save();
 		}
 	}
 }
