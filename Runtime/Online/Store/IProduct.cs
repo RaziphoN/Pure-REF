@@ -6,18 +6,21 @@ namespace REF.Runtime.Online.Store
 {
 	public interface IProduct
 	{
-		bool IsAvailable();
-		bool IsEnabled();
+		bool IsValid();
 
+		ProductType GetProductType();
 		string GetId(); // in-game identifier
-		string GetStoreId(string store); // real store identifier or id of a product in 3rd party SDK that is used as store accessor, store is an unique identifier of a store
-
-		IProductMeta GetMeta();
-		IItemContainer GetContent();
 		IItemContainer<T> GetContent<T>() where T : IItem;
 
-		IPrice GetPriceByType(PriceType type);
+		// default product info, read as MAIN
+		bool IsEnabled();
+		string GetProviderId();
+		IProductMeta GetMeta();
 		IPrice GetPrice();
-		IList<IPrice> GetPrices();
+
+		bool IsDefined(string providerId);
+		bool IsEnabled(string providerId);
+		IProductMeta GetMeta(string providerId);
+		IPrice GetPrice(string providerId); // store unique identifier
 	}
 }

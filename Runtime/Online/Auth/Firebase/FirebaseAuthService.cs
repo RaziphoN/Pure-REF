@@ -64,6 +64,16 @@ namespace REF.Runtime.Online.Auth
 				else
 				{
 					this.Log("Failed to update user profile: {0}", task.Exception.Message);
+
+					var aException = task.Exception as System.AggregateException;
+					if (aException != null)
+					{
+						foreach (var inner in aException.InnerExceptions)
+						{
+							this.Log("Error: {0}", inner.Message);
+						}
+					}
+
 					OnFail?.Invoke();
 				}
 			});
@@ -103,6 +113,16 @@ namespace REF.Runtime.Online.Auth
 					else
 					{
 						this.Log("Failed to link account: {0}", task.Exception.Message);
+
+						var aException = task.Exception as System.AggregateException;
+						if (aException != null)
+						{
+							foreach (var inner in aException.InnerExceptions)
+							{
+								this.Log("Error: {0}", inner.Message);
+							}
+						}
+
 						OnFailed?.Invoke();
 					}
 				});
@@ -143,6 +163,16 @@ namespace REF.Runtime.Online.Auth
 					else
 					{
 						this.Log("Failed to re-authenticate: {0}", task.Exception.Message);
+
+						var aException = task.Exception as System.AggregateException;
+						if (aException != null)
+						{
+							foreach (var inner in aException.InnerExceptions)
+							{
+								this.Log("Error: {0}", inner.Message);
+							}
+						}
+
 						OnFailed?.Invoke();
 					}
 				});
@@ -186,6 +216,16 @@ namespace REF.Runtime.Online.Auth
 					else
 					{
 						this.Log("Failed to create a user: {0}", creationTask.Exception.Message);
+
+						var aException = creationTask.Exception as System.AggregateException;
+						if (aException != null)
+						{
+							foreach (var inner in aException.InnerExceptions)
+							{
+								this.Log("Error: {0}", inner.Message);
+							}
+						}
+
 						OnFailed?.Invoke();
 					}
 				});
@@ -242,7 +282,10 @@ namespace REF.Runtime.Online.Auth
 			if (successful)
 			{
 				var auth = FirebaseAuth.DefaultInstance;
+				auth.StateChanged -= OnAuthStateChangedHandler;
 				auth.StateChanged += OnAuthStateChangedHandler;
+
+				auth.IdTokenChanged -= OnIdTokenChangedHandler;
 				auth.IdTokenChanged += OnIdTokenChangedHandler;
 				OnAuthStateChangedHandler(this, null);
 			}
@@ -264,6 +307,16 @@ namespace REF.Runtime.Online.Auth
 				else
 				{
 					this.Log("Failed to request user token: {0}", task.Exception.Message);
+
+					var aException = task.Exception as System.AggregateException;
+					if (aException != null)
+					{
+						foreach (var inner in aException.InnerExceptions)
+						{
+							this.Log("Error: {0}", inner.Message);
+						}
+					}
+
 				}
 
 				OnComplete?.Invoke(user);
@@ -288,6 +341,16 @@ namespace REF.Runtime.Online.Auth
 					else
 					{
 						this.Log("Failed to sign-in: {0}", task.Exception.Message);
+
+						var aException = task.Exception as System.AggregateException;
+						if (aException != null)
+						{
+							foreach (var inner in aException.InnerExceptions)
+							{
+								this.Log("Error: {0}", inner.Message);
+							}
+						}
+
 						OnFailed?.Invoke();
 					}
 				});
@@ -311,6 +374,16 @@ namespace REF.Runtime.Online.Auth
 							else
 							{
 								this.Log("Failed to sign-in: {0}", task.Exception.Message);
+
+								var aException = task.Exception as System.AggregateException;
+								if (aException != null)
+								{
+									foreach (var inner in aException.InnerExceptions)
+									{
+										this.Log("Error: {0}", inner.Message);
+									}
+								}
+
 								OnFailed?.Invoke();
 							}
 						});
@@ -330,6 +403,16 @@ namespace REF.Runtime.Online.Auth
 							else
 							{
 								this.Log("Failed to sign-in: {0}", task.Exception.Message);
+
+								var aException = task.Exception as System.AggregateException;
+								if (aException != null)
+								{
+									foreach (var inner in aException.InnerExceptions)
+									{
+										this.Log("Error: {0}", inner.Message);
+									}
+								}
+
 								OnFailed?.Invoke();
 							}
 						});
@@ -401,9 +484,9 @@ namespace REF.Runtime.Online.Auth
 					return creds;
 				}
 
-				case "Apple":
+				case "apple.com":
 				{
-					var creds = OAuthProvider.GetCredential("apple.com", credential.GetToken(), credential.GetNonce(), null);
+					var creds = OAuthProvider.GetCredential(provider, credential.GetToken(), credential.GetRawNonce(), null);
 					return creds;
 				}
 			}

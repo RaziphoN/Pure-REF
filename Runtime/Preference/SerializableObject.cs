@@ -16,7 +16,7 @@ namespace REF.Runtime.Preference
 	}
 
 	[System.Serializable]
-	public class UnitySerializableObject
+	public class SerializableObject
 	{
 		public List<SerializableField> Fields = new List<SerializableField>();
 

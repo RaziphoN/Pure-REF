@@ -3,6 +3,7 @@
 	public interface ITransaction
 	{
 		bool IsSuccessfull();
+		bool IsNotEnoughResources();
 		bool HasError();
 
 		IProduct GetProduct();

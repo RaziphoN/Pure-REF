@@ -1,4 +1,4 @@
-﻿#if REF_ONLINE_SOCIAL && REF_FACEBOOK_SOCIAL && REF_USE_FACEBOOK
+﻿#if REF_ONLINE_AUTH && REF_FACEBOOK_SOCIAL && REF_USE_FACEBOOK
 using REF.Runtime.Online.Social.Facebook;
 
 namespace REF.Runtime.Online.Auth.Method
