@@ -2,6 +2,7 @@
 using UnityEngine;
 
 using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 
 using REF.Runtime.Preference;
@@ -19,15 +20,9 @@ namespace REF.Runtime.Online.Auth
 		{
 			Serializable serializable = new Serializable();
 			serializable.ProviderId = providerId;
-
-			foreach (var record in data)
-			{
-				var serializableRecord = new Record();
-				serializableRecord.Key = record.Key;
-				serializableRecord.Value = record.Value;
-
-				serializable.Data.Add(serializableRecord);
-			}
+			
+			var serializedDict = serializer.SerializeDictionary(data);
+			serializable.Data = Encoding.Default.GetString(serializedDict);
 
 			return serializer.Serialize(serializable);
 		}
@@ -37,13 +32,9 @@ namespace REF.Runtime.Online.Auth
 			var serializable = serializer.Deserialize<Serializable>(data);
 			
 			this.providerId = serializable.ProviderId;
-			this.data.Clear();
 
-			foreach (var record in serializable.Data)
-			{
-				this.data.Add(record.Key, record.Value);
-			}
-
+			var byteData = Encoding.Default.GetBytes(serializable.Data);
+			serializer.DeserializeDictionary(byteData, this.data);
 		}
 
 		public string GetProviderId()
@@ -81,9 +72,19 @@ namespace REF.Runtime.Online.Auth
 			return data["token"];
 		}
 
+		public void SetRawNonce(string nonce)
+		{
+			SetData("rawNonce", nonce);
+		}
+
 		public void SetNonce(string nonce)
 		{
 			SetData("nonce", nonce);
+		}
+
+		public string GetRawNonce()
+		{
+			return GetData("rawNonce");
 		}
 
 		public string GetNonce()
@@ -113,21 +114,14 @@ namespace REF.Runtime.Online.Auth
 
 		public bool Equals(Credential other)
 		{
-			return providerId == other.providerId
+			return other != null && providerId == other.providerId
 				&& data.Count == other.data.Count && !data.Except(other.data).Any();
-		}
-
-		[System.Serializable]
-		private class Record
-		{
-			public string Key;
-			public string Value;
 		}
 
 		[System.Serializable]
 		private class Serializable
 		{
-			public List<Record> Data = new List<Record>();
+			public string Data;
 			public string ProviderId;
 		}
 	}

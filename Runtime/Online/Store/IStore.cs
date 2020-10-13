@@ -1,27 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using REF.Runtime.Core;
+
+using System.Collections.Generic;
 
 namespace REF.Runtime.Online.Store
 {
-	// this is a mock-up to implement on game side to process offline purchase, because it is not possible to decouple profile remove things and such from game code
-	public interface IOfflineBillingMethod
+	public interface IStore : IService
 	{
-		void Buy(IProduct product, System.Action<ITransaction> OnSuccess, System.Action OnNotEnoughResources, System.Action<ITransaction> OnFailed);
-	}
-
-	public interface IStore : IOnlineService
-	{
-		string GetStoreId();
-
-		void Buy(IProduct product, System.Action<ITransaction> OnSuccess, System.Action OnNotEnoughResources, System.Action<ITransaction> OnFailed);
+		void Buy(string id, System.Action<ITransaction> OnSuccess, System.Action<ITransaction> OnFailed);
+		void Buy(IProduct product, System.Action<ITransaction> OnSuccess, System.Action<ITransaction> OnFailed);
+		void Buy(IProduct product, string providerId, System.Action<ITransaction> OnSuccess, System.Action<ITransaction> OnFailed);
 		void Restore(System.Action<IList<IProduct>> OnSuccess, System.Action OnFailed);
 
 		IProduct GetProductById(string id);
-		IProduct GetProductByStoreId(string storeId);
-		IProduct GetProductByIdx(string id);
+		IProduct GetProductByIdx(int idx);
 		int GetProductCount();
 
-		IEnumerable<IProduct> GetOfflineProducts(); // products that may be bought using in-game resources
-		IEnumerable<IProduct> GetCurrencyProducts();
 		IEnumerable<IProduct> GetProducts();
 	}
 }

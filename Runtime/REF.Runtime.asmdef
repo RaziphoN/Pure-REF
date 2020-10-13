@@ -2,7 +2,8 @@
     "name": "REF.Runtime",
     "references": [
         "GUID:ac145e6b8c6034cdbadc8c6e26aedbcf",
-        "GUID:1e8e55397bd004beaba78a667566665f"
+        "GUID:1e8e55397bd004beaba78a667566665f",
+        "GUID:1db92b3fd2bba0c4c96e1137c4208d69"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
