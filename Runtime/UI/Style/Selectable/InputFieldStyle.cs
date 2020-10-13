@@ -8,7 +8,7 @@ namespace REF.Runtime.UI.Style.Selectable
 	{
 		private static char defaultAsteriskChar = '*';
 
-		[SerializeField] private SelectableStyle selectable;
+		[SerializeField] private SelectableStyle selectable = new SelectableStyle();
 		[SerializeField] private UnityEngine.UI.InputField.InputType inputType = InputField.InputType.AutoCorrect;
 		[SerializeField] private UnityEngine.UI.InputField.ContentType contentType = InputField.ContentType.Standard;
 		[SerializeField] private UnityEngine.UI.InputField.LineType lineType = InputField.LineType.SingleLine;
@@ -41,6 +41,28 @@ namespace REF.Runtime.UI.Style.Selectable
 			element.selectionColor = GetSelectionColor();
 			element.shouldHideMobileInput = IsHideMobileInput();
 			element.readOnly = IsReadOnly();
+		}
+
+		public override void Copy(UnityEngine.UI.InputField element)
+		{
+			selectable.Copy(element);
+			inputType = element.inputType;
+			contentType = element.contentType;
+			lineType = element.lineType;
+			characterValidation = element.characterValidation;
+			keyboardType = element.keyboardType;
+			
+			asteriskChar = string.Empty;
+			asteriskChar += element.asteriskChar;
+
+			characterLimit = element.characterLimit;
+			caretBlinkRate = element.caretBlinkRate;
+			caretWidth = element.caretWidth;
+			customCaretColor = element.customCaretColor;
+			caretColor = element.caretColor;
+			selectionColor = element.selectionColor;
+			hideMobileInput = element.shouldHideMobileInput;
+			readOnly = element.readOnly;
 		}
 
 		public UnityEngine.UI.InputField.InputType GetInputType()

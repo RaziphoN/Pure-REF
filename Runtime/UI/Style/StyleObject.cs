@@ -7,5 +7,6 @@ namespace REF.Runtime.UI.Style
 	public abstract class StyleObject<T> : ScriptableObject where T : UIBehaviour
 	{
 		public abstract void Apply(T element);
+		public abstract void Copy(T element);
 	}
 }

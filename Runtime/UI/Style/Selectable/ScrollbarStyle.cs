@@ -6,7 +6,7 @@ namespace REF.Runtime.UI.Style.Selectable
 	[System.Serializable]
 	public class ScrollbarStyle : Style<UnityEngine.UI.Scrollbar>, IScrollbarStyle
 	{
-		[SerializeField] private SelectableStyle selectable;
+		[SerializeField] private SelectableStyle selectable = new SelectableStyle();
 		//[SerializeField] private Scrollbar.Direction direction = Scrollbar.Direction.LeftToRight;
 		[SerializeField, Range(0f, 1f)] private float size = 0.2f;
 		[SerializeField, Range(0, 11)] private int numberOfSteps = 0;
@@ -17,6 +17,13 @@ namespace REF.Runtime.UI.Style.Selectable
 			//element.direction = GetDirection();
 			element.size = size;
 			element.numberOfSteps = numberOfSteps;
+		}
+
+		public override void Copy(UnityEngine.UI.Scrollbar element)
+		{	
+			selectable.Copy(element);
+			size = element.size;
+			numberOfSteps = element.numberOfSteps;
 		}
 
 		public AnimationTriggers GetAnimationTriggers()

@@ -6,11 +6,16 @@ namespace REF.Runtime.UI.Style.Selectable
 	[System.Serializable]
 	public class ToggleStyle : Style<UnityEngine.UI.Toggle>, IToggleStyle
 	{
-		[SerializeField] private SelectableStyle selectable;
+		[SerializeField] private SelectableStyle selectable = new SelectableStyle();
 
 		public override void Apply(UnityEngine.UI.Toggle element)
 		{
 			selectable.Apply(element);
+		}
+
+		public override void Copy(UnityEngine.UI.Toggle element)
+		{
+			selectable.Copy(element);
 		}
 
 		public AnimationTriggers GetAnimationTriggers()

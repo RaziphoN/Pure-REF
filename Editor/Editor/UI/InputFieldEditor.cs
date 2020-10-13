@@ -8,18 +8,18 @@ namespace REF.Editor.UI
 	[CustomEditor(typeof(InputField))]
 	public class InputFieldEditor : UnityEditor.UI.InputFieldEditor
 	{
-		private SerializedProperty styleProperty;
+		private SerializedProperty handlerProperty;
 
 		protected override void OnEnable()
 		{
 			base.OnEnable();
-			styleProperty = serializedObject.FindProperty("style");
+			handlerProperty = serializedObject.FindProperty("handler");
 		}
 
 		public override void OnInspectorGUI()
 		{
 			base.OnInspectorGUI();
-			EditorGUILayout.PropertyField(styleProperty);
+			EditorGUILayout.PropertyField(handlerProperty);
 			serializedObject.ApplyModifiedProperties();
 		}
 	}

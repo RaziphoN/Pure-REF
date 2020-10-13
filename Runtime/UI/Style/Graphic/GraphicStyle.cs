@@ -16,6 +16,13 @@ namespace REF.Runtime.UI.Style.Graphic
 			element.raycastTarget = IsRaycastTarget();
 		}
 
+		public override void Copy(UnityEngine.UI.Graphic element)
+		{
+			color = element.color;
+			material = element.material;
+			raycastTarget = element.raycastTarget;
+		}
+
 		public Color GetColor()
 		{
 			return color;

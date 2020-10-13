@@ -20,6 +20,15 @@ namespace REF.Runtime.UI.Style.Text
 			element.lineSpacing = GetLineSpacing();
 		}
 
+		public override void Copy(UnityEngine.UI.Text element)
+		{			
+			richText = element.supportRichText;
+			font = element.font;
+			fontStyle = element.fontStyle;
+			fontSize = element.fontSize;
+			lineSpacing = element.lineSpacing;
+		}
+
 		public Font GetFont()
 		{
 			return font;

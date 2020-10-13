@@ -2,7 +2,7 @@
 
 namespace REF.Runtime.Core
 {
-	public abstract class ServiceBase : ScriptableObject, IService
+	public abstract class ServiceSO : ScriptableObject, IService
 	{
 		private bool initialized = false;
 

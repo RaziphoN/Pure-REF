@@ -8,7 +8,7 @@ namespace REF.Runtime.Diagnostic
 {
 	// NOTE: This class is strongly linked with library architecture.
 	[CreateAssetMenu(fileName = "Logger", menuName = "REF/Diagnostic/Logger")]
-	public class RefDebug : ServiceBase
+	public class RefDebug : ServiceSO
 	{
 		private static RefDebug instance = null;
 
@@ -18,15 +18,17 @@ namespace REF.Runtime.Diagnostic
 			{
 				if (instance == null)
 				{
-					var loggerObjects = Resources.FindObjectsOfTypeAll<RefDebug>();
-					
-					if (loggerObjects != null && loggerObjects.Length > 0)
+					var singletonName = typeof(RefDebug).Name;
+					//Look for the singleton on the resources folder
+					var assets = Resources.LoadAll<RefDebug>("");
+
+					if (assets.Length == 0)
 					{
-						instance = loggerObjects[0];
+						instance = CreateInstance<RefDebug>();
 					}
 					else
 					{
-						instance = CreateInstance<RefDebug>();
+						instance = assets[0];
 					}
 				}
 

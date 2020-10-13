@@ -12,6 +12,11 @@ namespace REF.Runtime.UI.Style.Graphic
 			graphic.Apply(element);
 		}
 
+		public override void Copy(UnityEngine.UI.RawImage element)
+		{
+			graphic.Copy(element);
+		}
+
 		public Color GetColor()
 		{
 			return graphic.GetColor();

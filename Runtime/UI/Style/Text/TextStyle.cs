@@ -7,15 +7,22 @@ namespace REF.Runtime.UI.Style.Text
 	[System.Serializable]
 	public class TextStyle : Style<UnityEngine.UI.Text>, ITextStyle
 	{
-		[SerializeField] private CharacterStyle character;
-		[SerializeField] private ParagraphStyle paragraph;
-		[SerializeField] private MaskableGraphicStyle graphic;
+		[SerializeField] private CharacterStyle character = new CharacterStyle();
+		[SerializeField] private ParagraphStyle paragraph = new ParagraphStyle();
+		[SerializeField] private MaskableGraphicStyle graphic = new MaskableGraphicStyle();
 
 		public override void Apply(UnityEngine.UI.Text element)
 		{
 			character.Apply(element);
 			paragraph.Apply(element);
 			graphic.Apply(element);
+		}
+
+		public override void Copy(UnityEngine.UI.Text element)
+		{
+			character.Copy(element);
+			paragraph.Copy(element);
+			graphic.Copy(element);
 		}
 
 		public TextAnchor GetAlignment()

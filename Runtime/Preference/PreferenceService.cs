@@ -6,7 +6,7 @@ using REF.Runtime.Serialization;
 namespace REF.Runtime.Preference
 {
 	[CreateAssetMenu(fileName = "PreferenceService", menuName = "REF/Game Data/Preferences")]
-	public class PreferenceService : ServiceBase, IPreferenceService
+	public class PreferenceService : ServiceSO, IPreferenceService
 	{
 		[SerializeField] private Preferences preferences;
 

@@ -24,6 +24,17 @@ namespace REF.Runtime.UI.Style.Text
 			element.resizeTextMaxSize = GetMaxFitFontSize();
 		}
 
+		public override void Copy(UnityEngine.UI.Text element)
+		{
+			textAlignment = element.alignment;
+			alignByGeometry = element.alignByGeometry;
+			horizontalWrapMode = element.horizontalOverflow;
+			verticalWrapMode = element.verticalOverflow;
+			bestFit = element.resizeTextForBestFit;
+			minFitSize = element.resizeTextMinSize;
+			maxFitSize = element.resizeTextMaxSize;
+		}
+
 		public TextAnchor GetAlignment()
 		{
 			return textAlignment;

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 namespace REF.Runtime.UI.Style.Selectable
 {
+	[System.Serializable]
 	public class ButtonStyle : Style<UnityEngine.UI.Button>, IButtonStyle
 	{
 		[SerializeField] private SelectableStyle selectable = new SelectableStyle();
@@ -10,6 +11,11 @@ namespace REF.Runtime.UI.Style.Selectable
 		public override void Apply(UnityEngine.UI.Button element)
 		{
 			selectable.Apply(element);
+		}
+
+		public override void Copy(UnityEngine.UI.Button element)
+		{
+			selectable.Copy(element);
 		}
 
 		public AnimationTriggers GetAnimationTriggers()

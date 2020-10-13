@@ -1,6 +1,8 @@
 ﻿
 namespace REF.Runtime.Core
 {
+	// if coroutine is required to initialize service, then you have to make a service that is inherit from MonoBehaviour and start a coroutine inside interface methods,
+	// otherwise this functions is expected to be non-blocking calls
 	public interface IService
 	{
 		bool IsSupported();

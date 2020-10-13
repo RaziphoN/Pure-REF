@@ -16,7 +16,7 @@ namespace REF.Runtime.UI.Style.Selectable
 		[SerializeField] private UnityEngine.UI.ScrollRect.MovementType movementType = UnityEngine.UI.ScrollRect.MovementType.Elastic;
 		[SerializeField] private float elasticity = 0.1f;
 
-		[SerializeField] private bool intertia = true;
+		[SerializeField] private bool inertia = true;
 		[SerializeField] private float decelerationRate = 0.135f;
 		[SerializeField] private float scrollSensivity = 1f;
 
@@ -35,6 +35,23 @@ namespace REF.Runtime.UI.Style.Selectable
 			element.inertia = UseIntertia();
 			element.decelerationRate = GetDecelerationRate();
 			element.scrollSensitivity = GetSensivity();
+		}
+
+		public override void Copy(UnityEngine.UI.ScrollRect element)
+		{
+			horizontal = element.horizontal;
+			horizontalScrollbarVisibility = element.horizontalScrollbarVisibility;
+			horizontalSpacing = element.horizontalScrollbarSpacing;
+
+			vertical = element.vertical;
+			verticalScrollbarVisibility = element.verticalScrollbarVisibility;
+			verticalSpacing = element.verticalScrollbarSpacing;
+
+			movementType = element.movementType;
+			elasticity = element.elasticity;
+			inertia = element.inertia;
+			decelerationRate = element.decelerationRate;
+			scrollSensivity = element.scrollSensitivity;
 		}
 
 		public float GetDecelerationRate()
@@ -84,7 +101,7 @@ namespace REF.Runtime.UI.Style.Selectable
 
 		public bool UseIntertia()
 		{
-			return intertia;
+			return inertia;
 		}
 
 		public bool UseVertical()

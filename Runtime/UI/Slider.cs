@@ -1,45 +1,64 @@
 ﻿using UnityEngine;
-
-using REF.Runtime.UI.Style.Selectable;
 using UnityEngine.EventSystems;
+
+using REF.Runtime.UI.Module;
 
 namespace REF.Runtime.UI
 {
 	[AddComponentMenu("UI/REF/Slider")]
-	public class Slider : UnityEngine.UI.Slider
+	public class Slider : UnityEngine.UI.Slider, IModularBehaviour
 	{
 		public event System.Action OnUserDragStart;
 		public event System.Action<float> OnUserDragEnd;
 
-		[SerializeField] private SliderStyleObject style;
-		private bool isControlled = false;
+		[SerializeField] private ModuleHandler handler = new ModuleHandler();
 
-		protected override void Start()
+		public ModuleHandler<T> GetHandler<T>() where T : ModuleBase
 		{
-			base.Start();
-			style?.Apply(this);
+			return handler as ModuleHandler<T>;
 		}
 
 		public override void OnPointerDown(PointerEventData eventData)
 		{
 			base.OnPointerDown(eventData);
-			isControlled = true;
 			OnUserDragStart?.Invoke();
 		}
 
 		public override void OnPointerUp(PointerEventData eventData)
 		{
 			base.OnPointerUp(eventData);
-			isControlled = false;
 			OnUserDragEnd?.Invoke(value);
 		}
 
-#if UNITY_EDITOR
+		protected override void Awake()
+		{
+			base.Awake();
+			handler.DoInit(this);
+		}
+
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+			handler.DoShow();
+		}
+
+		protected override void OnDisable()
+		{
+			handler.DoHide();
+			base.OnDisable();
+		}
+
+		protected override void OnDestroy()
+		{
+			handler.DoDeinit();
+			base.OnDestroy();
+		}
+
 		protected override void OnValidate()
 		{
 			base.OnValidate();
-			style?.Apply(this);
+			handler.DoInit(this);
+			handler.DoValidate();
 		}
-#endif
 	}
 }

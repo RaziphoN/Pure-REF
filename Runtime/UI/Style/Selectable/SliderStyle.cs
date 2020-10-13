@@ -6,7 +6,7 @@ namespace REF.Runtime.UI.Style.Selectable
 	[System.Serializable]
 	public class SliderStyle : Style<UnityEngine.UI.Slider>, ISliderStyle
 	{
-		[SerializeField] private SelectableStyle selectable;
+		[SerializeField] private SelectableStyle selectable = new SelectableStyle();
 		//[SerializeField] private Slider.Direction direction = Slider.Direction.LeftToRight;
 		[SerializeField, Min(0)] private float minValue = 0f;
 		[SerializeField, Min(0)] private float maxValue = 1f;
@@ -19,6 +19,15 @@ namespace REF.Runtime.UI.Style.Selectable
 			element.minValue = GetMinValue();
 			element.maxValue = GetMaxValue();
 			element.wholeNumbers = IsWholeNumbers();
+		}
+
+		public override void Copy(UnityEngine.UI.Slider element)
+		{			
+			selectable.Copy(element);
+
+			minValue = element.minValue;
+			maxValue = element.maxValue;
+			wholeNumbers = element.wholeNumbers;
 		}
 
 		public AnimationTriggers GetAnimationTriggers()

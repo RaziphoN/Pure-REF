@@ -2,7 +2,7 @@
 
 namespace REF.Runtime.Online.Service
 {
-	public class OnlineService : ServiceBase, IOnlineService
+	public class OnlineService : ServiceSO, IOnlineService
 	{
 		
 	}

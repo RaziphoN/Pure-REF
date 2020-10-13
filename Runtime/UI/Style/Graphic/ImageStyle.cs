@@ -10,7 +10,7 @@ namespace REF.Runtime.UI.Style.Graphic
 		[SerializeField] private Image.FillMethod fillMethod = Image.FillMethod.Radial360;
 		[SerializeField] private bool fillCenter = true;
 		[SerializeField] private int fillOrigin = 0;
-		[SerializeField] private float fillAmount = 1f;
+		[SerializeField, Range(0, 1)] private float fillAmount = 1f;
 		[SerializeField] private bool fillClockwise = false;
 
 		[SerializeField] private bool useSpriteMesh = false;
@@ -35,6 +35,19 @@ namespace REF.Runtime.UI.Style.Graphic
 			element.preserveAspect = IsPreserveAspect();
 		}
 
+		public override void Copy(UnityEngine.UI.Image element)
+		{
+			imageType = element.type;
+			fillMethod = element.fillMethod;
+			fillCenter = element.fillCenter;
+			fillOrigin = element.fillOrigin;
+			fillAmount = element.fillAmount;
+			fillClockwise = element.fillClockwise;
+			useSpriteMesh = element.useSpriteMesh;
+			pixerPerUnitMultiplier = (int)element.pixelsPerUnitMultiplier;
+			preserveAspect = element.preserveAspect;
+		}
+
 		public Color GetColor()
 		{
 			return graphic.GetColor();
@@ -42,7 +55,7 @@ namespace REF.Runtime.UI.Style.Graphic
 
 		public float GetFillAmount()
 		{
-			throw new System.NotImplementedException();
+			return fillAmount;
 		}
 
 		public Image.Type GetImageType()

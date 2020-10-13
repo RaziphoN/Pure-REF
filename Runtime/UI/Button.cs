@@ -1,30 +1,59 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
-using REF.Runtime.UI.Style.Selectable;
+using REF.Runtime.UI.Module;
 
 namespace REF.Runtime.UI
 {
 	[AddComponentMenu("UI/REF/Button")]
-	public class Button : UnityEngine.UI.Button
+	public class Button : UnityEngine.UI.Button, IModularBehaviour
 	{
-		[SerializeField] private ButtonStyleObject style;
+		[SerializeField] private ModuleHandler handler = new ModuleHandler();
 
-		protected override void Start()
+		public ModuleHandler<T> GetHandler<T>() where T : ModuleBase
 		{
-			base.Start();
-			style?.Apply(this);
+			return handler as ModuleHandler<T>;
 		}
 
-#if UNITY_EDITOR
+		public override void OnPointerClick(PointerEventData eventData)
+		{
+			base.OnPointerClick(eventData);
+			handler.ForEach((module) =>
+			{
+				var btnModule = module as IButtonModule;
+				btnModule?.OnClick();
+			});
+		}
+
+		protected override void Awake()
+		{
+			base.Awake();
+			handler.DoInit(this);
+		}
+
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+			handler.DoShow();
+		}
+
+		protected override void OnDisable()
+		{
+			handler.DoHide();
+			base.OnDisable();
+		}
+
+		protected override void OnDestroy()
+		{
+			handler.DoDeinit();
+			base.OnDestroy();
+		}
+
 		protected override void OnValidate()
 		{
 			base.OnValidate();
-
-			if (style != null)
-			{
-				style.Apply(this);
-			}
+			handler.DoInit(this);
+			handler.DoValidate();
 		}
-#endif
 	}
 }
