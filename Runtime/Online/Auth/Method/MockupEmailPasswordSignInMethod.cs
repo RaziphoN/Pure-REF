@@ -1,4 +1,5 @@
-﻿
+﻿#if REF_ONLINE_AUTH
+
 using System;
 
 namespace REF.Runtime.Online.Auth.Method
@@ -37,3 +38,5 @@ namespace REF.Runtime.Online.Auth.Method
 		}
 	}
 }
+
+#endif
