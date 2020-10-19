@@ -5,20 +5,26 @@ namespace REF.Runtime.Preference
 	[System.Serializable]
 	public class SerializableField
 	{
-		public SerializableField(string key, byte[] data)
+		public SerializableField(string key, string data)
 		{
 			this.Key = key;
 			this.Data = data;
 		}
 
 		public string Key;
-		public byte[] Data;
+		public string Data;
 	}
 
 	[System.Serializable]
 	public class SerializableObject
 	{
 		public List<SerializableField> Fields = new List<SerializableField>();
+
+		public bool HasField(string key)
+		{
+			var field = GetField(key);
+			return field != null;
+		}
 
 		public SerializableField GetField(string key)
 		{

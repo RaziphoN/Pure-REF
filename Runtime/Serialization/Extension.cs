@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
 using REF.Runtime.Preference;
 
@@ -17,28 +19,40 @@ namespace REF.Runtime.Serialization
 		[System.Serializable]
 		private class SerializableDictionaryList
 		{
+			public List<SerializableKeyValuePair> Data = null;
+
 			public SerializableDictionaryList(List<SerializableKeyValuePair> data)
 			{
 				Data = data;
 			}
-
-			public List<SerializableKeyValuePair> Data = null;
 		}
 
 		[System.Serializable]
 		private class SerializableList
 		{
+			public List<string> Data = null;
+
 			public SerializableList(List<string> data)
 			{
 				Data = data;
 			}
+		}
 
-			public List<string> Data = null;
+		[System.Serializable]
+		private class SerializableList<T>
+		{
+			public List<T> Data = null;
+
+			public SerializableList(List<T> data)
+			{
+				Data = data;
+			}
 		}
 
 		public static byte[] SerializeList<T>(this ISerializer serializer, IList<T> collection) where T : ISerializable, new()
 		{
 			var enumerator = collection.GetEnumerator();
+
 			var list = new List<string>();
 
 			while (enumerator.MoveNext())
