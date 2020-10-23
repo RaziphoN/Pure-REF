@@ -20,6 +20,7 @@ namespace REF.Runtime.Core
 		[SerializeField] private string version = string.Empty;
 		[SerializeField] private string build = string.Empty;
 
+		public float Progress { get; private set; } = 0f;
 		public string Version { get { return version; } set { version = value; } }
 		public string Build { get { return build; } set { build = value; } }
 
@@ -122,6 +123,7 @@ namespace REF.Runtime.Core
 					yield return new WaitUntil(() => ended);
 
 					this.Log(Color.red, $"[{service.GetType().Name}] - PreInitialized");
+					Progress = (((idx + 1) / (float)supportedServices.Count) * 0.33f);
 				}
 
 				OnPreInitialized?.Invoke();
@@ -135,6 +137,7 @@ namespace REF.Runtime.Core
 					yield return new WaitUntil(() => ended);
 
 					this.Log(Color.yellow, $"[{service.GetType().Name}] - Initialized");
+					Progress = 0.33f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
 				}
 
 				OnInitialized?.Invoke();
@@ -148,7 +151,11 @@ namespace REF.Runtime.Core
 					yield return new WaitUntil(() => ended);
 
 					this.Log(Color.green, $"[{service.GetType().Name}] - PostInitialized");
+					Progress = 0.66f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
 				}
+
+				Progress = 1f;
+
 				OnPostInitialized?.Invoke();
 			}
 		}
