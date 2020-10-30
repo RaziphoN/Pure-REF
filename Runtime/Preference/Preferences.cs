@@ -12,6 +12,7 @@ namespace REF.Runtime.Preference
 		[SerializeField] private Saver saver;
 		[SerializeField] private Serializer serializer;
 
+		private IDictionary<string, ISaveable> saveables = new Dictionary<string, ISaveable>();
 		private IDictionary<string, ISerializable> serializables = new Dictionary<string, ISerializable>();
 
 		public ISerializer GetSerializer()
@@ -43,6 +44,12 @@ namespace REF.Runtime.Preference
 
 				saver.Save(serializable.Key, data);
 			}
+
+			foreach (var saveable in saveables)
+			{
+				var obj = saveable.Value;
+				obj.Save();
+			}
 		}
 
 		public void Load()
@@ -54,6 +61,20 @@ namespace REF.Runtime.Preference
 
 				obj.Deserialize(serializer, data);
 			}
+
+			foreach (var saveable in saveables)
+			{
+				var obj = saveable.Value;
+				obj.Load();
+			}
+		}
+
+		public void Register(string key, ISaveable obj)
+		{
+			if (!saveables.ContainsKey(key))
+			{
+				saveables.Add(key, obj);
+			}
 		}
 
 		public void Register(string key, ISerializable obj)
@@ -64,12 +85,20 @@ namespace REF.Runtime.Preference
 			}
 		}
 
+		public void UnregisterSerializable(string key)
+		{
+			serializables.Remove(key);
+		}
+
+		public void UnregisterSaveable(string key)
+		{
+			saveables.Remove(key);
+		}
+
 		public void Unregister(string key)
 		{
-			if (serializables.ContainsKey(key))
-			{
-				serializables.Remove(key);
-			}
+			UnregisterSaveable(key);
+			UnregisterSerializable(key);
 		}
 	}
 }

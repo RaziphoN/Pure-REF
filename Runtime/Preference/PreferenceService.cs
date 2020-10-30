@@ -42,6 +42,11 @@ namespace REF.Runtime.Preference
 			preferences.Save();
 		}
 
+		public void Register(string key, ISaveable obj)
+		{
+			preferences.Register(key, obj);
+		}
+
 		public void Register(string key, ISerializable obj)
 		{
 			preferences.Register(key, obj);

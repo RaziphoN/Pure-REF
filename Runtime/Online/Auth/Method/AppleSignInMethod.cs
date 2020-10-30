@@ -16,6 +16,21 @@ namespace REF.Runtime.Online.Auth.Method
 		private System.Action<Credential> sucessCallback = null;
 		private System.Action failCallback = null;
 
+		private string rawNonce;
+		private string nonce;
+
+		public AppleSignInMethod()
+		{
+			rawNonce = GenerateRandomString(32);
+			nonce = GenerateSHA256NonceFromRawNonce(rawNonce);
+		}
+
+		public AppleSignInMethod(string rawNonce, string nonce)
+		{
+			this.rawNonce = rawNonce;
+			this.nonce = nonce;
+		}
+
 		public string GetProviderId()
 		{
 			return ProviderId;
@@ -54,12 +69,9 @@ namespace REF.Runtime.Online.Auth.Method
 			if (args.credentialState != UnityEngine.SignInWithApple.UserCredentialState.Authorized)
 			{
 				RefDebug.Log(nameof(AppleSignInMethod), $"Credential state is invalid: {args.credentialState}");
-				failCallback?.Invoke();
-				return;
+				//failCallback?.Invoke();
+				//return;
 			}
-
-			var rawNonce = GenerateRandomString(32);
-			var nonce = GenerateSHA256NonceFromRawNonce(rawNonce);
 
 			Credential credential = new Credential();
 			credential.SetProviderId(ProviderId);
