@@ -15,6 +15,7 @@ namespace REF.Runtime.Online.Auth
 		[SerializeField] private string email;
 		[SerializeField] private string phoneNumber;
 		private System.Uri photoUri;
+
 		private IDictionary<string, string> data = new Dictionary<string, string>();
 
 		public void SetData(IDictionary<string, string> data)

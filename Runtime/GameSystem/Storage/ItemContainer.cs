@@ -107,13 +107,13 @@ namespace REF.Runtime.GameSystem.Storage
 		{
 			for (int i = 0; i < container.GetItemCount(); ++i)
 			{
-				AddItem(container.GetItem(i).Clone());
+				AddItem(container.GetItem(i).Clone()); // Clone is questionable, but here i think it's more ok than not ok
 			}
 		}
 
 		public void AddItem(IItem item)
 		{
-			items.Add(item.Clone());
+			items.Add(item.Clone()); // Clone is questionable
 		}
 
 		public void Remove(IItem item)
