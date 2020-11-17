@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -28,6 +29,12 @@ namespace REF.Runtime.Core
 		public abstract void Assign();
 
 		public static App Instance { get { return instance; } }
+
+		public bool IsInitialized()
+		{
+			var supported = services.Where((service) => { return service.IsSupported(); });
+			return supported.All((service) => { return service.IsInitialized(); });
+		}
 
 		public bool IsInitialized<T>() where T : IService
 		{

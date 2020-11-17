@@ -29,6 +29,7 @@ namespace REF.Runtime.GameSystem.Storage
 		void RemoveAllItemOfType(string type);
 
 		IItemContainer Clone();
+		void Copy(IItemContainer container);
 	}
 
 	public interface IItemContainer<T> where T : IItem
@@ -55,6 +56,7 @@ namespace REF.Runtime.GameSystem.Storage
 		void RemoveAllItemOfType(string type);
 
 		IItemContainer<T> Clone();
+		void Copy(IItemContainer<T> container);
 	}
 
 	[System.Serializable]
@@ -199,6 +201,17 @@ namespace REF.Runtime.GameSystem.Storage
 
 			items.Clear();
 			items = stacked;
+		}
+
+		public virtual void Copy(IItemContainer container)
+		{
+			items.Clear();
+
+			for (int idx = 0; idx < container.GetItemCount(); ++idx)
+			{
+				var item = container.GetItem(idx);
+				AddItem(item.Clone());
+			}
 		}
 
 		public virtual IItemContainer Clone()
@@ -356,6 +369,17 @@ namespace REF.Runtime.GameSystem.Storage
 
 			items.Clear();
 			items = stacked;
+		}
+
+		public virtual void Copy(IItemContainer<T> container)
+		{
+			items.Clear();
+
+			for (int idx = 0; idx < container.GetItemCount(); ++idx)
+			{
+				var item = container.GetItem(idx);
+				AddItem((T)item.Clone());
+			}
 		}
 
 		public virtual IItemContainer<T> Clone()
