@@ -18,6 +18,7 @@ namespace REF.Runtime.Core
 		
 		protected IService[] services = null;
 
+		[SerializeField] private bool autoInit = true;
 		[SerializeField] private string version = string.Empty;
 		[SerializeField] private string build = string.Empty;
 
@@ -98,72 +99,36 @@ namespace REF.Runtime.Core
 			return default(T);
 		}
 
+		public void Initialize()
+		{
+			StartCoroutine(InitializeInternal());
+		}
+
+		public void Release()
+		{
+			if (services != null)
+			{
+				for (int idx = services.Length - 1; idx >= 0; --idx)
+				{
+					var service = services[idx];
+					if (service.IsInitialized())
+					{
+						service.Release(null);
+					}
+				}
+			}
+		}
+
 		private void Awake()
 		{
 			instance = this;
 		}
 
-		private IEnumerator Start()
+		private void Start()
 		{
-			Assign();
-
-			if (services != null)
+			if (autoInit)
 			{
-				var supportedServices = new List<IService>();
-
-				for (int idx = 0; idx < services.Length; ++idx)
-				{
-					var service = services[idx];
-
-					if (service.IsSupported())
-					{
-						supportedServices.Add(service);
-					}
-				}
-
-				// pre-init
-				for (int idx = 0; idx < supportedServices.Count; ++idx)
-				{
-					var service = supportedServices[idx];
-					bool ended = false;
-					service.PreInitialize(() => { ended = true; });
-					yield return new WaitUntil(() => ended);
-
-					this.Log(Color.red, $"[{service.GetType().Name}] - PreInitialized");
-					Progress = (((idx + 1) / (float)supportedServices.Count) * 0.33f);
-				}
-
-				OnPreInitialized?.Invoke();
-
-				// init
-				for (int idx = 0; idx < supportedServices.Count; ++idx)
-				{
-					var service = supportedServices[idx];
-					bool ended = false;
-					service.Initialize(() => { ended = true; });
-					yield return new WaitUntil(() => ended);
-
-					this.Log(Color.yellow, $"[{service.GetType().Name}] - Initialized");
-					Progress = 0.33f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
-				}
-
-				OnInitialized?.Invoke();
-
-				// post-init
-				for (int idx = 0; idx < supportedServices.Count; ++idx)
-				{
-					var service = supportedServices[idx];
-					bool ended = false;
-					service.PostInitialize(() => { ended = true; });
-					yield return new WaitUntil(() => ended);
-
-					this.Log(Color.green, $"[{service.GetType().Name}] - PostInitialized");
-					Progress = 0.66f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
-				}
-
-				Progress = 1f;
-
-				OnPostInitialized?.Invoke();
+				StartCoroutine(InitializeInternal());
 			}
 		}
 
@@ -229,16 +194,73 @@ namespace REF.Runtime.Core
 
 		private void OnDestroy()
 		{
+			if (autoInit)
+			{
+				Release();
+			}
+		}
+
+		private IEnumerator InitializeInternal()
+		{
+			Assign();
+
 			if (services != null)
 			{
-				for (int idx = services.Length - 1; idx >= 0; --idx)
+				var supportedServices = new List<IService>();
+
+				for (int idx = 0; idx < services.Length; ++idx)
 				{
 					var service = services[idx];
-					if (service.IsInitialized())
+
+					if (service.IsSupported())
 					{
-						service.Release(null);
+						supportedServices.Add(service);
 					}
 				}
+
+				// pre-init
+				for (int idx = 0; idx < supportedServices.Count; ++idx)
+				{
+					var service = supportedServices[idx];
+					bool ended = false;
+					service.PreInitialize(() => { ended = true; });
+					yield return new WaitUntil(() => ended);
+
+					this.Log(Color.red, $"[{service.GetType().Name}] - PreInitialized");
+					Progress = (((idx + 1) / (float)supportedServices.Count) * 0.33f);
+				}
+
+				OnPreInitialized?.Invoke();
+
+				// init
+				for (int idx = 0; idx < supportedServices.Count; ++idx)
+				{
+					var service = supportedServices[idx];
+					bool ended = false;
+					service.Initialize(() => { ended = true; });
+					yield return new WaitUntil(() => ended);
+
+					this.Log(Color.yellow, $"[{service.GetType().Name}] - Initialized");
+					Progress = 0.33f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
+				}
+
+				OnInitialized?.Invoke();
+
+				// post-init
+				for (int idx = 0; idx < supportedServices.Count; ++idx)
+				{
+					var service = supportedServices[idx];
+					bool ended = false;
+					service.PostInitialize(() => { ended = true; });
+					yield return new WaitUntil(() => ended);
+
+					this.Log(Color.green, $"[{service.GetType().Name}] - PostInitialized");
+					Progress = 0.66f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
+				}
+
+				Progress = 1f;
+
+				OnPostInitialized?.Invoke();
 			}
 		}
 	}
