@@ -2,7 +2,7 @@
 
 namespace REF.Runtime.Online.Network
 {
-	public class Connection<T> : ISocket where T : ISocket, new()
+	public class Connection<T> : IConnection<T>, ISocket where T : ISocket, new()
 	{
 		public event Action OnConnect;
 		public event Action OnDisconnect;
@@ -67,6 +67,11 @@ namespace REF.Runtime.Online.Network
 			}
 
 			socket.Send(message);
+		}
+
+		public void Update()
+		{
+
 		}
 
 		private void OnSocketMessageReceivedHandler(string message)

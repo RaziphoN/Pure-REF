@@ -2,11 +2,11 @@
 {
 	public interface IResponseHandle
 	{
-		IResponse Parse(string message);
+		IResponse Create(string message);
 		void Handle(IResponse response);
 	}
 
-	public class ResponseHandle<T> : IResponseHandle where T : IResponse
+	public class ResponseHandle<T> : IResponseHandle where T : IResponse, new()
 	{
 		private IResponseHandler<T> handler;
 
@@ -15,9 +15,14 @@
 			this.handler = handler;
 		}
 
-		public IResponse Parse(string data)
+		public IResponse Create()
 		{
-			return UnityEngine.JsonUtility.FromJson<T>(data);
+			return new T();
+		}
+
+		public IResponse Create(string message)
+		{
+			return handler.Create(message);
 		}
 
 		public void Handle(IResponse response)
@@ -33,6 +38,7 @@
 
 	public interface IResponseHandler<T> where T : IResponse
 	{
+		T Create(string message);
 		void OnResponse(T response);
 	}
 }

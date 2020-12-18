@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace REF.Runtime.Online.Network
 {
-	public class SyncConnection<T> where T : ISocket, new()
+	public class SyncConnection<T> : IConnection<T> where T : ISocket, new()
 	{
 		public event System.Action OnConnect;
 		public event System.Action OnDisconnect;
-		public event System.Action<string> OnResponse;
+		public event System.Action<string> OnMessage;
 
 		private Connection<T> connection = new Connection<T>();
 
@@ -75,6 +75,8 @@ namespace REF.Runtime.Online.Network
 		// call from the thread on which you want to syncronize response callback
 		public void Update()
 		{
+			connection.Update();
+
 			Receiver();
 		}
 
@@ -150,7 +152,7 @@ namespace REF.Runtime.Online.Network
 				while (receiverQueue.Count > 0)
 				{
 					var response = receiverQueue.Dequeue();
-					OnResponse?.Invoke(response);
+					OnMessage?.Invoke(response);
 				}
 			}
 		}
