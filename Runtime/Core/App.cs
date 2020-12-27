@@ -10,24 +10,18 @@ namespace REF.Runtime.Core
 {
 	public abstract class App : MonoBehaviour
 	{
-		public event System.Action OnPreInitialized;
-		public event System.Action OnInitialized;
-		public event System.Action OnPostInitialized;
-
 		private static App instance;
-		
-		protected IService[] services = null;
+
+		public event System.Action OnInitialized;
 
 		[SerializeField] private bool autoInit = true;
 		[SerializeField] private string version = string.Empty;
 		[SerializeField] private string build = string.Empty;
+		private List<IService> services = null;
 
 		public float Progress { get; private set; } = 0f;
 		public string Version { get { return version; } set { version = value; } }
 		public string Build { get { return build; } set { build = value; } }
-
-		// TODO: Add here your services to services array (initialization happens at Start, so managers could initialize something in Awake in case of MonoBehaviour)
-		public abstract void Assign();
 
 		public static App Instance { get { return instance; } }
 
@@ -61,6 +55,24 @@ namespace REF.Runtime.Core
 			return false;
 		}
 
+		public void Set(List<IService> serviceList)
+		{
+			services = serviceList;
+		}
+
+		public void Add(IService service)
+		{
+			if (!services.Contains(service))
+			{
+				services.Add(service);
+			}
+		}
+
+		public void Remove(IService service)
+		{
+			services.Remove(service);
+		}
+
 		public bool Has<T>() where T : IService
 		{
 			var service = Get<T>();
@@ -73,6 +85,11 @@ namespace REF.Runtime.Core
 			return false;
 		}
 
+		public IService Get(int idx)
+		{
+			return services[idx];
+		}
+
 		public T Get<T>() where T : IService
 		{
 			if (services == null)
@@ -82,7 +99,7 @@ namespace REF.Runtime.Core
 
 			if (services != null)
 			{
-				for (int idx = 0; idx < services.Length; ++idx)
+				for (int idx = 0; idx < services.Count; ++idx)
 				{
 					var service = services[idx];
 
@@ -99,6 +116,31 @@ namespace REF.Runtime.Core
 			return default(T);
 		}
 
+		public T Get<T>(int idx) where T : IService
+		{
+			var service = services[idx];
+
+			var genericType = typeof(T);
+			var serviceType = service.GetType();
+
+			if (genericType.IsAssignableFrom(serviceType))
+			{
+				return (T)service;
+			}
+
+			return default(T);
+		}
+
+		public List<IService> GetAll()
+		{
+			return services;
+		}
+
+		public int GetServiceCount()
+		{
+			return services.Count;
+		}
+
 		public void Initialize()
 		{
 			StartCoroutine(InitializeInternal());
@@ -108,7 +150,7 @@ namespace REF.Runtime.Core
 		{
 			if (services != null)
 			{
-				for (int idx = services.Length - 1; idx >= 0; --idx)
+				for (int idx = services.Count - 1; idx >= 0; --idx)
 				{
 					var service = services[idx];
 					if (service.IsInitialized())
@@ -119,7 +161,7 @@ namespace REF.Runtime.Core
 			}
 		}
 
-		private void Awake()
+		protected void Awake()
 		{
 			instance = this;
 		}
@@ -136,7 +178,7 @@ namespace REF.Runtime.Core
 		{
 			if (services != null)
 			{
-				for (int idx = 0; idx < services.Length; ++idx)
+				for (int idx = 0; idx < services.Count; ++idx)
 				{
 					var service = services[idx];
 					if (service.IsInitialized())
@@ -151,7 +193,7 @@ namespace REF.Runtime.Core
 		{
 			if (services != null)
 			{
-				for (int idx = 0; idx < services.Length; ++idx)
+				for (int idx = 0; idx < services.Count; ++idx)
 				{
 					var service = services[idx];
 					if (service.IsInitialized())
@@ -166,7 +208,7 @@ namespace REF.Runtime.Core
 		{
 			if (services != null)
 			{
-				for (int idx = 0; idx < services.Length; ++idx)
+				for (int idx = 0; idx < services.Count; ++idx)
 				{
 					var service = services[idx];
 					if (service.IsInitialized())
@@ -181,7 +223,7 @@ namespace REF.Runtime.Core
 		{
 			if (services != null)
 			{
-				for (int idx = 0; idx < services.Length; ++idx)
+				for (int idx = 0; idx < services.Count; ++idx)
 				{
 					var service = services[idx];
 					if (service.IsInitialized())
@@ -202,13 +244,11 @@ namespace REF.Runtime.Core
 
 		private IEnumerator InitializeInternal()
 		{
-			Assign();
-
 			if (services != null)
 			{
 				var supportedServices = new List<IService>();
 
-				for (int idx = 0; idx < services.Length; ++idx)
+				for (int idx = 0; idx < services.Count; ++idx)
 				{
 					var service = services[idx];
 
@@ -226,11 +266,9 @@ namespace REF.Runtime.Core
 					service.PreInitialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
 
-					this.Log(Color.red, $"[{service.GetType().Name}] - PreInitialized");
+					this.Log($"[{service.GetType().Name}] - PreInitialized");
 					Progress = (((idx + 1) / (float)supportedServices.Count) * 0.33f);
 				}
-
-				OnPreInitialized?.Invoke();
 
 				// init
 				for (int idx = 0; idx < supportedServices.Count; ++idx)
@@ -240,11 +278,9 @@ namespace REF.Runtime.Core
 					service.Initialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
 
-					this.Log(Color.yellow, $"[{service.GetType().Name}] - Initialized");
+					this.Log($"[{service.GetType().Name}] - Initialized");
 					Progress = 0.33f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
 				}
-
-				OnInitialized?.Invoke();
 
 				// post-init
 				for (int idx = 0; idx < supportedServices.Count; ++idx)
@@ -254,13 +290,13 @@ namespace REF.Runtime.Core
 					service.PostInitialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
 
-					this.Log(Color.green, $"[{service.GetType().Name}] - PostInitialized");
+					this.Log($"[{service.GetType().Name}] - PostInitialized");
 					Progress = 0.66f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
 				}
 
 				Progress = 1f;
 
-				OnPostInitialized?.Invoke();
+				OnInitialized?.Invoke();
 			}
 		}
 	}
