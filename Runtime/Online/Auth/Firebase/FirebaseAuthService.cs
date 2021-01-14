@@ -426,7 +426,8 @@ namespace REF.Runtime.Online.Auth
 		{
 			if (internalFirebaseUser != null && IsSignedIn() && IsInitialized())
 			{
-				RequestTokenInternal(internalFirebaseUser, (user) => { OnTokenChanged?.Invoke(); }, true);
+
+				RequestTokenInternal(internalFirebaseUser, (user) => { OnTokenChanged?.Invoke(); }, false);
 			}
 		}
 

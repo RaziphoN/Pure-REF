@@ -10,6 +10,7 @@ using Facebook.Unity;
 
 namespace REF.Runtime.Online.Analytics.Facebook
 {
+	[CreateAssetMenu(fileName = "FacebookAnalyticsService", menuName = "REF/Online/Analytics/Facebook Analytics")]
 	public class FacebookAnalyticService : FacebookService, IAnalyticService
 	{
 		[SerializeField] private bool autoLogAppEvents = true;

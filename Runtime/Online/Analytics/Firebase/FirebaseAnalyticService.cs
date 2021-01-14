@@ -1,4 +1,5 @@
 ﻿#if REF_ONLINE_ANALYTICS && REF_FIREBASE_ANALYTICS && REF_USE_FIREBASE
+using UnityEngine;
 
 using System.Linq;
 
@@ -8,6 +9,7 @@ using Firebase.Analytics;
 
 namespace REF.Runtime.Online.Analytics
 {
+	[CreateAssetMenu(fileName = "FirebaseAnalyticsService", menuName = "REF/Online/Analytics/Firebase Analytics")]
 	public class FirebaseAnalyticService : FirebaseService, IAnalyticService
 	{
 		private string setId;
