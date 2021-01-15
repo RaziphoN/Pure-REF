@@ -7,210 +7,92 @@ namespace REF.Runtime.Online.Advertisments
 	[System.Serializable]
 	public class BannerSettings
 	{
-		public enum Position
-		{
-            Undefined = -1,
-			Top = 0,
-			Bottom = 1,
-			TopLeft = 2,
-			TopRight = 3,
-			BottomLeft = 4,
-			BottomRight = 5,
-			Center = 6
-		}
-
-        public enum Orientation
+        public enum Type
         {
-            Current = 0,
-            Landscape = 1,
-            Portrait = 2
+            Preset, // Will choose the closest preset from Advertisment service available size presets from developer guide
+            Smart, // width wouldn't matter, it would always fit screen width, but height would be choosen automatically from closest preset or by ad service
+            Adaptive, // height woudn't matter here, but service would try to request precise width for you ad size or adapt it to requested one. Height is adapted automatically
+            Custom // just send custom size banner request, it would use "Preset" policy if custom size banners is not supported by ad service
         }
 
-        public class Size
+        public enum PositionPolicy
+		{
+            Defined, // Took value from Position enum
+            Custom // Took custom position if supported, otherwise enum value
+		}
+
+        public enum Position
+		{
+			Top,
+			Bottom,
+			TopLeft,
+			TopRight,
+			BottomLeft,
+			BottomRight,
+			Center
+		}
+
+        private Type sizePolicy = Type.Preset;
+        private PositionPolicy posPolicy = PositionPolicy.Defined;
+
+        private Position enumPos = Position.Bottom;
+        private Vector2Int position = new Vector2Int(0, 0);
+        private Vector2Int size = new Vector2Int(0, 0);
+
+        public BannerSettings()
+		{
+
+		}
+
+        public void SetBannerType(Type type)
+		{
+            this.sizePolicy = type;
+		}
+
+        public void SetSize(int width, int height)
+		{
+            size.x = width;
+            size.y = height;
+		}
+
+        public void SetPosition(int x, int y)
         {
-            public enum Type
-            {
-                Standard = 0,
-                SmartBanner = 1,
-                AnchoredAdaptive = 2
-            }
+            this.posPolicy = PositionPolicy.Custom;
 
-            private Type type;
-            private Orientation orientation;
-            private int width;
-            private int height;
-
-            public static readonly Size Banner = new Size(320, 50);
-            public static readonly Size MediumRectangle = new Size(300, 250);
-            public static readonly Size IABBanner = new Size(468, 60);
-            public static readonly Size Leaderboard = new Size(728, 90);
-            public static readonly Size SmartBanner = new Size(0, 0, Type.SmartBanner);
-            public static readonly int FullWidth = -1;
-
-            public Size(int width, int height)
-            {
-                this.type = Type.Standard;
-                this.width = width;
-                this.height = height;
-                orientation = Orientation.Current;
-            }
-
-            private Size(int width, int height, Type type) : this(width, height)
-            {
-                this.type = type;
-            }
-
-            private static Size CreateAnchoredAdaptiveAdSize(int width, Orientation orientation)
-            {
-                Size adSize = new Size(width, 0, Type.AnchoredAdaptive);
-                adSize.orientation = orientation;
-                return adSize;
-            }
-
-            public static Size GetLandscapeAnchoredAdaptiveBannerAdSizeWithWidth(int width)
-            {
-                return CreateAnchoredAdaptiveAdSize(width, Orientation.Landscape);
-            }
-
-            public static Size GetPortraitAnchoredAdaptiveBannerAdSizeWithWidth(int width)
-            {
-                return CreateAnchoredAdaptiveAdSize(width, Orientation.Portrait);
-            }
-
-            public static Size GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(int width)
-            {
-                return CreateAnchoredAdaptiveAdSize(width, Orientation.Current);
-            }
-
-            public int Width
-            {
-                get
-                {
-                    return width;
-                }
-            }
-
-            public int Height
-            {
-                get
-                {
-                    return height;
-                }
-            }
-
-            public Type AdType
-            {
-                get
-                {
-                    return type;
-                }
-            }
-
-            public Orientation Orientation
-            {
-                get
-                {
-                    return orientation;
-                }
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (obj == null || GetType() != obj.GetType())
-                    return false;
-
-                Size other = (Size)obj;
-                return (width == other.width) && (height == other.height)
-                && (type == other.type) && (orientation == other.orientation);
-            }
-
-            public static bool operator ==(Size a, Size b)
-            {
-                if ((object)a == null)
-                {
-                    return (object)b == null;
-                }
-
-                return a.Equals(b);
-            }
-
-            public static bool operator !=(Size a, Size b)
-            {
-                if ((object)a == null)
-                {
-                    return (object)b != null;
-                }
-
-                return !a.Equals(b);
-            }
-
-            public override int GetHashCode()
-            {
-                int hashBase = 71;
-                int hashMultiplier = 11;
-
-                int hash = hashBase;
-                hash = (hash * hashMultiplier) ^ width.GetHashCode();
-                hash = (hash * hashMultiplier) ^ height.GetHashCode();
-                hash = (hash * hashMultiplier) ^ type.GetHashCode();
-                hash = (hash * hashMultiplier) ^ orientation.GetHashCode();
-                return hash;
-            }
+            this.position.x = x;
+            this.position.y = y;
         }
 
-        private Position presetPosition = Position.Undefined;
-        private Vector2Int position;
-        private Size size = new Size(0, 0);
+        public void SetPosition(Position position)
+        {
+            this.posPolicy = PositionPolicy.Defined;
+            this.enumPos = position;
+            this.position = Vector2Int.zero;
+        }
 
-        public BannerSettings(Size size, Position position)
+        internal Position GetRelativePosition()
 		{
-            this.size = size;
-            this.presetPosition = position;
+            return enumPos;
 		}
 
-        public BannerSettings(Size size, int x, int y)
-		{
-            this.size = size;
-            position.x = x;
-            position.y = y;
-		}
-
-        public void SetSize(Size size)
-		{
-            this.size = size;
-		}
-
-        public Size GetSize()
+        internal Vector2Int GetSize()
 		{
             return size;
 		}
 
-        public bool IsRelativePosition()
-		{
-            return presetPosition != Position.Undefined;
-		}
-
-        public void SetScreenPosition(int x, int y)
-		{
-            this.presetPosition = Position.Undefined;
-            this.position.x = x;
-            this.position.y = y;
-		}
-
-        public void SetRelativePosition(Position position)
-		{
-            this.position = Vector2Int.zero;
-            presetPosition = position;
-		}
-
-        public Position GetRelativePosition()
-		{
-            return presetPosition;
-		}
-
-        public Vector2Int GetScreenPosition()
+        internal Vector2Int GetPosition()
 		{
             return position;
+		}
+
+        internal Type GetBannerType()
+		{
+            return sizePolicy;
+		}
+
+        internal PositionPolicy GetPositionType()
+		{
+            return posPolicy;
 		}
     }
 }

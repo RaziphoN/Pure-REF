@@ -2,19 +2,6 @@
 
 namespace REF.Runtime.Online.Advertisments
 {
-	public enum BannerPosition
-	{
-		TopLeft,
-		TopCenter,
-		TopRight,
-		MiddlefLeft,
-		Center,
-		MiddleRight,
-		BottomLeft,
-		BottomCenter,
-		BottomRight
-	}
-
 	public interface IBannerAd : System.IDisposable
 	{
 		event System.Action OnLoaded;

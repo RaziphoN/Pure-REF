@@ -2,6 +2,10 @@
 
 using GoogleMobileAds.Api;
 
+using REF.Runtime.Diagnostic;
+
+using System.Collections.Generic;
+
 namespace REF.Runtime.Online.Advertisments.AdMob
 {
 	public class BannerAd : IBannerAd
@@ -18,7 +22,10 @@ namespace REF.Runtime.Online.Advertisments.AdMob
 
 		public BannerAd(string placement, BannerSettings settings)
 		{
-			var size = ToSDKSize(settings.GetSize());
+			var size = ToSDKSize(settings);
+			var pos = ToDipPosition(settings);
+
+			var positionPolicy = settings.GetPositionType();
 
 			if (size == null)
 			{
@@ -26,16 +33,22 @@ namespace REF.Runtime.Online.Advertisments.AdMob
 			}
 
 			this.placement = placement;
-			
-			if (settings.IsRelativePosition())
+
+			switch (positionPolicy)
 			{
-				var relativePos = ToSDKPosition(settings.GetRelativePosition());
-				view = new BannerView(placement, size, relativePos);
-			}
-			else
-			{
-				var pos = settings.GetScreenPosition();
-				view = new BannerView(placement, size, pos.x, pos.y);
+				case BannerSettings.PositionPolicy.Defined:
+				{
+					var relativePos = ToSDKPosition(settings.GetRelativePosition());
+					view = new BannerView(placement, size, relativePos);
+				}
+				break;
+
+				case BannerSettings.PositionPolicy.Custom:
+				default:
+				{
+					view = new BannerView(placement, size, pos.x - (int)(size.Width * 0.5f), pos.y - (int)(size.Height * 0.5f));
+				}
+				break;
 			}
 
 			if (view != null)
@@ -79,23 +92,22 @@ namespace REF.Runtime.Online.Advertisments.AdMob
 			if (state == AdState.Showing)
 			{
 				view?.Hide();
-				state = AdState.Idle;
+				state = AdState.Loaded;
 			}
 		}
 
 		public void Load()
 		{
-			if (state == AdState.Idle)
-			{
-				state = AdState.Loading;
-				AdRequest request = new AdRequest.Builder().Build();
-				view?.LoadAd(request);
-			}
+			// LoadInternal();
 		}
 
 		public void Show()
 		{
-			if (state == AdState.Loaded)
+			if (state == AdState.Idle)
+			{
+				LoadInternal();
+			}
+			else if (state == AdState.Loaded)
 			{
 				state = AdState.Showing;
 				view?.Show();
@@ -129,41 +141,60 @@ namespace REF.Runtime.Online.Advertisments.AdMob
 		private void OnAdLoadedHandler(object sender, System.EventArgs e)
 		{
 			state = AdState.Loaded;
+			state = AdState.Showing;
 			OnLoaded?.Invoke();
 		}
 
-		private AdSize ToSDKSize(BannerSettings.Size size)
+		private UnityEngine.Vector2Int ToDipPosition(BannerSettings settings)
 		{
-			if (size.Height == 0 && size.Width != 0)
+			var deviceScale = MobileAds.Utils.GetDeviceScale();
+			var pos = settings.GetPosition();
+
+			pos.x = (int)(pos.x / deviceScale);
+			pos.y = (int)(pos.y / deviceScale);
+
+			return pos;
+		}
+
+		private AdSize ToSDKSize(BannerSettings settings)
+		{
+			var deviceScale = MobileAds.Utils.GetDeviceScale();
+			var size = settings.GetSize();
+			
+			size.x = (int)(size.x / deviceScale);
+			size.y = (int)(size.y / deviceScale);
+
+			var type = settings.GetBannerType();
+
+			switch (type)
 			{
-				switch (size.Orientation)
+				case BannerSettings.Type.Preset:
 				{
-					case BannerSettings.Orientation.Current:
-					{
-						return AdSize.GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(size.Width);
-					}
-					break;
-
-					case BannerSettings.Orientation.Landscape:
-					{
-						return AdSize.GetLandscapeAnchoredAdaptiveBannerAdSizeWithWidth(size.Width);
-					}
-					break;
-
-					case BannerSettings.Orientation.Portrait:
-					{
-						return AdSize.GetPortraitAnchoredAdaptiveBannerAdSizeWithWidth(size.Width);
-					}
-					break;
+					/* https://developers.google.com/admob/unity/banner */
+					var presets = new List<AdSize>() { AdSize.Banner, AdSize.MediumRectangle, AdSize.IABBanner, AdSize.Leaderboard, new AdSize(320, 100) };
+					var closest = FindClosest(size, presets);
+					
+					return closest;
 				}
-			}
-			else if (size.Height == 0 && size.Width == 0)
-			{
-				return AdSize.SmartBanner;
-			}
-			else
-			{
-				return new AdSize(size.Width, size.Height);
+				break;
+
+				case BannerSettings.Type.Smart:
+				{
+					return AdSize.SmartBanner;
+				}
+				break;
+
+				case BannerSettings.Type.Adaptive:
+				{
+					return AdSize.GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(size.x);
+				}
+				break;
+
+				case BannerSettings.Type.Custom:
+				{
+					return new AdSize(size.x, size.y);
+				}
+				break;
 			}
 
 			return null;
@@ -173,12 +204,6 @@ namespace REF.Runtime.Online.Advertisments.AdMob
 		{
 			switch (position)
 			{
-				case BannerSettings.Position.Undefined:
-				{
-					return 0;
-				}
-				break;
-
 				case BannerSettings.Position.Top:
 				{
 					return AdPosition.Top;
@@ -223,6 +248,45 @@ namespace REF.Runtime.Online.Advertisments.AdMob
 			}
 
 			return 0;
+		}
+
+		private AdSize FindClosest(UnityEngine.Vector2Int target, List<AdSize> presets)
+		{
+			var diffs = presets.ConvertAll((preset) => { return target - new UnityEngine.Vector2Int(preset.Width, preset.Height); });
+
+			var closest = diffs[0];
+
+			for (int idx = 0; idx < diffs.Count; ++idx)
+			{
+				var diff = diffs[idx];
+
+				// skip  those that are smaller
+				if (diff.x < 0 || diff.y < 0)
+				{
+					continue;
+				}
+
+				var totalPadding = closest.x + closest.y;
+				var otherTotalPadding = diff.x + diff.y;
+
+				if (totalPadding > otherTotalPadding)
+				{
+					closest = diff;
+				}
+			}
+
+			var index = diffs.IndexOf(closest);
+			return presets[index];
+		}
+
+		private void LoadInternal()
+		{
+			if (state == AdState.Idle)
+			{
+				state = AdState.Loading;
+				AdRequest request = new AdRequest.Builder().Build();
+				view?.LoadAd(request);
+			}
 		}
 	}
 }
