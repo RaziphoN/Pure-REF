@@ -2,6 +2,7 @@
 
 namespace REF.Runtime.Online.Advertisments
 {
+	// NOTE: All callbacks should be assumed as async (outside main thread)
 	public interface IRewardedAd : System.IDisposable
 	{
 		event System.Action OnLoaded;
