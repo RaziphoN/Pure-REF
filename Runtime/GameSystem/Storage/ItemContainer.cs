@@ -373,11 +373,16 @@ namespace REF.Runtime.GameSystem.Storage
 
 		public virtual void Copy(IItemContainer<T> container)
 		{
+			var containerItems = container.GetItems();
+			Copy(containerItems);
+		}
+
+		public virtual void Copy(IEnumerable<T> collection)
+		{
 			items.Clear();
 
-			for (int idx = 0; idx < container.GetItemCount(); ++idx)
+			foreach (var item in collection)
 			{
-				var item = container.GetItem(idx);
 				AddItem((T)item.Clone());
 			}
 		}
