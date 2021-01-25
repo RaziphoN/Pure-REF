@@ -20,12 +20,12 @@ namespace REF.Runtime.Preference
 			return preferences.HasKey(key);
 		}
 
-		public void Save(string key, byte[] data)
+		public void Save(string key, string data)
 		{
 			preferences.Save(key, data);
 		}
 
-		public byte[] Load(string key)
+		public string Load(string key)
 		{
 			return preferences.Load(key);
 		}

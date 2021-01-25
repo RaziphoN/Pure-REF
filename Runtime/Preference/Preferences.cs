@@ -10,7 +10,7 @@ namespace REF.Runtime.Preference
 	public class Preferences : IPreferences
 	{
 		[SerializeField] private Saver saver;
-		[SerializeField] private Serializer serializer;
+		[SerializeField] private SerializerBase serializer;
 
 		private IDictionary<string, ISaveable> saveables = new Dictionary<string, ISaveable>();
 		private IDictionary<string, ISerializable> serializables = new Dictionary<string, ISerializable>();
@@ -25,12 +25,12 @@ namespace REF.Runtime.Preference
 			return saver.HasKey(key);
 		}
 
-		public void Save(string key, byte[] data)
+		public void Save(string key, string data)
 		{
 			saver.Save(key, data);
 		}
 
-		public byte[] Load(string key)
+		public string Load(string key)
 		{
 			return saver.Load(key);
 		}
@@ -40,7 +40,7 @@ namespace REF.Runtime.Preference
 			foreach (var serializable in serializables)
 			{
 				var obj = serializable.Value;
-				var data = obj.Serialize(serializer);
+				var data = serializer.Serialize(obj);
 
 				saver.Save(serializable.Key, data);
 			}
@@ -59,7 +59,10 @@ namespace REF.Runtime.Preference
 				var obj = serializable.Value;
 				var data = saver.Load(serializable.Key);
 
-				obj.Deserialize(serializer, data);
+				if (!string.IsNullOrEmpty(data))
+				{
+					serializer.Deserialize(data, obj);
+				}
 			}
 
 			foreach (var saveable in saveables)

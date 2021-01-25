@@ -1,41 +1,13 @@
 ﻿#if REF_ONLINE_AUTH
-using UnityEngine;
-
 using System.Linq;
-using System.Text;
 using System.Collections.Generic;
-
-using REF.Runtime.Preference;
-using REF.Runtime.Serialization;
 
 namespace REF.Runtime.Online.Auth
 {
-	[System.Serializable]
-	public class Credential : ISerializable
+	public class Credential
 	{
-		[SerializeField] private string providerId;
+		private string providerId;
 		private Dictionary<string, string> data = new Dictionary<string, string>();
-
-		public byte[] Serialize(ISerializer serializer)
-		{
-			Serializable serializable = new Serializable();
-			serializable.ProviderId = providerId;
-			
-			var serializedDict = serializer.SerializeDictionary(data);
-			serializable.Data = Encoding.Default.GetString(serializedDict);
-
-			return serializer.Serialize(serializable);
-		}
-
-		public void Deserialize(ISerializer serializer, byte[] data)
-		{
-			var serializable = serializer.Deserialize<Serializable>(data);
-			
-			this.providerId = serializable.ProviderId;
-
-			var byteData = Encoding.Default.GetBytes(serializable.Data);
-			serializer.DeserializeDictionary(byteData, this.data);
-		}
 
 		public string GetProviderId()
 		{
@@ -60,6 +32,11 @@ namespace REF.Runtime.Online.Auth
 		public string GetData(string key)
 		{
 			return data[key];
+		}
+
+		public List<string> GetKeys()
+		{
+			return data.Keys.ToList();
 		}
 
 		public void SetToken(string token)
@@ -116,13 +93,6 @@ namespace REF.Runtime.Online.Auth
 		{
 			return other != null && providerId == other.providerId
 				&& data.Count == other.data.Count && !data.Except(other.data).Any();
-		}
-
-		[System.Serializable]
-		private class Serializable
-		{
-			public string Data;
-			public string ProviderId;
 		}
 	}
 }

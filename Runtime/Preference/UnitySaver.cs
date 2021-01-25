@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 
-using System.Text;
-
 namespace REF.Runtime.Preference
 {
 	[CreateAssetMenu(fileName = "UnitySaver", menuName = "REF/Game Data/Default Unity Saver")]
@@ -12,20 +10,19 @@ namespace REF.Runtime.Preference
 			return PlayerPrefs.HasKey(key);
 		}
 
-		public override byte[] Load(string key)
+		public override string Load(string key)
 		{
 			if (PlayerPrefs.HasKey(key))
 			{
-				var str = PlayerPrefs.GetString(key);
-				return Encoding.Default.GetBytes(str);
+				return PlayerPrefs.GetString(key);
 			}
 
-			return new byte[0];
+			return string.Empty;
 		}
 
-		public override void Save(string key, byte[] data)
+		public override void Save(string key, string data)
 		{
-			PlayerPrefs.SetString(key, Encoding.Default.GetString(data));
+			PlayerPrefs.SetString(key, data);
 			PlayerPrefs.Save();
 		}
 	}

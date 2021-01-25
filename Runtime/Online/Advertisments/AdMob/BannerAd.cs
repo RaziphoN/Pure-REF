@@ -1,10 +1,8 @@
 ﻿#if REF_ONLINE_ADVERTISMENT && REF_ADMOB_ADVERTISMENT && REF_USE_ADMOB
 
-using GoogleMobileAds.Api;
-
-using REF.Runtime.Diagnostic;
-
 using System.Collections.Generic;
+
+using GoogleMobileAds.Api;
 
 namespace REF.Runtime.Online.Advertisments.AdMob
 {
@@ -89,16 +87,25 @@ namespace REF.Runtime.Online.Advertisments.AdMob
 
 		public void Hide()
 		{
-			if (state == AdState.Showing)
+			if (state == AdState.Showing || state == AdState.Loaded || state == AdState.Loading)
 			{
 				view?.Hide();
-				state = AdState.Loaded;
+
+				if (state == AdState.Loading)
+				{
+					state = AdState.Idle;
+				}
+				else
+				{
+					state = AdState.Loaded;
+				}
 			}
 		}
 
 		public void Load()
 		{
-			// LoadInternal();
+			// Dunno what to do here, user of this code is expecting ad state to become Loading, but it's not really work like that in google ads.
+			// When you loading google banner, it's immediately showing
 		}
 
 		public void Show()
@@ -133,7 +140,6 @@ namespace REF.Runtime.Online.Advertisments.AdMob
 
 		private void OnAdFailedToLoadHandler(object sender, AdFailedToLoadEventArgs e)
 		{
-			Diagnostic.RefDebug.Log(nameof(BannerAd), $"Failed to load banner: {e.Message}");
 			state = AdState.Idle;
 			OnFailedToLoad?.Invoke();
 		}
@@ -141,8 +147,10 @@ namespace REF.Runtime.Online.Advertisments.AdMob
 		private void OnAdLoadedHandler(object sender, System.EventArgs e)
 		{
 			state = AdState.Loaded;
-			state = AdState.Showing;
 			OnLoaded?.Invoke();
+
+			state = AdState.Showing;
+			OnShow?.Invoke(); // banner is shown when it's loaded, but no show callback called from google ads
 		}
 
 		private UnityEngine.Vector2Int ToDipPosition(BannerSettings settings)
@@ -281,12 +289,10 @@ namespace REF.Runtime.Online.Advertisments.AdMob
 
 		private void LoadInternal()
 		{
-			if (state == AdState.Idle)
-			{
-				state = AdState.Loading;
-				AdRequest request = new AdRequest.Builder().Build();
-				view?.LoadAd(request);
-			}
+			state = AdState.Loading;
+
+			AdRequest request = new AdRequest.Builder().Build();
+			view?.LoadAd(request);
 		}
 	}
 }

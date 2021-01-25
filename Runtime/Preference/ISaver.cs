@@ -3,7 +3,7 @@
 	public interface ISaver
 	{
 		bool HasKey(string key);
-		void Save(string key, byte[] data);
-		byte[] Load(string key);
+		void Save(string key, string data);
+		string Load(string key);
 	}
 }

@@ -2,9 +2,12 @@
 {
 	public interface ISerializer
 	{
-		byte[] Serialize(object obj);
+		string Serialize(Record record);
+		Record Deserialize(string data);
+
+		string Serialize(ISerializable obj);
 		
-		void Deserialize(byte[] data, object obj);
-		T Deserialize<T>(byte[] data);
+		void Deserialize(string data, ISerializable obj);
+		T Deserialize<T>(string data) where T : ISerializable, new();
 	}
 }
