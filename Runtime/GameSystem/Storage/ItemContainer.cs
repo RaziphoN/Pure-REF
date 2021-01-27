@@ -7,7 +7,7 @@ namespace REF.Runtime.GameSystem.Storage
 {
 	public interface IItemContainer
 	{
-		bool ContainsItem(IItem item);
+		bool Contains(IItem item);
 		bool Contains(IItemContainer container);
 		bool ContainsItemOfType(string type);
 		
@@ -34,8 +34,8 @@ namespace REF.Runtime.GameSystem.Storage
 
 	public interface IItemContainer<T> where T : IItem
 	{
-		bool ContainsItem(T item);
-		bool ContainsItems(IItemContainer<T> container);
+		bool Contains(T item);
+		bool Contains(IItemContainer<T> container);
 		bool ContainsItemOfType(string type);
 		
 		T GetItemOfType(string type);
@@ -53,7 +53,7 @@ namespace REF.Runtime.GameSystem.Storage
 
 		void Remove(T item);
 		void Remove(IItemContainer<T> container);
-		void RemoveAllItemOfType(string type);
+		void RemoveAllItemsOfType(string type);
 
 		IItemContainer<T> Clone();
 		void Copy(IItemContainer<T> container);
@@ -64,7 +64,7 @@ namespace REF.Runtime.GameSystem.Storage
 	{
 		[SerializeField] protected List<IItem> items = new List<IItem>();
 
-		public bool ContainsItem(IItem item)
+		public bool Contains(IItem item)
 		{
 			return items.Contains(item);
 		}
@@ -72,7 +72,7 @@ namespace REF.Runtime.GameSystem.Storage
 		public bool Contains(IItemContainer container)
 		{
 			var content = container.GetItems();
-			return content.All((item) => { return ContainsItem(item); });
+			return items.ContainItems(content);
 		}
 
 		public bool ContainsItemOfType(string type)
@@ -120,9 +120,9 @@ namespace REF.Runtime.GameSystem.Storage
 
 		public void Remove(IItem item)
 		{
-			if (ContainsItem(item))
+			if (Contains(item))
 			{
-				var invItem = items.GetSameItemFromIList<IItem>(item);
+				var invItem = items.GetSameItemFromList<IItem>(item);
 
 				item.SetQuantity(item.GetQuantity() * -1);
 				invItem.Stack(item);
@@ -174,26 +174,34 @@ namespace REF.Runtime.GameSystem.Storage
 			{
 				var item = items[i];
 
-				if (stacked.Count > 0)
+				for (int j = 0; j < stacked.Count; ++j)
 				{
-					for (int j = 0; j < stacked.Count; ++j)
-					{
-						var stackedItem = stacked[j];
+					var stackedItem = stacked[j];
 
-						if (stackedItem.IsStackable(item))
+					if (stackedItem.IsStackable(item))
+					{
+						var stackSize = stackedItem.GetMaxStackQuantity();
+						var quantity = stackedItem.GetQuantity();
+						var itemToStackQuantity = item.GetQuantity();
+						var stackQuantity = stackSize - quantity;
+
+						if (stackQuantity > 0)
 						{
+							item.SetQuantity(stackQuantity);
 							stackedItem.Stack(item);
-							break;
+							item.SetQuantity(itemToStackQuantity - stackQuantity);
+							continue;
 						}
 
-						if (j == stacked.Count - 1)
+						if (item.GetQuantity() == 0)
 						{
-							stacked.Add(item);
 							break;
 						}
 					}
 				}
-				else
+
+				var itemQuantity = item.GetQuantity();
+				if (itemQuantity > 0)
 				{
 					stacked.Add(item);
 				}
@@ -232,15 +240,15 @@ namespace REF.Runtime.GameSystem.Storage
 	{
 		[SerializeField] protected List<T> items = new List<T>();
 
-		public bool ContainsItem(T item)
+		public bool Contains(T item)
 		{
 			return items.ContainsItem(item);
 		}
 
-		public bool ContainsItems(IItemContainer<T> container)
+		public bool Contains(IItemContainer<T> container)
 		{
 			var content = container.GetItems();
-			return content.All((item) => { return ContainsItem(item); });
+			return items.ContainItems(content);
 		}
 
 		public bool ContainsItemOfType(string type)
@@ -288,9 +296,9 @@ namespace REF.Runtime.GameSystem.Storage
 
 		public void Remove(T item)
 		{
-			if (ContainsItem(item))
+			if (Contains(item))
 			{
-				var invItem = items.GetSameItemFromIList<T>(item);
+				var invItem = items.GetSameItemFromList<T>(item);
 
 				item.SetQuantity(item.GetQuantity() * -1);
 				invItem.Stack(item);
@@ -312,7 +320,7 @@ namespace REF.Runtime.GameSystem.Storage
 			}
 		}
 
-		public void RemoveAllItemOfType(string type)
+		public void RemoveAllItemsOfType(string type)
 		{
 			for (int i = GetItemCount() - 1; i >= 0; --i)
 			{
@@ -342,26 +350,39 @@ namespace REF.Runtime.GameSystem.Storage
 			{
 				var item = items[i];
 
-				if (stacked.Count > 0)
+				for (int j = 0; j < stacked.Count; ++j)
 				{
-					for (int j = 0; j < stacked.Count; ++j)
-					{
-						var stackedItem = stacked[j];
+					var stackedItem = stacked[j];
 
-						if (stackedItem.IsStackable(item))
+					if (stackedItem.IsStackable(item))
+					{
+						var stackSize = stackedItem.GetMaxStackQuantity();
+						var quantity = stackedItem.GetQuantity();
+						var itemToStackQuantity = item.GetQuantity();
+						var stackAvailableQuantity = stackSize - quantity;
+
+						if (stackAvailableQuantity <= itemToStackQuantity)
+						{
+							item.SetQuantity(stackAvailableQuantity);
+							stackedItem.Stack(item);
+							item.SetQuantity(itemToStackQuantity - stackAvailableQuantity);
+							continue;
+						}
+						else
 						{
 							stackedItem.Stack(item);
-							break;
+							item.SetQuantity(0);
 						}
 
-						if (j == stacked.Count - 1)
+						if (item.GetQuantity() == 0)
 						{
-							stacked.Add(item);
 							break;
 						}
 					}
 				}
-				else
+
+				var itemQuantity = item.GetQuantity();
+				if (itemQuantity > 0)
 				{
 					stacked.Add(item);
 				}
