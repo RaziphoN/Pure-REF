@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 
-using System.Linq;
 using System.Collections.Generic;
+
+using REF.Runtime.Diagnostic;
 
 namespace REF.Runtime.GameSystem.Storage
 {
@@ -283,7 +284,9 @@ namespace REF.Runtime.GameSystem.Storage
 
 		public void AddItems(IItemContainer<T> container)
 		{
-			for (int i = 0; i < container.GetItemCount(); ++i)
+			var count = container.GetItemCount();
+
+			for (int i = 0; i < count; ++i)
 			{
 				AddItem((T)container.GetItem(i).Clone());
 			}
@@ -400,6 +403,11 @@ namespace REF.Runtime.GameSystem.Storage
 
 		public virtual void Copy(IEnumerable<T> collection)
 		{
+			if (collection == items)
+			{
+				return;
+			}
+
 			items.Clear();
 
 			foreach (var item in collection)
