@@ -12,7 +12,7 @@ namespace REF.Runtime.Online.Network
 
 		public Connection()
 		{
-			socket = new T();
+			socket = new T(); // this is bad, but i don't know how to traverse socket config to the socket
 		}
 
 		public T GetSocket()

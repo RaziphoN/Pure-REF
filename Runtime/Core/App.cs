@@ -8,7 +8,7 @@ using REF.Runtime.Diagnostic;
 
 namespace REF.Runtime.Core
 {
-	public abstract class App : MonoBehaviour
+	public abstract class App : MonoBehaviour, IApp
 	{
 		private static App instance;
 
@@ -55,9 +55,9 @@ namespace REF.Runtime.Core
 			return false;
 		}
 
-		public void Set(List<IService> serviceList)
+		public void Set(IEnumerable<IService> serviceList)
 		{
-			services = serviceList;
+			services = serviceList.ToList();
 		}
 
 		public void Add(IService service)
@@ -116,22 +116,7 @@ namespace REF.Runtime.Core
 			return default(T);
 		}
 
-		public T Get<T>(int idx) where T : IService
-		{
-			var service = services[idx];
-
-			var genericType = typeof(T);
-			var serviceType = service.GetType();
-
-			if (genericType.IsAssignableFrom(serviceType))
-			{
-				return (T)service;
-			}
-
-			return default(T);
-		}
-
-		public List<IService> GetAll()
+		public IEnumerable<IService> GetAll()
 		{
 			return services;
 		}
@@ -155,10 +140,12 @@ namespace REF.Runtime.Core
 					var service = services[idx];
 					if (service.IsInitialized())
 					{
-						service.Release(null);
+						service.Release(null); // TODO: Coroutine to release
 					}
 				}
 			}
+
+			Progress = 0f;
 		}
 
 		protected void Awake()

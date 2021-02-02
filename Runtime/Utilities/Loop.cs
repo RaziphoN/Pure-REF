@@ -27,6 +27,11 @@ namespace REF.Runtime.Utilities
 			timer = tickInterval;
 		}
 
+		public float GetTickInterval()
+		{
+			return tickInterval;
+		}
+
 		public void Update()
 		{
 			timer -= Time.deltaTime;

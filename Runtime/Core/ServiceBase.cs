@@ -4,7 +4,7 @@ namespace REF.Runtime.Core
 {
 	public abstract class ServiceBase : ScriptableObject, IService
 	{
-		private bool initialized = false;
+		[System.NonSerialized] private bool initialized = false;
 
 		public virtual bool IsSupported() { return true; }
 		public virtual bool IsInitialized() { return initialized; }
@@ -12,7 +12,7 @@ namespace REF.Runtime.Core
 		public virtual void PreInitialize(System.Action callback) 
 		{ 
 			SetInitialized(false); 
-			callback?.Invoke(); 
+			callback?.Invoke();
 		}
 
 		public virtual void Initialize(System.Action callback) 
