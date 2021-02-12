@@ -3,6 +3,20 @@ using System.Collections.Generic;
 
 namespace REF.Runtime.Core
 {
+	public class ConfigServicePair
+	{
+		private IConfigInjector injector;
+
+		public ConfigServicePair(IService service, IConfigInjector configInjector)
+		{
+			Service = service;
+			injector = configInjector;
+		}
+
+		public IConfigInjector Config { get; private set; }
+		public IService Service { get; private set; }
+	}
+
 	public interface IApp
 	{
 		string Build { get; set; }
@@ -16,9 +30,7 @@ namespace REF.Runtime.Core
 		bool IsInitialized<T>() where T : IService;
 		bool IsSupported<T>() where T : IService;
 
-		void Set(IEnumerable<IService> serviceList);
-		void Add(IService service);
-		void Remove(IService service);
+		void Set(IEnumerable<ConfigServicePair> pairList);
 
 		IService Get(int idx);
 		T Get<T>() where T : IService;

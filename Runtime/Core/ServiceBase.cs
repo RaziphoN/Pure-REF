@@ -2,7 +2,7 @@
 
 namespace REF.Runtime.Core
 {
-	public abstract class ServiceBase : ScriptableObject, IService
+	public abstract class ServiceBase : ScriptableObject, IService<IConfiguration>
 	{
 		[System.NonSerialized] private bool initialized = false;
 
@@ -13,6 +13,11 @@ namespace REF.Runtime.Core
 		{ 
 			SetInitialized(false); 
 			callback?.Invoke();
+		}
+
+		public virtual void Configure(IConfiguration config)
+		{
+
 		}
 
 		public virtual void Initialize(System.Action callback) 

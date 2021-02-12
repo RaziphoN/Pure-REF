@@ -2,8 +2,11 @@
 
 namespace REF.Runtime.Online.Service
 {
-	public class OnlineService : ServiceBase, IOnlineService
+	public class OnlineService<TConfig> : ServiceBase, IOnlineService<TConfig> where TConfig : IConfiguration
 	{
-		
+		public virtual void Configure(TConfig config)
+		{
+
+		}
 	}
 }

@@ -20,8 +20,13 @@ namespace REF.Runtime.Online.Store
 
 	public interface ICurrencyPrice : IPrice
 	{
-		string GetLocalizedPrice();
+		decimal GetLocalizedPrice();
+		void SetLocalizedPrice(decimal price);
+
 		string GetLocalizedPriceString();
+		void SetLocalizedPriceString(string priceString);
+
 		string GetCurrencyCode();
+		void SetCurrencyCode(string isoCountryCode);
 	}
 }

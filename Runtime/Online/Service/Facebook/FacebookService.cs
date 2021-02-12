@@ -1,8 +1,10 @@
 ﻿#if REF_USE_FACEBOOK
 
+using REF.Runtime.Core;
+
 namespace REF.Runtime.Online.Service.Facebook
 {
-	public class FacebookService : OnlineService
+	public class FacebookService : OnlineService<IConfiguration>
 	{
 		private System.Action postponedCallback = null;
 

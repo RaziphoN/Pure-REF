@@ -4,7 +4,6 @@
 	{
 		int GetMaxStackQuantity();
 
-		void SetItemType(string type);
 		string GetItemType();
 
 		void SetQuantity(int quantity);

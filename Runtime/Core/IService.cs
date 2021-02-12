@@ -19,4 +19,9 @@ namespace REF.Runtime.Core
 
 		void OnApplicationQuit();
 	}
+
+	public interface IService<TConfig> : IService where TConfig : IConfiguration
+	{
+		void Configure(TConfig config);
+	}
 }

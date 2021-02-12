@@ -1,8 +1,10 @@
 ﻿#if REF_USE_FIREBASE
 
+using REF.Runtime.Core;
+
 namespace REF.Runtime.Online.Service
 {
-	public abstract class FirebaseService : OnlineService
+	public abstract class FirebaseService : OnlineService<IConfiguration>
 	{
 		private System.Action posponedCallback = null;
 

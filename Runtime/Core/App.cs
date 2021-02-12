@@ -17,6 +17,8 @@ namespace REF.Runtime.Core
 		[SerializeField] private bool autoInit = true;
 		[SerializeField] private string version = string.Empty;
 		[SerializeField] private string build = string.Empty;
+
+		private List<IConfigInjector> configs = null;
 		private List<IService> services = null;
 
 		public float Progress { get; private set; } = 0f;
@@ -55,22 +57,17 @@ namespace REF.Runtime.Core
 			return false;
 		}
 
-		public void Set(IEnumerable<IService> serviceList)
+		public void Set(IEnumerable<ConfigServicePair> pairList)
 		{
-			services = serviceList.ToList();
-		}
+			var count = pairList.Count();
+			services = new List<IService>(count);
+			configs = new List<IConfigInjector>(count);
 
-		public void Add(IService service)
-		{
-			if (!services.Contains(service))
+			foreach (var pair in pairList)
 			{
-				services.Add(service);
+				services.Add(pair.Service);
+				configs.Add(pair.Config);
 			}
-		}
-
-		public void Remove(IService service)
-		{
-			services.Remove(service);
 		}
 
 		public bool Has<T>() where T : IService
@@ -253,8 +250,17 @@ namespace REF.Runtime.Core
 					service.PreInitialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
 
-					this.Log($"[{service.GetType().Name}] - PreInitialized");
 					Progress = (((idx + 1) / (float)supportedServices.Count) * 0.33f);
+					this.Log($"[{service.GetType().Name}] - PreInitialized {Progress * 100}");
+				}
+				
+				// configure
+				for (int idx = 0; idx < supportedServices.Count; ++idx)
+				{
+					var injector = configs[idx];
+					injector?.Configure();
+
+					this.Log($"[{services[idx].GetType().Name}] - Configured");
 				}
 
 				// init
@@ -265,8 +271,8 @@ namespace REF.Runtime.Core
 					service.Initialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
 
-					this.Log($"[{service.GetType().Name}] - Initialized");
 					Progress = 0.33f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
+					this.Log($"[{service.GetType().Name}] - Initialized {Progress * 100}");
 				}
 
 				// post-init
@@ -277,8 +283,8 @@ namespace REF.Runtime.Core
 					service.PostInitialize(() => { ended = true; });
 					yield return new WaitUntil(() => ended);
 
-					this.Log($"[{service.GetType().Name}] - PostInitialized");
 					Progress = 0.66f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
+					this.Log($"[{service.GetType().Name}] - PostInitialized {Progress * 100}");
 				}
 
 				Progress = 1f;

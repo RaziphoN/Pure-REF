@@ -1,8 +1,10 @@
 ﻿#if REF_ONLINE_ADVERTISMENT
 
+using REF.Runtime.Core;
+
 namespace REF.Runtime.Online.Advertisments
 {
-	public interface IAdvertismentService : IOnlineService
+	public interface IAdvertismentService : IOnlineService<IConfiguration>
 	{
 		void SetTestAds(bool value);
 

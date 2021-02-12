@@ -2,9 +2,11 @@
 
 using System.Collections.Generic;
 
+using REF.Runtime.Core;
+
 namespace REF.Runtime.Online.Social
 {
-	public interface ISocialService : IOnlineService
+	public interface ISocialService : IOnlineService<IConfiguration>
 	{
 		string GetUserId();
 		string GetToken();

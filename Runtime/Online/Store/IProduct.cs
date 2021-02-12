@@ -14,12 +14,20 @@ namespace REF.Runtime.Online.Store
 
 		// default product info, read as MAIN
 		bool IsEnabled();
+		bool IsAvailable();
+
 		string GetProviderId();
 		IProductMeta GetMeta();
 		IPrice GetPrice();
 
 		bool IsDefined(string providerId);
 		bool IsEnabled(string providerId);
+		bool IsAvailable(string providerId);
+
+		void SetEnabled(string providerId, bool state);
+		void SetAvailable(string provderId, bool state);
+
+		IEnumerable<KeyValuePair<string, string>> GetStoreIds(string providerId);
 		IProductMeta GetMeta(string providerId);
 		IPrice GetPrice(string providerId); // store unique identifier
 	}

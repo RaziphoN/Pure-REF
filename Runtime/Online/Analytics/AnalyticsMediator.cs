@@ -3,11 +3,12 @@
 using System.Linq;
 using System.Collections.Generic;
 
+using REF.Runtime.Core;
 using REF.Runtime.Online.Service;
 
 namespace REF.Runtime.Online.Analytics
 {
-	public class AnalyticsMediator : OnlineService
+	public class AnalyticsMediator : OnlineService<IConfiguration>
 	{
 		private List<IAnalyticService> services = new List<IAnalyticService>();
 		private System.Action postponedCallback = null;

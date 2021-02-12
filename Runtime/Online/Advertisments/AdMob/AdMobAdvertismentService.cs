@@ -2,12 +2,13 @@
 
 using UnityEngine;
 
+using REF.Runtime.Core;
 using REF.Runtime.Online.Service;
 
 namespace REF.Runtime.Online.Advertisments.AdMob
 {
 	[CreateAssetMenu(fileName = "AdMobAdvertismentService", menuName = "REF/Online/Advertisment/AdMob Service")]
-	public class AdMobAdvertismentService : OnlineService, IAdvertismentService
+	public class AdMobAdvertismentService : OnlineService<IConfiguration>, IAdvertismentService
 	{
 		[SerializeField] private bool isTest = true;
 		[SerializeField] private Placement bannerTestPlacement = new Placement("ca-app-pub-3940256099942544/6300978111", "ca-app-pub-3940256099942544/2934735716", "unexpected_platform");
