@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-using System.Linq;
+﻿using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,29 +6,20 @@ using REF.Runtime.Diagnostic;
 
 namespace REF.Runtime.Core
 {
-	public abstract class App : MonoBehaviour, IApp
+	public class App : IApp
 	{
-		private static App instance;
-
 		public event System.Action OnInitialized;
 
-		[SerializeField] private bool autoInit = true;
-		[SerializeField] private string version = string.Empty;
-		[SerializeField] private string build = string.Empty;
+		private bool initialized;
+		private List<IConfiguration> configs = new List<IConfiguration>();
+		private List<IService> services = new List<IService>();
 
-		private List<IConfigInjector> configs = null;
-		private List<IService> services = null;
-
-		public float Progress { get; private set; } = 0f;
-		public string Version { get { return version; } set { version = value; } }
-		public string Build { get { return build; } set { build = value; } }
-
-		public static App Instance { get { return instance; } }
+		public string Version { get; private set; }
+		public float Progress { get; private set; }
 
 		public bool IsInitialized()
 		{
-			var supported = services.Where((service) => { return service.IsSupported(); });
-			return supported.All((service) => { return service.IsInitialized(); });
+			return initialized;
 		}
 
 		public bool IsInitialized<T>() where T : IService
@@ -57,17 +46,10 @@ namespace REF.Runtime.Core
 			return false;
 		}
 
-		public void Set(IEnumerable<ConfigServicePair> pairList)
+		public void Register(IConfiguration config, IService service)
 		{
-			var count = pairList.Count();
-			services = new List<IService>(count);
-			configs = new List<IConfigInjector>(count);
-
-			foreach (var pair in pairList)
-			{
-				services.Add(pair.Service);
-				configs.Add(pair.Config);
-			}
+			services.Add(service);
+			configs.Add(config);
 		}
 
 		public bool Has<T>() where T : IService
@@ -80,11 +62,6 @@ namespace REF.Runtime.Core
 			}
 
 			return false;
-		}
-
-		public IService Get(int idx)
-		{
-			return services[idx];
 		}
 
 		public T Get<T>() where T : IService
@@ -113,121 +90,10 @@ namespace REF.Runtime.Core
 			return default(T);
 		}
 
-		public IEnumerable<IService> GetAll()
+		public IEnumerator Initialize(string version, System.Action callback)
 		{
-			return services;
-		}
+			Version = version;
 
-		public int GetServiceCount()
-		{
-			return services.Count;
-		}
-
-		public void Initialize()
-		{
-			StartCoroutine(InitializeInternal());
-		}
-
-		public void Release()
-		{
-			if (services != null)
-			{
-				for (int idx = services.Count - 1; idx >= 0; --idx)
-				{
-					var service = services[idx];
-					if (service.IsInitialized())
-					{
-						service.Release(null); // TODO: Coroutine to release
-					}
-				}
-			}
-
-			Progress = 0f;
-		}
-
-		protected void Awake()
-		{
-			instance = this;
-		}
-
-		private void Start()
-		{
-			if (autoInit)
-			{
-				StartCoroutine(InitializeInternal());
-			}
-		}
-
-		private void Update()
-		{
-			if (services != null)
-			{
-				for (int idx = 0; idx < services.Count; ++idx)
-				{
-					var service = services[idx];
-					if (service.IsInitialized())
-					{
-						service.Update();
-					}
-				}
-			}
-		}
-
-		private void OnApplicationFocus(bool focus)
-		{
-			if (services != null)
-			{
-				for (int idx = 0; idx < services.Count; ++idx)
-				{
-					var service = services[idx];
-					if (service.IsInitialized())
-					{
-						service.OnApplicationFocus(focus);
-					}
-				}
-			}
-		}
-
-		private void OnApplicationPause(bool pause)
-		{
-			if (services != null)
-			{
-				for (int idx = 0; idx < services.Count; ++idx)
-				{
-					var service = services[idx];
-					if (service.IsInitialized())
-					{
-						service.OnApplicationPause(pause);
-					}
-				}
-			}
-		}
-
-		private void OnApplicationQuit()
-		{
-			if (services != null)
-			{
-				for (int idx = 0; idx < services.Count; ++idx)
-				{
-					var service = services[idx];
-					if (service.IsInitialized())
-					{
-						service.OnApplicationQuit();
-					}
-				}
-			}
-		}
-
-		private void OnDestroy()
-		{
-			if (autoInit)
-			{
-				Release();
-			}
-		}
-
-		private IEnumerator InitializeInternal()
-		{
 			if (services != null)
 			{
 				var supportedServices = new List<IService>();
@@ -238,6 +104,7 @@ namespace REF.Runtime.Core
 
 					if (service.IsSupported())
 					{
+						service.Construct(this);
 						supportedServices.Add(service);
 					}
 				}
@@ -248,19 +115,20 @@ namespace REF.Runtime.Core
 					var service = supportedServices[idx];
 					bool ended = false;
 					service.PreInitialize(() => { ended = true; });
-					yield return new WaitUntil(() => ended);
+					yield return WaitUntil(() => ended);
 
 					Progress = (((idx + 1) / (float)supportedServices.Count) * 0.33f);
-					this.Log($"[{service.GetType().Name}] - PreInitialized {Progress * 100}");
+					RefDebug.Log(nameof(App), $"[{service.GetType().Name}] - PreInitialized {Progress * 100}");
 				}
-				
+
 				// configure
 				for (int idx = 0; idx < supportedServices.Count; ++idx)
 				{
-					var injector = configs[idx];
-					injector?.Configure();
+					var service = supportedServices[idx];
+					var config = configs[idx]; // TODO: This idx MUST match if some service isn't supported
+					service.Configure(config);
 
-					this.Log($"[{services[idx].GetType().Name}] - Configured");
+					RefDebug.Log(nameof(App), $"[{services[idx].GetType().Name}] - Configured");
 				}
 
 				// init
@@ -269,10 +137,10 @@ namespace REF.Runtime.Core
 					var service = supportedServices[idx];
 					bool ended = false;
 					service.Initialize(() => { ended = true; });
-					yield return new WaitUntil(() => ended);
+					yield return WaitUntil(() => ended);
 
 					Progress = 0.33f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
-					this.Log($"[{service.GetType().Name}] - Initialized {Progress * 100}");
+					RefDebug.Log(nameof(App), $"[{service.GetType().Name}] - Initialized {Progress * 100}");
 				}
 
 				// post-init
@@ -281,15 +149,91 @@ namespace REF.Runtime.Core
 					var service = supportedServices[idx];
 					bool ended = false;
 					service.PostInitialize(() => { ended = true; });
-					yield return new WaitUntil(() => ended);
+					yield return WaitUntil(() => ended);
 
 					Progress = 0.66f + (((idx + 1) / (float)supportedServices.Count) * 0.33f);
-					this.Log($"[{service.GetType().Name}] - PostInitialized {Progress * 100}");
+					RefDebug.Log(nameof(App), $"[{service.GetType().Name}] - PostInitialized {Progress * 100}");
 				}
 
 				Progress = 1f;
 
+				initialized = true;
+				callback?.Invoke();
 				OnInitialized?.Invoke();
+			}
+		}
+
+		public void Update()
+		{
+			if (services != null)
+			{
+				for (int idx = 0; idx < services.Count; ++idx)
+				{
+					var service = services[idx];
+					//if (service.IsInitialized())
+					{
+						service.Update();
+					}
+				}
+			}
+		}
+
+		public IEnumerator Release(System.Action callback)
+		{
+			if (services != null)
+			{
+				for (int idx = services.Count - 1; idx >= 0; --idx)
+				{
+					var service = services[idx];
+					if (service.IsInitialized())
+					{
+						bool ended = false;
+						service.Release(() => { ended = true; });
+						yield return WaitUntil(() => ended);
+						RefDebug.Log(nameof(App), $"[{service.GetType().Name}] - Released");
+					}
+				}
+			}
+
+			Progress = 0f;
+			callback?.Invoke();
+		}
+
+		public void Suspend()
+		{
+			if (services != null)
+			{
+				for (int idx = 0; idx < services.Count; ++idx)
+				{
+					var service = services[idx];
+					if (service.IsInitialized())
+					{
+						service.Suspend();
+					}
+				}
+			}
+		}
+
+		public void Resume()
+		{
+			if (services != null)
+			{
+				for (int idx = 0; idx < services.Count; ++idx)
+				{
+					var service = services[idx];
+					if (service.IsInitialized())
+					{
+						service.Resume();
+					}
+				}
+			}
+		}
+
+		private IEnumerator WaitUntil(System.Func<bool> condition)
+		{
+			while(!condition.Invoke())
+			{
+				yield return null;
 			}
 		}
 	}

@@ -2,44 +2,36 @@
 
 using System.Diagnostics;
 
+using REF.Runtime.Online;
 using REF.Runtime.Core;
+
+#if REF_ONLINE_CRASH_REPORT
+	using REF.Runtime.Online.CrashReports;
+#endif
 
 namespace REF.Runtime.Diagnostic
 {
-	// NOTE: This class is strongly linked with library architecture.
-	[CreateAssetMenu(fileName = "Logger", menuName = "REF/Diagnostic/Logger")]
-	public class RefDebug : ServiceBase
+	[System.Serializable]
+	public class RefDebug : ServiceBase, IOnlineService
 	{
 		private static RefDebug instance = null;
 
 		private static RefDebug Instance 
-		{ 
+		{
 			get
 			{
 				if (instance == null)
 				{
-					var loggerObjects = Resources.FindObjectsOfTypeAll<RefDebug>();
-					
-					if (loggerObjects != null && loggerObjects.Length > 0)
-					{
-						instance = loggerObjects[0];
-					}
-					else
-					{
-						instance = CreateInstance<RefDebug>();
-					}
+					UnityEngine.Debug.LogError("No Instance of RefDebug");
+					instance = new RefDebug();
 				}
 
 				return instance;
 			}
 		}
 
+		[SerializeField] private CloudDebug cloudLogger = new CloudDebug();
 		[SerializeField] private Debug logger = new Debug();
-
-		public override bool IsInitialized()
-		{
-			return true;
-		}
 
 		public static Color GetColor()
 		{
@@ -109,6 +101,37 @@ namespace REF.Runtime.Diagnostic
 		public static void Assert(bool condition, Color color, string tag, string format, Object context = null, params object[] args)
 		{
 			Instance.logger.Assert(condition, color, tag, format, context, args);
+		}
+
+		public RefDebug()
+		{
+			instance = this;
+		}
+
+		public override void Construct(IApp app)
+		{
+			base.Construct(app);
+
+#if REF_ONLINE_CRASH_REPORT
+			var cloudDebugService = app.Get<ICloudDebugService>();
+			cloudLogger.Construct(cloudDebugService);
+#endif
+		}
+
+		public override void PreInitialize(System.Action callback)
+		{
+#if REF_ONLINE_CRASH_REPORT
+			cloudLogger.Initialize();
+#endif
+			base.PreInitialize(callback);
+		}
+
+		public override void Release(System.Action callback)
+		{
+#if REF_ONLINE_CRASH_REPORT
+			cloudLogger.Release();
+#endif
+			base.Release(callback);
 		}
 	}
 }

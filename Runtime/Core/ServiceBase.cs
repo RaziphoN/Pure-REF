@@ -1,13 +1,17 @@
-﻿using UnityEngine;
-
-namespace REF.Runtime.Core
+﻿namespace REF.Runtime.Core
 {
-	public abstract class ServiceBase : ScriptableObject, IService<IConfiguration>
+	public class ServiceBase : IService
 	{
-		[System.NonSerialized] private bool initialized = false;
+		protected IApp app = null;
+		private bool initialized = false;
 
 		public virtual bool IsSupported() { return true; }
 		public virtual bool IsInitialized() { return initialized; }
+
+		public virtual void Construct(IApp app)
+		{
+			this.app = app;
+		}
 
 		public virtual void PreInitialize(System.Action callback) 
 		{ 
@@ -39,9 +43,8 @@ namespace REF.Runtime.Core
 
 		public virtual void Update() { }
 
-		public virtual void OnApplicationFocus(bool focus) { }
-		public virtual void OnApplicationPause(bool pause) { }
-		public virtual void OnApplicationQuit() { }
+		public virtual void Suspend() { }
+		public virtual void Resume() { }
 
 		protected void SetInitialized(bool state)
 		{

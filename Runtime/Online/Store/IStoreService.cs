@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 
-using REF.Runtime.Core;
-
 namespace REF.Runtime.Online.Store
 {
-	public interface IStore : IStoreListener, IOnlineService<IConfiguration>
+	public interface IStoreService : IStoreListener, IOnlineService
 	{
 		void Buy(string id, System.Action<ITransaction> OnSuccess, System.Action<ITransaction> OnFailed);
 		void Buy(IProduct product, System.Action<ITransaction> OnSuccess, System.Action<ITransaction> OnFailed);

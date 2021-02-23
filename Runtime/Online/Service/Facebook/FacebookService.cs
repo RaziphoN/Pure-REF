@@ -1,14 +1,12 @@
 ﻿#if REF_USE_FACEBOOK
 
-using REF.Runtime.Core;
-
 namespace REF.Runtime.Online.Service.Facebook
 {
-	public class FacebookService : OnlineService<IConfiguration>
+	public class FacebookService : OnlineService
 	{
 		private System.Action postponedCallback = null;
 
-		public override void PreInitialize(System.Action callback)
+		public override void Initialize(System.Action callback)
 		{
 			if (!FacebookInitializer.IsInitialized())
 			{
@@ -17,10 +15,10 @@ namespace REF.Runtime.Online.Service.Facebook
 			}
 			else
 			{
-				SetInitialized(FacebookInitializer.AllowApiCalls());
+				OnFacebookInitializedHandler(FacebookInitializer.AllowApiCalls());
 			}
 
-			callback?.Invoke();
+			base.Initialize(callback);
 		}
 
 		public override void PostInitialize(System.Action callback)

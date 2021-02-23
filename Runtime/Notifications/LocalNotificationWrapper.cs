@@ -13,7 +13,7 @@ using REF.Runtime.Notifications.iOS;
 
 namespace REF.Runtime.Notifications
 {
-	public static class LocalNotifications
+	public static class LocalNotificationWrapper
 	{
 		private static event Action<ILocalNotification> OnNotificationReceived;
 		private static List<NotificationId> localNotificationIds = new List<NotificationId>();
@@ -61,12 +61,12 @@ namespace REF.Runtime.Notifications
 
 		public static void Subscribe(Action<ILocalNotification> OnNotificationReceived)
 		{
-			LocalNotifications.OnNotificationReceived += OnNotificationReceived;
+			LocalNotificationWrapper.OnNotificationReceived += OnNotificationReceived;
 		}
 
 		public static void Unsubscribe(Action<ILocalNotification> OnNotificationReceived)
 		{
-			LocalNotifications.OnNotificationReceived -= OnNotificationReceived;
+			LocalNotificationWrapper.OnNotificationReceived -= OnNotificationReceived;
 		}
 
 		public static NotificationId Schedule(ILocalNotification notification)

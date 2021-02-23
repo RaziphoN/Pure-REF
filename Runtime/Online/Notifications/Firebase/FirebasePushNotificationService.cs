@@ -1,9 +1,9 @@
 ﻿#if REF_ONLINE_PUSH_NOTIFICATION && REF_FIREBASE_PUSH_NOTIFICATION && REF_USE_FIREBASE
 
-using UnityEngine;
-
 using System.Threading.Tasks;
 
+using REF.Runtime.Core;
+using REF.Runtime.Diagnostic;
 using REF.Runtime.Notifications;
 using REF.Runtime.Online.Service;
 
@@ -11,18 +11,44 @@ using Firebase.Messaging;
 
 namespace REF.Runtime.Online.Notifications
 {
-	[CreateAssetMenu(fileName = "FirebasePushNotificationService", menuName = "REF/Online/Push Notifications/Firebase Push Notifications")]
 	public class FirebasePushNotificationService : FirebaseService, IPushNotificationService
 	{
 		public event System.Action<string> OnTokenReceived;
 		public event System.Action<INotification> OnNotificationReceived;
 
-		[SerializeField] private string allTopic = "all";
 		private string token = "";
+		private string[] subscriptions;
+
+		public override void Configure(IConfiguration config)
+		{
+			base.Configure(config);
+
+			var configuration = config as IPushConfiguration;
+
+			if (configuration == null)
+			{
+				RefDebug.Error(nameof(FirebasePushNotificationService), $"Config must be of type {nameof(IPushConfiguration)}!");
+				return;
+			}
+
+			subscriptions = configuration.GetSubscriptionTopics();
+		}
 
 		public string GetToken()
 		{
 			return token;
+		}
+
+		public void Subscribe(string topic)
+		{
+			Task subscriptionTask = FirebaseMessaging.SubscribeAsync(topic);
+			subscriptionTask.ContinueWith(TaskComplete);
+		}
+
+		public void Unsubscribe(string topic)
+		{
+			Task unsubscriptionTask = FirebaseMessaging.UnsubscribeAsync(topic);
+			unsubscriptionTask.ContinueWith(TaskComplete);
 		}
 
 		public override void Release(System.Action callback)
@@ -40,8 +66,17 @@ namespace REF.Runtime.Online.Notifications
 		{
 			if (successful)
 			{
-				Task subscriptionTask = FirebaseMessaging.SubscribeAsync(allTopic);
 				Task permissionRequestTask = FirebaseMessaging.RequestPermissionAsync();
+				permissionRequestTask.ContinueWith(TaskComplete);
+
+				if (subscriptions != null)
+				{
+					for (int idx = 0; idx < subscriptions.Length; ++idx)
+					{
+						var topic = subscriptions[idx];
+						Subscribe(topic);
+					}
+				}
 
 				FirebaseMessaging.TokenReceived += OnTokenReceivedHandler;
 				FirebaseMessaging.MessageReceived += OnMessageReceivedHandler;
@@ -68,6 +103,11 @@ namespace REF.Runtime.Online.Notifications
 		{
 			token = e.Token;
 			OnTokenReceived?.Invoke(e.Token);
+		}
+
+		private void TaskComplete(Task task)
+		{
+			
 		}
 	}
 }

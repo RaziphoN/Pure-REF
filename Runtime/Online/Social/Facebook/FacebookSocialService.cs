@@ -5,17 +5,42 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 
+using REF.Runtime.Core;
+using REF.Runtime.Diagnostic;
 using REF.Runtime.Online.Service.Facebook;
 
 using Facebook.Unity;
 
 namespace REF.Runtime.Online.Social.Facebook
 {
-	[CreateAssetMenu(fileName = "FacebookSocialService", menuName = "REF/Online/Social/Facebook")]
 	public class FacebookSocialService : FacebookService, ISocialService
 	{
-		[SerializeField] private Vector2Int avatarResolution = new Vector2Int(50, 50);
-		[SerializeField] private List<string> logInPermissions = new List<string>();
+		private int avatarWidth = 256;
+		private int avatarHeight = 256;
+		private string[] permissions;
+
+		public override void Configure(IConfiguration config)
+		{
+			base.Configure(config);
+
+			var configuration = config as ISocialServiceConfiguration;
+
+			if (configuration == null)
+			{
+				RefDebug.Error(nameof(FacebookSocialService), $"Config must be of type {nameof(ISocialServiceConfiguration)}!");
+				return;
+			}
+
+			permissions = configuration.GetPermissions();
+
+			if (permissions == null)
+			{
+				permissions = new string[0];
+			}
+
+			avatarWidth = configuration.GetAvatarWidth();
+			avatarHeight = configuration.GetAvatarHeight();
+		}
 
 		public string GetUserId()
 		{
@@ -44,7 +69,7 @@ namespace REF.Runtime.Online.Social.Facebook
 
 		public void LoadFriendList(System.Action<IList<ISocialUserProfile>> OnSuccess, System.Action OnFail = null)
 		{
-			string query = $"/me/friends?fields=name,id,picture.width({avatarResolution.x}).height({avatarResolution.y})"; 
+			string query = $"/me/friends?fields=name,id,picture.width({avatarWidth}).height({avatarHeight})"; 
 
 			FB.API(query, HttpMethod.GET, (graphResult) =>
 			{
@@ -61,7 +86,7 @@ namespace REF.Runtime.Online.Social.Facebook
 
 		public void LoadProfile(System.Action<ISocialUserProfile> OnSuccess, System.Action OnFail = null)
 		{
-			string query = $"/me?fields=name,id,picture.width({avatarResolution.x}).height({avatarResolution.y})";
+			string query = $"/me?fields=name,id,picture.width({avatarWidth}).height({avatarHeight})";
 
 			FB.API(query, HttpMethod.GET, (graphResult) =>
 			{
@@ -104,11 +129,11 @@ namespace REF.Runtime.Online.Social.Facebook
 
 			if (!HasPublishPermission())
 			{
-				FB.LogInWithReadPermissions(logInPermissions, logInCallback);
+				FB.LogInWithReadPermissions(permissions, logInCallback);
 			}
 			else
 			{
-				FB.LogInWithPublishPermissions(logInPermissions, logInCallback);
+				FB.LogInWithPublishPermissions(permissions, logInCallback);
 			}
 		}
 
@@ -139,7 +164,7 @@ namespace REF.Runtime.Online.Social.Facebook
 
 		private bool HasPublishPermission()
 		{
-			return logInPermissions.Any((permission) => { return permission.Contains("publish"); });
+			return permissions.Any((permission) => { return permission.Contains("publish"); });
 		}
 	}
 }

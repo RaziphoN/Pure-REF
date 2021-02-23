@@ -1,10 +1,8 @@
 ﻿#if REF_ONLINE_AUTH
 
-using REF.Runtime.Core;
-
 namespace REF.Runtime.Online.Auth
 {
-	public interface IAuthService : IOnlineService<IConfiguration>
+	public interface IAuthService : IOnlineService
 	{
 		event System.Action OnTokenChanged;
 

@@ -8,16 +8,6 @@ namespace REF.Runtime.Diagnostic
 	[System.Serializable]
 	public class Debug
 	{
-		public enum Level
-		{
-			None = 0,
-			Assert = 1,
-			Exception = 2,
-			Error = 3,
-			Warning = 4,
-			Log = 5,
-		}
-
 		public enum Mode
 		{
 			Exclusive,
@@ -134,45 +124,7 @@ namespace REF.Runtime.Diagnostic
 			var formatted = string.Format("[{3}] - {4}", (byte)(color.r * 255f), (byte)(color.g * 255f), (byte)(color.b * 255f), tag, format);
 #endif
 
-			UnityEngine.Debug.LogFormat(ConvertLevel(this.level), stacktrace ? LogOption.None : LogOption.NoStacktrace, context, formatted, args);
-		}
-
-		private LogType ConvertLevel(Level level)
-		{
-			switch (level)
-			{
-				case Level.None:
-				{
-					return LogType.Exception;
-				}	
-
-				case Level.Exception:
-				{
-					return LogType.Exception;
-				}
-
-				case Level.Assert:
-				{
-					return LogType.Assert;
-				}
-
-				case Level.Error:
-				{
-					return LogType.Error;
-				}
-
-				case Level.Warning:
-				{
-					return LogType.Warning;
-				}
-
-				case Level.Log:
-				{
-					return LogType.Log;
-				}
-			}
-
-			return LogType.Exception;
+			UnityEngine.Debug.LogFormat(this.level.ToUnityDebugLevel(), stacktrace ? LogOption.None : LogOption.NoStacktrace, context, formatted, args);
 		}
 	}
 }

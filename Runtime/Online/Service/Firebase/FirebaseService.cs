@@ -1,16 +1,13 @@
 ﻿#if REF_USE_FIREBASE
 
-using REF.Runtime.Core;
-
 namespace REF.Runtime.Online.Service
 {
-	public abstract class FirebaseService : OnlineService<IConfiguration>
+	public abstract class FirebaseService : OnlineService
 	{
 		private System.Action posponedCallback = null;
 
-		public override void PreInitialize(System.Action callback)
+		public override void Initialize(System.Action callback)
 		{
-			SetInitialized(false);
 			FirebaseInitializer.OnInitialized += OnFirebaseInitializedHandler;
 
 			if (FirebaseInitializer.IsInitializationPerformed)
@@ -22,7 +19,7 @@ namespace REF.Runtime.Online.Service
 				FirebaseInitializer.Initialize();
 			}
 
-			callback?.Invoke();
+			base.Initialize(callback);
 		}
 
 		public override void PostInitialize(System.Action callback)
@@ -45,7 +42,7 @@ namespace REF.Runtime.Online.Service
 				FirebaseInitializer.Release();
 			}
 
-			callback?.Invoke();
+			base.Release(callback);
 		}
 
 		// NOTE: init concrete firebase service here

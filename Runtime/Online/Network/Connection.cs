@@ -1,18 +1,17 @@
-﻿using System;
-
-namespace REF.Runtime.Online.Network
+﻿namespace REF.Runtime.Online.Network
 {
-	public class Connection<T> : IConnection<T>, ISocket where T : ISocket, new()
+	public class Connection<T> : IConnection<T> where T : ISocket, new()
 	{
-		public event Action OnConnect;
-		public event Action OnDisconnect;
-		public event Action<string> OnMessage;
+		public event System.Action OnConnect;
+		public event System.Action OnDisconnect;
+		public event System.Action<string> OnMessage;
 
 		private T socket;
 
-		public Connection()
+		public Connection(ISocketConfiguration socketConfig)
 		{
 			socket = new T(); // this is bad, but i don't know how to traverse socket config to the socket
+			socket.Init(socketConfig);
 		}
 
 		public T GetSocket()
@@ -20,14 +19,12 @@ namespace REF.Runtime.Online.Network
 			return socket;
 		}
 
-		public void Connect(Uri uri)
+		public void Connect(System.Uri uri)
 		{
 			if (IsConnected())
 			{
 				return;
 			}
-
-			socket = new T();
 
 			socket.OnConnect += OnSocketConnectHandler;
 			socket.OnDisconnect += OnSocketDisconnectHandler;

@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using REF.Runtime.Notifications.Android;
-using REF.Runtime.Notifications.iOS;
-
 namespace REF.Runtime.Notifications
 {
 	public class LocalNotification : ILocalNotification

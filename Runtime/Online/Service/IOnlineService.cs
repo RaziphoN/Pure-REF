@@ -2,7 +2,7 @@
 
 namespace REF.Runtime.Online
 {
-	public interface IOnlineService<TConfig> : IService<TConfig> where TConfig : IConfiguration
+	public interface IOnlineService : IService
 	{
 	}
 }

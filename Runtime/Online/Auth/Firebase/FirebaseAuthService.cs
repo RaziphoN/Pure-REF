@@ -12,14 +12,14 @@ using FirebaseCredential = Firebase.Auth.Credential;
 
 namespace REF.Runtime.Online.Auth
 {
-	[CreateAssetMenu(fileName = "FirebaseAuthService", menuName = "REF/Online/Auth/Firebase Auth")]
+	[System.Serializable]
 	public class FirebaseAuthService : FirebaseService, IAuthService
 	{
 		public event System.Action OnTokenChanged;
 
 		[SerializeField] private User internalUser;
+		[SerializeField] private bool isSignedIn = false;
 		private FirebaseUser internalFirebaseUser;
-		private bool isSignedIn = false;
 
 		public bool IsSignedIn()
 		{
@@ -63,14 +63,14 @@ namespace REF.Runtime.Online.Auth
 				}
 				else
 				{
-					this.Log("Failed to update user profile: {0}", task.Exception.Message);
+					RefDebug.Error(nameof(FirebaseAuthService), "Failed to update user profile: {0}", null, task.Exception.Message);
 
 					var aException = task.Exception as System.AggregateException;
 					if (aException != null)
 					{
 						foreach (var inner in aException.InnerExceptions)
 						{
-							this.Log("Error: {0}", inner.Message);
+							RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
 						}
 					}
 
@@ -93,7 +93,7 @@ namespace REF.Runtime.Online.Auth
 		{
 			if (!IsInitialized() || !IsSignedIn())
 			{
-				this.Log("You didn't initialize auth service or you aren't logged in!");
+				RefDebug.Error(nameof(FirebaseAuthService), "You didn't initialize auth service or you aren't logged in!");
 				OnFailed?.Invoke();
 				return;
 			}
@@ -112,14 +112,14 @@ namespace REF.Runtime.Online.Auth
 					}
 					else
 					{
-						this.Log("Failed to link account: {0}", task.Exception.Message);
+						RefDebug.Error(nameof(FirebaseAuthService), "Failed to link account: {0}", null, task.Exception.Message);
 
 						var aException = task.Exception as System.AggregateException;
 						if (aException != null)
 						{
 							foreach (var inner in aException.InnerExceptions)
 							{
-								this.Log("Error: {0}", inner.Message);
+								RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
 							}
 						}
 
@@ -137,7 +137,7 @@ namespace REF.Runtime.Online.Auth
 		{
 			if (!IsInitialized() || !IsSignedIn())
 			{
-				this.Log("You didn't initialize auth service or you aren't logged in!");
+				RefDebug.Error(nameof(FirebaseAuthService), "You didn't initialize auth service or you aren't logged in!");
 				OnFailed?.Invoke();
 				return;
 			}
@@ -162,14 +162,14 @@ namespace REF.Runtime.Online.Auth
 					}
 					else
 					{
-						this.Log("Failed to re-authenticate: {0}", task.Exception.Message);
+						RefDebug.Error(nameof(FirebaseAuthService), "Failed to re-authenticate: {0}", null, task.Exception.Message);
 
 						var aException = task.Exception as System.AggregateException;
 						if (aException != null)
 						{
 							foreach (var inner in aException.InnerExceptions)
 							{
-								this.Log("Error: {0}", inner.Message);
+								RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
 							}
 						}
 
@@ -179,7 +179,7 @@ namespace REF.Runtime.Online.Auth
 			}
 			else
 			{
-				this.Log("Failed to re-authenticate, because credential is null!");
+				RefDebug.Error(nameof(FirebaseAuthService), "Failed to re-authenticate, because credential is null!");
 				OnFailed?.Invoke();
 			}
 		}
@@ -188,14 +188,14 @@ namespace REF.Runtime.Online.Auth
 		{
 			if (!IsInitialized())
 			{
-				this.Log("You didn't initialize auth service");
+				RefDebug.Error(nameof(FirebaseAuthService), "You didn't initialize auth service");
 				OnFailed?.Invoke();
 				return;
 			}
 
 			if (IsSignedIn())
 			{
-				this.Log("You already signed in!");
+				RefDebug.Error(nameof(FirebaseAuthService), "You already signed in!");
 				OnFailed?.Invoke();
 				return;
 			}
@@ -215,14 +215,14 @@ namespace REF.Runtime.Online.Auth
 					}
 					else
 					{
-						this.Log("Failed to create a user: {0}", creationTask.Exception.Message);
+						RefDebug.Error(nameof(FirebaseAuthService), "Failed to create a user: {0}", null, creationTask.Exception.Message);
 
 						var aException = creationTask.Exception as System.AggregateException;
 						if (aException != null)
 						{
 							foreach (var inner in aException.InnerExceptions)
 							{
-								this.Log("Error: {0}", inner.Message);
+								RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
 							}
 						}
 
@@ -240,14 +240,14 @@ namespace REF.Runtime.Online.Auth
 		{
 			if (!IsInitialized())
 			{
-				this.Log("You didn't initialize auth service");
+				RefDebug.Error(nameof(FirebaseAuthService), "You didn't initialize auth service");
 				OnFailed?.Invoke();
 				return;
 			}
 
 			if (IsSignedIn())
 			{
-				this.Log("You already signed in!");
+				RefDebug.Error(nameof(FirebaseAuthService), "You already signed in!");
 				OnFailed?.Invoke();
 				return;
 			}
@@ -306,14 +306,14 @@ namespace REF.Runtime.Online.Auth
 				}
 				else
 				{
-					this.Log("Failed to request user token: {0}", task.Exception.Message);
+					RefDebug.Error(nameof(FirebaseAuthService), "Failed to request user token: {0}", null, task.Exception.Message);
 
 					var aException = task.Exception as System.AggregateException;
 					if (aException != null)
 					{
 						foreach (var inner in aException.InnerExceptions)
 						{
-							this.Log("Error: {0}", inner.Message);
+							RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
 						}
 					}
 
@@ -340,14 +340,14 @@ namespace REF.Runtime.Online.Auth
 					}
 					else
 					{
-						this.Log("Failed to sign-in: {0}", task.Exception.Message);
+						RefDebug.Error(nameof(FirebaseAuthService), "Failed to sign-in: {0}", null, task.Exception.Message);
 
 						var aException = task.Exception as System.AggregateException;
 						if (aException != null)
 						{
 							foreach (var inner in aException.InnerExceptions)
 							{
-								this.Log("Error: {0}", inner.Message);
+								RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
 							}
 						}
 
@@ -373,14 +373,14 @@ namespace REF.Runtime.Online.Auth
 							}
 							else
 							{
-								this.Log("Failed to sign-in: {0}", task.Exception.Message);
+								RefDebug.Error(nameof(FirebaseAuthService), "Failed to sign-in: {0}", null, task.Exception.Message);
 
 								var aException = task.Exception as System.AggregateException;
 								if (aException != null)
 								{
 									foreach (var inner in aException.InnerExceptions)
 									{
-										this.Log("Error: {0}", inner.Message);
+										RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
 									}
 								}
 
@@ -402,14 +402,14 @@ namespace REF.Runtime.Online.Auth
 							}
 							else
 							{
-								this.Log("Failed to sign-in: {0}", task.Exception.Message);
+								RefDebug.Error(nameof(FirebaseAuthService), "Failed to sign-in: {0}", null, task.Exception.Message);
 
 								var aException = task.Exception as System.AggregateException;
 								if (aException != null)
 								{
 									foreach (var inner in aException.InnerExceptions)
 									{
-										this.Log("Error: {0}", inner.Message);
+										RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
 									}
 								}
 
@@ -494,14 +494,6 @@ namespace REF.Runtime.Online.Auth
 
 			return null;
 		}
-
-#if UNITY_EDITOR
-		[ContextMenu("Sign Out")]
-		private void SignOutEditor()
-		{
-			SignOut();
-		}
-#endif
 	}
 }
 

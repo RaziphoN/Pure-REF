@@ -1,10 +1,8 @@
 ﻿#if REF_ONLINE_ANALYTICS
 
-using REF.Runtime.Core;
-
 namespace REF.Runtime.Online.Analytics
 {
-	public interface IAnalyticService : IOnlineService<IConfiguration>
+	public interface IAnalyticsService : IOnlineService
 	{
 		bool IsValidEvent(string eventName);
 		bool IsValidParameter(Parameter parameter);

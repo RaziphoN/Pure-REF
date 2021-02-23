@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Collections.Generic;
 
-
 namespace REF.Runtime.Notifications
 {
 	public static class NotificationDataHelper

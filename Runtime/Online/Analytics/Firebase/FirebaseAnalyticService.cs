@@ -1,19 +1,35 @@
 ﻿#if REF_ONLINE_ANALYTICS && REF_FIREBASE_ANALYTICS && REF_USE_FIREBASE
-using UnityEngine;
-
 using System.Linq;
 
+using REF.Runtime.Core;
+using REF.Runtime.Diagnostic;
 using REF.Runtime.Online.Service;
 
 using Firebase.Analytics;
 
 namespace REF.Runtime.Online.Analytics
 {
-	[CreateAssetMenu(fileName = "FirebaseAnalyticsService", menuName = "REF/Online/Analytics/Firebase Analytics")]
-	public class FirebaseAnalyticService : FirebaseService, IAnalyticService
+	public class FirebaseAnalyticService : FirebaseService, IAnalyticsService
 	{
+		private bool isAutoLogEnabled = true;
+
 		private string setId;
 		private string setScreenName;
+
+		public override void Configure(IConfiguration config)
+		{
+			base.Configure(config);
+
+			var configuration = config as IAnalyticsConfiguration;
+
+			if (configuration == null)
+			{
+				RefDebug.Error(nameof(FirebaseAnalyticService), $"Config must be of type {nameof(IAnalyticsConfiguration)}!");
+				return;
+			}
+
+			isAutoLogEnabled = configuration.IsAutoLogEnabled();
+		}
 
 		public void SetUserId(string id)
 		{
@@ -63,6 +79,7 @@ namespace REF.Runtime.Online.Analytics
 
 		protected override void FinalizeInit(bool successful, System.Action callback)
 		{
+			FirebaseAnalytics.SetAnalyticsCollectionEnabled(isAutoLogEnabled);
 			SetInitialized(true);
 			callback?.Invoke();
 		}

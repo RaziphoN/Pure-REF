@@ -1,6 +1,4 @@
-﻿using REF.Runtime.Notifications;
-
-namespace REF.Runtime.Notifications
+﻿namespace REF.Runtime.Notifications
 {
 	public interface INotificationSettings
 	{

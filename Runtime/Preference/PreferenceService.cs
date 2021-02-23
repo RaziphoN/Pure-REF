@@ -1,60 +1,110 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
 
 using REF.Runtime.Core;
+using REF.Runtime.Diagnostic;
 using REF.Runtime.Serialization;
 
 namespace REF.Runtime.Preference
 {
-	[CreateAssetMenu(fileName = "PreferenceService", menuName = "REF/Game Data/Preferences")]
 	public class PreferenceService : ServiceBase, IPreferenceService
 	{
-		[SerializeField] private Preferences preferences;
+		private ISaver saver;
+		private ISerializer serializer;
+
+		private IDictionary<string, ISaveable> saveables = new Dictionary<string, ISaveable>();
+		private IDictionary<string, ISerializable> serializables = new Dictionary<string, ISerializable>();
+
+		public override void Configure(IConfiguration config)
+		{
+			base.Configure(config);
+
+			var configuration = config as IPreferenceServiceConfiguration;
+
+			if (configuration == null)
+			{
+				RefDebug.Error(nameof(PreferenceService), $"Config must be of type {nameof(IPreferenceServiceConfiguration)}!");
+				return;
+			}
+
+			saver = configuration.GetSaver();
+			serializer = configuration.GetSerializer();
+		}
 
 		public ISerializer GetSerializer()
 		{
-			return preferences.GetSerializer();
+			return serializer;
 		}
 
-		public bool HasKey(string key)
+		public ISaver GetSaver()
 		{
-			return preferences.HasKey(key);
+			return saver;
 		}
 
-		public void Save(string key, string data)
-		{
-			preferences.Save(key, data);
-		}
-
-		public string Load(string key)
-		{
-			return preferences.Load(key);
-		}
-
-		[ContextMenu("Load")]
-		public void Load()
-		{
-			preferences.Load();
-		}
-
-		[ContextMenu("Save")]
 		public void Save()
 		{
-			preferences.Save();
+			foreach (var serializable in serializables)
+			{
+				var obj = serializable.Value;
+				var data = serializer.Serialize(obj);
+
+				saver.Save(serializable.Key, data);
+			}
+
+			foreach (var saveable in saveables)
+			{
+				var obj = saveable.Value;
+				obj.Save();
+			}
+		}
+
+		public void Load()
+		{
+			foreach (var serializable in serializables)
+			{
+				var obj = serializable.Value;
+				var data = saver.Load(serializable.Key);
+
+				if (!string.IsNullOrEmpty(data))
+				{
+					serializer.Deserialize(data, obj);
+				}
+			}
+
+			foreach (var saveable in saveables)
+			{
+				var obj = saveable.Value;
+				obj.Load();
+			}
 		}
 
 		public void Register(string key, ISaveable obj)
 		{
-			preferences.Register(key, obj);
+			if (!saveables.ContainsKey(key))
+			{
+				saveables.Add(key, obj);
+			}
+			else
+			{
+				saveables[key] = obj;
+			}
 		}
 
 		public void Register(string key, ISerializable obj)
 		{
-			preferences.Register(key, obj);
+			if (!serializables.ContainsKey(key))
+			{
+				serializables.Add(key, obj);
+			}
+			else
+			{
+				serializables[key] = obj;
+			}
 		}
 
 		public void Unregister(string key)
 		{
-			preferences.Unregister(key);
+			serializables.Remove(key);
+			saveables.Remove(key);
 		}
 	}
 }

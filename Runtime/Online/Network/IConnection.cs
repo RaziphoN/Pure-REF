@@ -1,6 +1,6 @@
 ﻿namespace REF.Runtime.Online.Network
 {
-	public interface IConnection<T> where T : ISocket
+	public interface IConnection
 	{
 		event System.Action OnConnect;
 		event System.Action OnDisconnect;
@@ -8,12 +8,15 @@
 
 		bool IsConnected();
 
-		T GetSocket();
-
 		void Connect(System.Uri uri);
 		void Disconnect();
 
 		void Send(string message);
 		void Update(); // loop update
+	}
+
+	public interface IConnection<T> : IConnection where T : ISocket
+	{
+		T GetSocket();
 	}
 }

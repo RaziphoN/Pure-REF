@@ -5,17 +5,17 @@ using REF.Runtime.GameSystem.Storage;
 
 namespace REF.Runtime.Online.Store.Providers
 {
-	public abstract class OfflineStoreProvider<T> : IStoreProvider<IConfiguration> where T : IItem
+	public abstract class OfflineStoreProvider<T> : IStoreProvider where T : IItem
 	{
 		public const string ProviderId = "OfflineStore";
 
-		private IStore store;
+		private IStoreService store;
 		private IStoreListener listener;
 
 		private bool initialized = false;
 		private List<ITransaction> pendingTransactions = new List<ITransaction>();
 
-		public OfflineStoreProvider(IStore store, IStoreListener listener)
+		public OfflineStoreProvider(IStoreService store, IStoreListener listener)
 		{
 			this.store = store;
 			this.listener = listener;
@@ -107,6 +107,11 @@ namespace REF.Runtime.Online.Store.Providers
 			return pendingTransactions;
 		}
 
+		public void Construct(IApp app)
+		{
+			
+		}
+
 		public void PreInitialize(System.Action callback)
 		{
 			initialized = false;
@@ -140,19 +145,14 @@ namespace REF.Runtime.Online.Store.Providers
 
 		}
 
-		public void OnApplicationFocus(bool focused)
+		public void Suspend()
 		{
-			
+
 		}
 
-		public void OnApplicationPause(bool pause)
+		public void Resume()
 		{
-			
-		}
 
-		public void OnApplicationQuit()
-		{
-			
 		}
 
 		protected abstract IItemContainer<T> GetInventory();

@@ -17,14 +17,21 @@ namespace REF.Runtime.Online.RemoteConfig
 		{
 			var reference = new RemoteValueReference(key, source);
 			reference.Assign(source.Config);
-			source.OnConfigFetched += reference.OnConfigChanged;
+
+			if (source != null)
+			{
+				source.OnConfigFetched += reference.OnConfigChanged;
+			}
 
 			return reference;
 		}
 
 		public static void Remove(RemoteValueReference reference)
 		{
-			reference.source.OnConfigFetched -= reference.OnConfigChanged;
+			if (reference.source != null)
+			{
+				reference.source.OnConfigFetched -= reference.OnConfigChanged;
+			}
 		}
 
 		private RemoteValueReference(string key, IRemoteConfigService source)

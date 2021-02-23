@@ -9,7 +9,7 @@ namespace REF.Runtime.Online.Network
 		public event System.Action OnDisconnect;
 		public event System.Action<string> OnMessage;
 
-		private Connection<T> connection = new Connection<T>();
+		private Connection<T> connection;
 
 		private object sender = new object();
 		private Thread senderThread;
@@ -18,8 +18,10 @@ namespace REF.Runtime.Online.Network
 		private object receiver = new object();
 		private Queue<string> receiverQueue = new Queue<string>();
 
-		public SyncConnection()
+		public SyncConnection(ISocketConfiguration socketConfig)
 		{
+			connection = new Connection<T>(socketConfig);
+
 			connection.OnConnect += OnConnectHandler;
 			connection.OnDisconnect += OnDisconnectHandler;
 			connection.OnMessage += OnResponseHandler;

@@ -1,10 +1,8 @@
 ﻿#if REF_ONLINE_CRASH_REPORT
 
-using REF.Runtime.Core;
-
 namespace REF.Runtime.Online.CrashReports
 {
-	public interface ICrashReportService : IOnlineService<IConfiguration>
+	public interface ICloudDebugService : IOnlineService
 	{
 		void SetUserId(string userId);
 		void SetCustomData(string key, string value);

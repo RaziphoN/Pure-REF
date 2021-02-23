@@ -1,20 +1,35 @@
 ﻿#if REF_ONLINE_ANALYTICS && REF_FACEBOOK_ANALYTICS && REF_USE_FACEBOOK
 
-using UnityEngine;
-
-using REF.Runtime.Online.Service.Facebook;
-
 using System.Collections.Generic;
+
+using REF.Runtime.Core;
+using REF.Runtime.Diagnostic;
+using REF.Runtime.Online.Service.Facebook;
 
 using Facebook.Unity;
 
 namespace REF.Runtime.Online.Analytics.Facebook
 {
-	[CreateAssetMenu(fileName = "FacebookAnalyticsService", menuName = "REF/Online/Analytics/Facebook Analytics")]
-	public class FacebookAnalyticService : FacebookService, IAnalyticService
+	public class FacebookAnalyticService : FacebookService, IAnalyticsService
 	{
-		[SerializeField] private bool autoLogAppEvents = true;
-		[SerializeField] private bool advertiserIdCollection = true;
+		private bool autoLogAppEvents = true;
+		private bool advertiserIdCollection = true;
+
+		public override void Configure(IConfiguration config)
+		{
+			base.Configure(config);
+
+			var configuration = config as IAnalyticsConfiguration;
+
+			if (configuration == null)
+			{
+				RefDebug.Error(nameof(FacebookAnalyticService), $"Config must be of type {nameof(IAnalyticsConfiguration)}!");
+				return;
+			}
+
+			autoLogAppEvents = configuration.IsAutoLogEnabled();
+			advertiserIdCollection = configuration.IsCollectAdvertisingId();
+		}
 
 		public bool IsValidEvent(string eventName)
 		{
@@ -45,11 +60,11 @@ namespace REF.Runtime.Online.Analytics.Facebook
 			// It's not implemented
 		}
 
-		public override void OnApplicationPause(bool pause)
+		public override void Resume()
 		{
-			base.OnApplicationPause(pause);
+			base.Resume();
 
-			if (!pause && IsInitialized())
+			if (IsInitialized())
 			{
 				FB.ActivateApp();
 			}

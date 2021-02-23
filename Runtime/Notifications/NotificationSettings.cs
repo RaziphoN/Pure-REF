@@ -1,7 +1,7 @@
-﻿
+﻿using UnityEngine;
+
 using REF.Runtime.Notifications.Android;
 using REF.Runtime.Notifications.iOS;
-using UnityEngine;
 
 namespace REF.Runtime.Notifications
 {

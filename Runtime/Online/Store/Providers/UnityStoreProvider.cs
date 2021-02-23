@@ -6,7 +6,7 @@ using REF.Runtime.Diagnostic;
 
 namespace REF.Runtime.Online.Store.Providers
 {
-	public class UnityStoreProvider : IStoreProvider<IConfiguration>, UnityEngine.Purchasing.IStoreListener
+	public class UnityStoreProvider : IStoreProvider, UnityEngine.Purchasing.IStoreListener
 	{
 		public const string ProviderId = "UnityStore";
 
@@ -17,10 +17,10 @@ namespace REF.Runtime.Online.Store.Providers
 		private IStoreController controller;
 		private IExtensionProvider extensionProvider;
 
-		private IStore store;
+		private IStoreService store;
 		private IStoreListener listener;
 
-		public UnityStoreProvider(IStore store, IStoreListener listener)
+		public UnityStoreProvider(IStoreService store, IStoreListener listener)
 		{
 			this.store = store;
 			this.listener = listener;
@@ -110,6 +110,11 @@ namespace REF.Runtime.Online.Store.Providers
 			}
 		}
 
+		public void Construct(IApp app)
+		{
+
+		}
+
 		public void PreInitialize(System.Action callback)
 		{
 			callback?.Invoke();
@@ -117,7 +122,13 @@ namespace REF.Runtime.Online.Store.Providers
 
 		public void Configure(IConfiguration config)
 		{
+			var configuration = config as IStoreConfiguration;
 
+			if (configuration == null)
+			{
+				RefDebug.Error(nameof(UnityStoreProvider), $"Config must be of type {nameof(IStoreConfiguration)}!");
+				return;
+			}
 		}
 
 		public void Initialize(System.Action callback)
@@ -186,17 +197,12 @@ namespace REF.Runtime.Online.Store.Providers
 			callback?.Invoke();
 		}
 
-		public void OnApplicationPause(bool pause)
+		public void Suspend()
 		{
 
 		}
 
-		public void OnApplicationFocus(bool focus)
-		{
-
-		}
-
-		public void OnApplicationQuit()
+		public void Resume()
 		{
 
 		}

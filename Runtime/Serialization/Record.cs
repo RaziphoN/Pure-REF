@@ -776,6 +776,11 @@ namespace REF.Runtime.Serialization
 			return Equals(record);
 		}
 
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+
 		public bool Equals(Record other)
 		{
 			if (type != other.type)

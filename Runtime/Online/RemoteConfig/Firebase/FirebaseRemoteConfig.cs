@@ -1,25 +1,38 @@
 ﻿#if REF_ONLINE_REMOTE_CONFIG && REF_FIREBASE_REMOTE_CONFIG && REF_USE_FIREBASE
 
-using UnityEngine;
-
-using System;
 using System.Collections.Generic;
 
+using REF.Runtime.Core;
+using REF.Runtime.Diagnostic;
 using REF.Runtime.Online.Service;
 
 using Firebase.Extensions;
 
 namespace REF.Runtime.Online.RemoteConfig
 {
-	[CreateAssetMenu(fileName = "FirebaseRemoteConfigService", menuName = "REF/Online/Remote Config/Firebase Remote Config")]
 	public class FirebaseRemoteConfig : FirebaseService, IRemoteConfigService
 	{
-		[SerializeField] ScriptableConfig config;
+		public event System.Action<IConfig> OnConfigFetched;
+		public event System.Action OnConfigFetchFailed;
 
-		public event Action<IConfig> OnConfigFetched;
-		public event Action OnConfigFetchFailed;
+		private IConfig config;
 
 		public IConfig Config { get { return config; } }
+
+		public override void Configure(IConfiguration config)
+		{
+			base.Configure(config);
+
+			var configuration = config as IRemoteConfigConfiguration;
+
+			if (configuration == null)
+			{
+				RefDebug.Error(nameof(FirebaseRemoteConfig), $"Config must be of type {nameof(IRemoteConfigConfiguration)}!");
+				return;
+			}
+
+			this.config = configuration.GetConfig();
+		}
 
 		public void Fetch(System.Action callback = null)
 		{

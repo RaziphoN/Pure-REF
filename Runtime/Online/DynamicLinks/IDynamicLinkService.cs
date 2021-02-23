@@ -1,10 +1,8 @@
 ﻿#if REF_ONLINE_DYNAMIC_LINK
 
-using REF.Runtime.Core;
-
 namespace REF.Runtime.Online.DynamicLinks
 {
-	public interface IDynamicLinkService : IOnlineService<IConfiguration>
+	public interface IDynamicLinkService : IOnlineService
 	{
 		event System.Action<System.Uri> OnLinkReceived;
 

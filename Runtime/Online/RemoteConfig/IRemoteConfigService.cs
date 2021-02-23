@@ -1,10 +1,8 @@
 ﻿#if REF_ONLINE_REMOTE_CONFIG
 
-using REF.Runtime.Core;
-
 namespace REF.Runtime.Online.RemoteConfig
 {
-	public interface IRemoteConfigService : IOnlineService<IConfiguration>
+	public interface IRemoteConfigService : IOnlineService
 	{
 		event System.Action<IConfig> OnConfigFetched;
 		event System.Action OnConfigFetchFailed;

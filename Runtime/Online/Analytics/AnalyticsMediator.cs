@@ -3,17 +3,16 @@
 using System.Linq;
 using System.Collections.Generic;
 
-using REF.Runtime.Core;
 using REF.Runtime.Online.Service;
 
 namespace REF.Runtime.Online.Analytics
 {
-	public class AnalyticsMediator : OnlineService<IConfiguration>
+	public class AnalyticsMediator : OnlineService
 	{
-		private List<IAnalyticService> services = new List<IAnalyticService>();
+		private List<IAnalyticsService> services = new List<IAnalyticsService>();
 		private System.Action postponedCallback = null;
 
-		public void Register(IAnalyticService provider)
+		public void Register(IAnalyticsService provider)
 		{
 			if (!services.Contains(provider))
 				services.Add(provider);
@@ -176,33 +175,23 @@ namespace REF.Runtime.Online.Analytics
 			thread.Start();
 		}
 
-		public override void OnApplicationFocus(bool focused)
+		public override void Suspend()
 		{
-			base.OnApplicationFocus(focused);
+			base.Suspend();
 
 			services.ForEach((provider) =>
 			{
-				provider.OnApplicationFocus(focused);
+				provider.Suspend();
 			});
 		}
 
-		public override void OnApplicationPause(bool pause)
+		public override void Resume()
 		{
-			base.OnApplicationPause(pause);
+			base.Resume();
 
 			services.ForEach((provider) =>
 			{
-				provider.OnApplicationFocus(pause);
-			});
-		}
-
-		public override void OnApplicationQuit()
-		{
-			base.OnApplicationQuit();
-
-			services.ForEach((provider) =>
-			{
-				provider.OnApplicationQuit();
+				provider.Resume();
 			});
 		}
 	}

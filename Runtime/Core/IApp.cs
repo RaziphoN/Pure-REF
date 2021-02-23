@@ -1,43 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections;
 
 namespace REF.Runtime.Core
 {
-	public class ConfigServicePair
-	{
-		private IConfigInjector injector;
-
-		public ConfigServicePair(IService service, IConfigInjector configInjector)
-		{
-			Service = service;
-			injector = configInjector;
-		}
-
-		public IConfigInjector Config { get; private set; }
-		public IService Service { get; private set; }
-	}
-
 	public interface IApp
 	{
-		string Build { get; set; }
+		string Version { get; }
 		float Progress { get; }
-		string Version { get; set; }
 
-		event Action OnInitialized;
+		event System.Action OnInitialized;
 
 		bool Has<T>() where T : IService;
 		bool IsInitialized();
 		bool IsInitialized<T>() where T : IService;
 		bool IsSupported<T>() where T : IService;
 
-		void Set(IEnumerable<ConfigServicePair> pairList);
-
-		IService Get(int idx);
 		T Get<T>() where T : IService;
-		IEnumerable<IService> GetAll();
-		int GetServiceCount();
 
-		void Initialize();
-		void Release();
+		// NOTE: Register all services before initialization
+		void Register(IConfiguration configuration, IService service);
+
+		IEnumerator Initialize(string version, System.Action callback);
+		IEnumerator Release(System.Action callback);
+
+		void Update();
+
+		void Suspend();
+		void Resume();
 	}
 }

@@ -4,7 +4,7 @@ using REF.Runtime.Diagnostic.Modules;
 
 namespace REF.Runtime.Diagnostic
 {
-	// This object will be created by Diagnostic tool for RefDebug if required
+	// TODO: This object will be created by Diagnostic tool for RefDebug if required
 	[System.Serializable]
 	public class DebugConsole : MonoBehaviour, IConsole
 	{

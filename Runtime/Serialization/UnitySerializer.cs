@@ -4,8 +4,7 @@ using System.Collections.Generic;
 
 namespace REF.Runtime.Serialization
 {
-	[CreateAssetMenu(fileName = "UnitySerializer", menuName = "REF/Game Data/Default Unity Serializer")]
-	public class UnitySerializer : SerializerBase
+	public class UnitySerializer : ISerializer
 	{
 		[System.Serializable]
 		private class UnitySerializableRecord
@@ -135,7 +134,7 @@ namespace REF.Runtime.Serialization
 			}
 		}
 
-		public override string Serialize(Record record)
+		public string Serialize(Record record)
 		{
 			var serializableRecord = new UnitySerializableRecord(record);
 			var json = JsonUtility.ToJson(serializableRecord);
@@ -143,25 +142,25 @@ namespace REF.Runtime.Serialization
 			return json;
 		}
 
-		public override Record Deserialize(string data)
+		public Record Deserialize(string data)
 		{
 			var record = (JsonUtility.FromJson<UnitySerializableRecord>(data)).ToRecord();
 			return record;
 		}
 
-		public override string Serialize(ISerializable obj)
+		public string Serialize(ISerializable obj)
 		{
 			var record = obj.Serialize();
 			return Serialize(record);
 		}
 
-		public override void Deserialize(string data, ISerializable obj)
+		public void Deserialize(string data, ISerializable obj)
 		{
 			var record = Deserialize(data);
 			obj.Deserialize(record);
 		}
 
-		public override T Deserialize<T>(string data)
+		public T Deserialize<T>(string data) where T : ISerializable, new()
 		{
 			var record = Deserialize(data);
 

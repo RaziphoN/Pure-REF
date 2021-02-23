@@ -1,19 +1,33 @@
 ﻿#if REF_ONLINE_DYNAMIC_LINK && REF_FIREBASE_DYNAMIC_LINK && REF_USE_FIREBASE
 
-using UnityEngine;
-
 using System.Collections.Generic;
 
+using REF.Runtime.Core;
+using REF.Runtime.Diagnostic;
 using REF.Runtime.Online.Service;
 
 namespace REF.Runtime.Online.DynamicLinks
 {
-	[CreateAssetMenu(fileName = "FirebaseDynamicLinkService", menuName = "REF/Online/Deep Link/Firebase Dynamic Links")]
 	public class FirebaseDynamicLinkService : FirebaseService, IDynamicLinkService
 	{
 		public event System.Action<System.Uri> OnLinkReceived;
 
-		[SerializeField] private string linkPrefix = "";
+		private string linkPrefix = string.Empty;
+
+		public override void Configure(IConfiguration config)
+		{
+			base.Configure(config);
+
+			var configuration = config as IDynamicLinkConfiguration;
+
+			if (configuration == null)
+			{
+				RefDebug.Error(nameof(FirebaseDynamicLinkService), $"Config must be of type {nameof(IDynamicLinkConfiguration)}!");
+				return;
+			}
+
+			linkPrefix = configuration.GetLinkPrefix();
+		}
 
 		// immediately returns a link, but all parameters are visible (unsafe) on client
 		public System.Uri GetLongLink(DynamicLink longLink)
