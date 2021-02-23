@@ -163,8 +163,8 @@ namespace REF.Runtime.Online.Store.Providers
 			}
 
 #if UNITY_IOS
-            var configuration = builder.Configure<IAppleConfiguration>();
-            configuration.SetApplePromotionalPurchaseInterceptorCallback(OnProductPurchasedHandler);
+            // var configuration = builder.Configure<IAppleConfiguration>();
+            // configuration.SetApplePromotionalPurchaseInterceptorCallback(OnProductPurchasedHandler);
 #endif
 
 #if UNITY_ANDROID
