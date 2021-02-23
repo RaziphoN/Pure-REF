@@ -1,5 +1,5 @@
 ﻿#if REF_ONLINE_AUTH && REF_FACEBOOK_SOCIAL && REF_USE_FACEBOOK
-using REF.Runtime.Online.Social.Facebook;
+using REF.Runtime.Online.Social;
 
 namespace REF.Runtime.Online.Auth.Method
 {
@@ -7,9 +7,9 @@ namespace REF.Runtime.Online.Auth.Method
 	{
 		public static string ProviderId { get { return "facebook.com"; } }
 
-		private FacebookSocialService fb;
+		private ISocialService fb;
 
-		public FacebookSignInMethod(FacebookSocialService facebookService)
+		public FacebookSignInMethod(ISocialService facebookService)
 		{
 			fb = facebookService;
 		}
