@@ -96,7 +96,7 @@ namespace REF.Runtime.Notifications.iOS
 			// not working
 			//if (notification.Trigger is iOSNotificationPushTrigger)
 			//	settings.IsRemote = true;
-			if (!LocalNotifications.IsLocal(settings.NotificationId))
+			if (!LocalNotificationWrapper.IsLocal(settings.NotificationId))
 				settings.IsRemote = true;
 
 			return settings;
