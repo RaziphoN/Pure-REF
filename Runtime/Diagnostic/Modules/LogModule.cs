@@ -28,6 +28,31 @@ namespace REF.Runtime.Diagnostic.Modules
 			public string StackTrace;
 		}
 
+		[System.Serializable]
+		public class SystemInfo
+		{
+			// public string AppVersion;
+
+			public string Platform;
+			public string OperationSystem;
+
+			public string DeviceID;
+			public string DeviceName;
+			public string DeviceType;
+			public string DeviceModel;
+			public string DeviceAvailableMemory;
+
+			public string ProcessorType;
+			public string ProcessorCoreCount;
+			public string ProcessorFrequency;
+
+			public string GraphicsAPIVersion;
+			public string GraphicsVendor;
+			public string GraphicsTotalMemory;
+			public string GraphicsMaxTextureSize;
+		}
+
+		[SerializeField] private SystemInfo systemInfo = new SystemInfo();
 		[SerializeField] private List<Record> logs = new List<Record>();
 
 		public override string GetTitle()
@@ -38,6 +63,23 @@ namespace REF.Runtime.Diagnostic.Modules
 		public override void OnInit()
 		{
 			base.OnInit();
+
+			systemInfo.Platform = Application.platform.ToString();
+			systemInfo.OperationSystem = UnityEngine.SystemInfo.operatingSystem;
+			systemInfo.DeviceID = UnityEngine.SystemInfo.deviceUniqueIdentifier;
+			systemInfo.DeviceName = UnityEngine.SystemInfo.deviceName;
+			systemInfo.DeviceType = UnityEngine.SystemInfo.deviceType.ToString();
+			systemInfo.DeviceModel = UnityEngine.SystemInfo.deviceModel;
+			systemInfo.DeviceAvailableMemory = UnityEngine.SystemInfo.systemMemorySize.ToString();
+			systemInfo.ProcessorType = UnityEngine.SystemInfo.processorType;
+			systemInfo.ProcessorCoreCount = UnityEngine.SystemInfo.processorCount.ToString();
+			systemInfo.ProcessorFrequency = UnityEngine.SystemInfo.processorFrequency.ToString();
+			systemInfo.GraphicsAPIVersion = UnityEngine.SystemInfo.graphicsDeviceVersion;
+			systemInfo.GraphicsVendor = UnityEngine.SystemInfo.graphicsDeviceVendor;
+			systemInfo.GraphicsTotalMemory = UnityEngine.SystemInfo.graphicsMemorySize.ToString();
+			systemInfo.GraphicsMaxTextureSize = UnityEngine.SystemInfo.maxTextureSize.ToString();
+
+
 			Application.logMessageReceived += OnLogReceivedHandler;
 		}
 
