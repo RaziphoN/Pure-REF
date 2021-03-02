@@ -4,37 +4,59 @@ namespace REF.Runtime.Notifications
 {
 	public class Notification : INotification
 	{
-		public string Title { get; set; }
-		public string Body { get; set; }
-		public IDictionary<string, string> Data { get; set; } = new Dictionary<string, string>();
+		private string title;
+		private string body;
+		private Dictionary<string, string> data = new Dictionary<string, string>();
+
+		public string Title { get { return title; } set { title = value; } }
+		public string Body { get { return body; } set { body = value; } }
 
 		public Notification(string title, string body, IDictionary<string, string> data = null)
 		{
-			Title = title;
-			Body = body;
+			this.title = title;
+			this.body = body;
+
+			this.data.Clear();
 
 			if (data != null)
 			{
-				foreach (var record in data)
+				foreach (var pair in data)
 				{
-					Data[record.Key] = record.Value;
+					this.data.Add(pair.Key, pair.Value);
 				}
 			}
 		}
 
-		public override string ToString()
+		public bool ContainsKey(string key)
 		{
-			string result = "{Notification} [Title]: " + Title + ", [Body]: " + Body;
+			return data.ContainsKey(key);
+		}
 
-			if (Data != null)
+		public void Set(string key, string value)
+		{
+			if (!data.ContainsKey(key))
 			{
-				foreach (var record in Data)
-				{
-					result += ", [" + record.Key + "]: " + record.Value;
-				}
+				data.Add(key, value);
 			}
+			else
+			{
+				data[key] = value;
+			}
+		}
 
-			return result;
+		public void Remove(string key)
+		{
+			data.Remove(key);
+		}
+
+		public string Get(string key)
+		{
+			return data[key];
+		}
+
+		public IEnumerable<string> GetKeys()
+		{
+			return data.Keys;
 		}
 	}
 }

@@ -2,20 +2,20 @@
 
 namespace REF.Runtime.Notifications
 {
-	public class LocalNotification : ILocalNotification
+	public class LocalNotification : Notification, ILocalNotification
 	{
-		public string Title { get; set; }
-		public string Body { get; set; }
-		public IDictionary<string, string> Data { get; set; } = new Dictionary<string, string>();
-		public INotificationSettings Settings { get; set; }
+		private INotificationSettings settings;
 
-		public LocalNotification(string title, string body, IDictionary<string, string> data, INotificationSettings settings)
+		public INotificationSettings Settings { get { return settings; } set { settings = value; } }
+
+		public LocalNotification(string title, string body, INotificationSettings settings) : base(title, body, null)
 		{
-			Title = title;
-			Body = body;
-			Data = data;
+			this.settings = settings;
+		}
 
-			Settings = settings;
+		public LocalNotification(string title, string body, INotificationSettings settings, IDictionary<string, string> data) : base(title, body, data)
+		{
+			this.settings = settings;
 		}
 	}
 }

@@ -22,7 +22,7 @@
 
 		public void Invalidate()
 		{
-			AndroidId = 1;
+			AndroidId = -1;
 			iOSId = string.Empty;
 		}
 

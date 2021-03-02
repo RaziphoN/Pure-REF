@@ -14,6 +14,24 @@ namespace REF.Runtime.Diagnostic
 
 #if REF_ONLINE_CRASH_REPORT
 		private ICloudDebugService service;
+#endif
+
+		public void SetUserId(string userId)
+		{
+#if REF_ONLINE_CRASH_REPORT
+			service?.SetUserId(userId);
+#endif
+		}
+
+		public void SetCustomData(string key, string value)
+		{
+#if REF_ONLINE_CRASH_REPORT
+			service?.SetCustomData(key, value);
+#endif
+		}
+
+
+#if REF_ONLINE_CRASH_REPORT
 
 		public void Construct(ICloudDebugService service)
 		{

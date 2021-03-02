@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using REF.Runtime.Serialization;
+
 namespace REF.Runtime.Notifications
 {
 	public static class NotificationIdHelper
@@ -26,6 +28,29 @@ namespace REF.Runtime.Notifications
 #endif
 
 			return notificationId;
+		}
+
+		public static Record ToRecord(NotificationId id)
+		{
+#if UNITY_ANDROID
+			Record record = Record.Create(id.AndroidId);
+			return record;
+#elif UNITY_IOS
+			Record record = Record.Create(id.iOSId);
+			return record;
+#endif
+			return Record.Create();
+		}
+
+		public static NotificationId FromRecord(Record record)
+		{
+#if UNITY_ANDROID
+			var id = record.GetInt();
+			return new NotificationId(id);
+#elif UNITY_IOS
+			var id = record.GetString();
+			return new NotificationId(id);
+#endif
 		}
 	}
 }

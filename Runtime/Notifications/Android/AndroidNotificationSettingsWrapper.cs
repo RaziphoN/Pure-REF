@@ -1,35 +1,53 @@
 ﻿using UnityEngine;
 
-using System;
-
+using REF.Runtime.Utilities.Serializable.Nullable;
 
 namespace REF.Runtime.Notifications.Android
 {
+	[System.Serializable]
 	public class AndroidNotificationSettingsWrapper : IAndroidNotificationSettings
 	{
+		[SerializeField, Min(-1)] private int id = -1;
+		[SerializeField] private int number;
+		[SerializeField] private string channelId = "Default";
+		[SerializeField] private string sortKey;
+
+		[SerializeField] private bool isRemote;
+
+		[SerializeField] private string group;
+		[SerializeField] private AndroidGroupAlertBehaviours groupAlertBehaviour = AndroidGroupAlertBehaviours.GroupAlertAll;
+		[SerializeField] private bool groupSummary;
+
+		[SerializeField] private AndroidNotificationStyle style = AndroidNotificationStyle.None;
+		[SerializeField] private NullableColor color;
+		[SerializeField] private string smallIcon;
+		[SerializeField] private string largeIcon;
+
+		[SerializeField] private bool useStopwatch;
+		[SerializeField] private bool autoCancel;
+
+		[SerializeField] private NotificationTrigger trigger = new NotificationTrigger();
+
+		public bool IsRemote { get { return isRemote; } internal set { isRemote = value; } }
+
 		public NotificationId NotificationId { get { return new NotificationId(Id); } }
-		public bool IsRemote { get; set; }
+		public int Id { get { return id; } set { id = value; } }
+		public int Number { get { return number; } set { number = value; } }
+		public string ChannelId { get { return channelId; } set { channelId = value; } }
+		public string SortKey { get { return sortKey; } set { sortKey = value; } }
 
-		public int Id { get; set; }
-		public string ChannelId { get; set; }
+		public string Group { get { return group; } set { group = value; } }
+		public AndroidGroupAlertBehaviours GroupAlertBehaviour { get { return groupAlertBehaviour; } set { groupAlertBehaviour = value; } }
+		public bool GroupSummary { get { return groupSummary; } set { groupSummary = value; } }
 
-		public AndroidGroupAlertBehaviours GroupAlertBehaviour { get; set; }
-		public bool GroupSummary { get; set; }
-		public string Group { get; set; }
+		public AndroidNotificationStyle Style { get { return style; } set { style = value; } }
+		public Color? Color { get { return color.Value;  } set { color.Value = value; } }
+		public string SmallIcon { get { return smallIcon; } set { smallIcon = value; } }
+		public string LargeIcon { get { return largeIcon; } set { largeIcon = value; } }
 
-		public bool UsesStopwatch { get; set; }
-		public bool ShouldAutoCancel { get; set; }
-		public int Number { get; set; }
-		public string SortKey { get; set; }
+		public bool UsesStopwatch { get { return useStopwatch; } set { useStopwatch = value; } }
+		public bool ShouldAutoCancel { get { return autoCancel; } set { autoCancel = value; } }
 
-		public Color? Color { get; set; }
-		public AndroidNotificationStyle Style { get; set; }
-
-		public string SmallIcon { get; set; }
-		public string LargeIcon { get; set; }
-
-		public TimeSpan? RepeatInterval { get; set; }
-		public DateTime FireTime { get; set; }
-		public NotificationTrigger Trigger { get; }
+		public NotificationTrigger Trigger { get { return trigger; } set { trigger = value; } }
 	}
 }

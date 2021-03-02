@@ -5,7 +5,7 @@ namespace REF.Runtime.Online.Auth.Method
 {
 	public class MockupEmailPasswordSignInMethod : ISignInMethod
 	{
-		public static string ProviderId { get { return "EmailPassword"; } }
+		public const string ProviderId = "password";
 
 		private string email;
 		private string password;

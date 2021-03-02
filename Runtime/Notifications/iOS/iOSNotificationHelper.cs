@@ -16,7 +16,7 @@ namespace REF.Runtime.Notifications.iOS
 			{
 				Title = notification.Title,
 				Body = notification.Body,
-				Data = NotificationDataHelper.ToString(notification.Data),
+				Data = NotificationDataHelper.ToString(notification),
 				Subtitle = settings.Subtitle,
 
 				ShowInForeground = settings.ShowInForeground,
@@ -80,10 +80,10 @@ namespace REF.Runtime.Notifications.iOS
 			var body = notification.Body;
 			var data = NotificationDataHelper.FromString<Dictionary<string, string>>(notification.Data);
 
-			return new LocalNotification(title, body, data, settings);
+			return new LocalNotification(title, body, settings, data);
 		}
 
-		private static IIosNotificationSettings GetSettings(iOSNotification notification)
+		private static iOSNotificationSettingsWrapper GetSettings(iOSNotification notification)
 		{
 			iOSNotificationSettingsWrapper settings = new iOSNotificationSettingsWrapper();
 

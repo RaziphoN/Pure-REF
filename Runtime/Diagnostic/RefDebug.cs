@@ -43,6 +43,16 @@ namespace REF.Runtime.Diagnostic
 			Instance.logger.SetColor(color);
 		}
 
+		public static void SetUserId(string id)
+		{
+			Instance.cloudLogger.SetUserId(id);
+		}
+
+		public static void SetCustomData(string key, string value)
+		{
+			Instance.cloudLogger.SetCustomData(key, value);
+		}
+
 		[Conditional("REF_LOG_VERBOSE")]
 		public static void Log(string tag, string format, Object context = null, params object[] args)
 		{

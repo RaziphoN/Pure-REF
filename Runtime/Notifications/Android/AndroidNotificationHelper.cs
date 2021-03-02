@@ -1,8 +1,6 @@
 ﻿#if UNITY_ANDROID
-using UnityEngine;
 using Unity.Notifications.Android;
 
-using System;
 using System.Collections.Generic;
 
 
@@ -18,7 +16,7 @@ namespace REF.Runtime.Notifications.Android
 			{
 				Title = notification.Title,
 				Text = notification.Body,
-				IntentData = NotificationDataHelper.ToString(notification.Data),
+				IntentData = NotificationDataHelper.ToString(notification),
 
 				GroupAlertBehaviour = (GroupAlertBehaviours)(int)settings.GroupAlertBehaviour,
 				GroupSummary = settings.GroupSummary,
@@ -70,10 +68,10 @@ namespace REF.Runtime.Notifications.Android
 			var body = androidNotification.Notification.Text;
 			var data = NotificationDataHelper.FromString<Dictionary<string, string>>(androidNotification.Notification.IntentData);
 
-			return new LocalNotification(title, body, data, settings);
+			return new LocalNotification(title, body, settings, data);
 		}
 
-		private static IAndroidNotificationSettings GetSettings(AndroidNotification notification)
+		private static AndroidNotificationSettingsWrapper GetSettings(AndroidNotification notification)
 		{
 			AndroidNotificationSettingsWrapper settings = new AndroidNotificationSettingsWrapper();
 

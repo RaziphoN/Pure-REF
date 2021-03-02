@@ -2,38 +2,79 @@
 
 using System.Collections.Generic;
 
-using REF.Runtime.Utilities.Serializable;
-
 namespace REF.Runtime.Notifications
 {
-	[CreateAssetMenu(fileName = "Scriptable Notification", menuName = "REF/Notifications/Local Notification")]
+	[CreateAssetMenu(fileName = "LocalNotification", menuName = "REF/Notifications/Local Notification")]
 	public class ScriptableLocalNotification : ScriptableObject, ILocalNotification
 	{
-		[SerializeField] private string title = string.Empty;
-		[SerializeField] private string body = string.Empty;
-		[SerializeField] private ScriptableNotificationSettings settings;
-		[SerializeField] private SerializableStringDictionary data = new SerializableStringDictionary();
-		private IDictionary<string, string> setData = null;
+		[System.Serializable]
+		public class Pair
+		{
+			public string Key;
+			public string Value;
 
+			public Pair(string key, string value)
+			{
+				this.Key = key;
+				this.Value = value;
+			}
+		}
+
+		[SerializeField] private string title;
+		[SerializeField] private string body;
+		[SerializeField] private List<Pair> data = new List<Pair>();
+
+		[SerializeField] private ScriptableNotificationSettings settings;
+
+		public INotificationSettings Settings { get { return settings.ToSettings(); } }
 		public string Title { get { return title; } set { title = value; } }
 		public string Body { get { return body; } set { body = value; } }
-		public INotificationSettings Settings { get { return settings.Settings; } set { settings.Settings = value; } }
 
-		public IDictionary<string, string> Data
+		public bool ContainsKey(string key)
 		{
-			get
-			{
-				if (setData != null)
-					return setData;
-				
-				return data;
-			}
+			var found = GetInternal(key);
+			return found != null;
+		}
 
-			set
+		public void Set(string key, string value)
+		{
+			var found = GetInternal(key);
+			
+			if (found != null)
 			{
-				setData = value;
-				data = null;
+				found.Value = value;
 			}
+			else
+			{
+				data.Add(new Pair(key, value));
+			}
+		}
+
+		public void Remove(string key)
+		{
+			var found = GetInternal(key);
+			
+			if (found != null)
+			{
+				data.Remove(found);
+			}
+		}
+
+		public string Get(string key)
+		{
+			var found = GetInternal(key);
+			return found?.Value;
+		}
+
+		public IEnumerable<string> GetKeys()
+		{
+			return data.ConvertAll((pair) => { return pair.Key; });
+		}
+
+		private Pair GetInternal(string key)
+		{
+			var found = data.Find((pair) => { return pair.Key == key; });
+			return found;
 		}
 	}
 }

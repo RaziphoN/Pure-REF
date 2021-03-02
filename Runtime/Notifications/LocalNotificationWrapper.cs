@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 #if UNITY_ANDROID
 using Unity.Notifications.Android;
@@ -15,7 +14,7 @@ namespace REF.Runtime.Notifications
 {
 	public static class LocalNotificationWrapper
 	{
-		private static event Action<ILocalNotification> OnNotificationReceived;
+		private static event System.Action<ILocalNotification> OnNotificationReceived;
 		private static List<NotificationId> localNotificationIds = new List<NotificationId>();
 
 #if UNITY_ANDROID
@@ -59,19 +58,19 @@ namespace REF.Runtime.Notifications
 #endif
 		}
 
-		public static void Subscribe(Action<ILocalNotification> OnNotificationReceived)
+		public static void Subscribe(System.Action<ILocalNotification> OnNotificationReceived)
 		{
 			LocalNotificationWrapper.OnNotificationReceived += OnNotificationReceived;
 		}
 
-		public static void Unsubscribe(Action<ILocalNotification> OnNotificationReceived)
+		public static void Unsubscribe(System.Action<ILocalNotification> OnNotificationReceived)
 		{
 			LocalNotificationWrapper.OnNotificationReceived -= OnNotificationReceived;
 		}
 
 		public static NotificationId Schedule(ILocalNotification notification)
 		{
-			if (notification.Settings.Trigger.TriggerTime <= DateTime.Now)
+			if (notification.Settings.Trigger.TriggerTime <= System.DateTime.Now)
 				return new NotificationId();
 
 #if UNITY_IOS
@@ -91,7 +90,7 @@ namespace REF.Runtime.Notifications
 
 #if UNITY_EDITOR
 			// imitate notification ids in editor
-			var id = new NotificationId(Guid.NewGuid().GetHashCode());
+			var id = new NotificationId(System.Guid.NewGuid().GetHashCode());
 			localNotificationIds.Add(id);
 			return id;
 #else

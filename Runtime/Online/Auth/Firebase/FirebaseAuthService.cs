@@ -1,6 +1,9 @@
 ﻿#if REF_ONLINE_AUTH && REF_FIREBASE_AUTH && REF_USE_FIREBASE
 
 using UnityEngine;
+using UnityEngine.Networking;
+
+using System.Linq;
 
 using REF.Runtime.Online.Service;
 using REF.Runtime.Diagnostic;
@@ -12,6 +15,7 @@ using FirebaseCredential = Firebase.Auth.Credential;
 
 namespace REF.Runtime.Online.Auth
 {
+	// TODO: Make a config file to match provider ids
 	[System.Serializable]
 	public class FirebaseAuthService : FirebaseService, IAuthService
 	{
@@ -40,7 +44,7 @@ namespace REF.Runtime.Online.Auth
 
 			if (update.PhotoUri != null)
 			{
-				internalUser.SetPhotoUri(update.PhotoUri);
+				internalUser.SetPhotoUrl(update.PhotoUri);
 			}
 
 			if (!string.IsNullOrEmpty(update.DisplayName))
@@ -57,23 +61,13 @@ namespace REF.Runtime.Online.Auth
 			{
 				if (task.IsCompleted && task.Exception == null)
 				{
-					internalUser.SetPhotoUri(update.PhotoUri);
+					internalUser.SetPhotoUrl(update.PhotoUri);
 					internalUser.SetDisplayName(update.DisplayName);
 					OnSuccess?.Invoke();
 				}
 				else
 				{
-					RefDebug.Error(nameof(FirebaseAuthService), "Failed to update user profile: {0}", null, task.Exception.Message);
-
-					var aException = task.Exception as System.AggregateException;
-					if (aException != null)
-					{
-						foreach (var inner in aException.InnerExceptions)
-						{
-							RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
-						}
-					}
-
+					HandlerError(task.Exception, "Failed to update user profile!");
 					OnFail?.Invoke();
 				}
 			});
@@ -107,22 +101,11 @@ namespace REF.Runtime.Online.Auth
 					if (task.IsCompleted && task.Exception == null)
 					{
 						internalFirebaseUser = task.Result;
-						internalUser?.SetProvider(credential.GetProviderId());
-						RequestTokenInternal(internalFirebaseUser, OnLinked);
+						OnPostAuthHandler(credential, OnLinked);
 					}
 					else
 					{
-						RefDebug.Error(nameof(FirebaseAuthService), "Failed to link account: {0}", null, task.Exception.Message);
-
-						var aException = task.Exception as System.AggregateException;
-						if (aException != null)
-						{
-							foreach (var inner in aException.InnerExceptions)
-							{
-								RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
-							}
-						}
-
+						HandlerError(task.Exception, "Failed to link account!");
 						OnFailed?.Invoke();
 					}
 				});
@@ -157,22 +140,11 @@ namespace REF.Runtime.Online.Auth
 							internalUser?.SetKey(obj.Key, obj.Value.ToString());
 						}
 
-						internalUser?.SetProvider(credential.GetProviderId());
-						RequestTokenInternal(internalFirebaseUser, (user) => { OnSucess?.Invoke(); });
+						OnPostAuthHandler(credential, (user) => { OnSucess?.Invoke(); });
 					}
 					else
 					{
-						RefDebug.Error(nameof(FirebaseAuthService), "Failed to re-authenticate: {0}", null, task.Exception.Message);
-
-						var aException = task.Exception as System.AggregateException;
-						if (aException != null)
-						{
-							foreach (var inner in aException.InnerExceptions)
-							{
-								RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
-							}
-						}
-
+						HandlerError(task.Exception, "Failed to re-auth");
 						OnFailed?.Invoke();
 					}
 				});
@@ -203,29 +175,18 @@ namespace REF.Runtime.Online.Auth
 			var provider = credential.GetProviderId();
 			var auth = FirebaseAuth.DefaultInstance;
 
-			if (provider == "EmailPassword")
+			if (provider == "password")
 			{
 				auth.CreateUserWithEmailAndPasswordAsync(credential.GetEmail(), credential.GetPassword()).ContinueWithOnMainThread((creationTask) =>
 				{
 					if (creationTask.IsCompleted && creationTask.Exception == null)
 					{
 						isSignedIn = true;
-						internalUser?.SetProvider(credential.GetProviderId());
-						RequestTokenInternal(creationTask.Result, OnSignedIn);
+						OnPostAuthHandler(credential, OnSignedIn);
 					}
 					else
 					{
-						RefDebug.Error(nameof(FirebaseAuthService), "Failed to create a user: {0}", null, creationTask.Exception.Message);
-
-						var aException = creationTask.Exception as System.AggregateException;
-						if (aException != null)
-						{
-							foreach (var inner in aException.InnerExceptions)
-							{
-								RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
-							}
-						}
-
+						HandlerError(creationTask.Exception, "Failed to create a user");
 						OnFailed?.Invoke();
 					}
 				});
@@ -306,17 +267,7 @@ namespace REF.Runtime.Online.Auth
 				}
 				else
 				{
-					RefDebug.Error(nameof(FirebaseAuthService), "Failed to request user token: {0}", null, task.Exception.Message);
-
-					var aException = task.Exception as System.AggregateException;
-					if (aException != null)
-					{
-						foreach (var inner in aException.InnerExceptions)
-						{
-							RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
-						}
-					}
-
+					HandlerError(task.Exception, "Failed to request user token");
 				}
 
 				OnComplete?.Invoke(user);
@@ -335,22 +286,11 @@ namespace REF.Runtime.Online.Auth
 					if (task.IsCompleted && task.Exception == null)
 					{
 						isSignedIn = true;
-						internalUser?.SetProvider(credential.GetProviderId());
-						RequestTokenInternal(internalFirebaseUser, OnSignedIn);
+						OnPostAuthHandler(credential, OnSignedIn);
 					}
 					else
 					{
-						RefDebug.Error(nameof(FirebaseAuthService), "Failed to sign-in: {0}", null, task.Exception.Message);
-
-						var aException = task.Exception as System.AggregateException;
-						if (aException != null)
-						{
-							foreach (var inner in aException.InnerExceptions)
-							{
-								RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
-							}
-						}
-
+						HandlerError(task.Exception, "Failed to sign-in");
 						OnFailed?.Invoke();
 					}
 				});
@@ -361,29 +301,18 @@ namespace REF.Runtime.Online.Auth
 
 				switch (provider)
 				{
-					case "Anonymouse":
+					case "anonymouse":
 					{
 						auth.SignInAnonymouslyAsync().ContinueWithOnMainThread((task) =>
 						{
 							if (task.IsCompleted && task.Exception == null)
 							{
 								isSignedIn = true;
-								internalUser?.SetProvider(credential.GetProviderId());
-								RequestTokenInternal(internalFirebaseUser, OnSignedIn);
+								OnPostAuthHandler(credential, OnSignedIn);
 							}
 							else
 							{
-								RefDebug.Error(nameof(FirebaseAuthService), "Failed to sign-in: {0}", null, task.Exception.Message);
-
-								var aException = task.Exception as System.AggregateException;
-								if (aException != null)
-								{
-									foreach (var inner in aException.InnerExceptions)
-									{
-										RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
-									}
-								}
-
+								HandlerError(task.Exception, "Failed to sign-in");
 								OnFailed?.Invoke();
 							}
 						});
@@ -397,22 +326,11 @@ namespace REF.Runtime.Online.Auth
 							if (task.IsCompleted && task.Exception == null)
 							{
 								isSignedIn = true;
-								internalUser?.SetProvider(credential.GetProviderId());
-								RequestTokenInternal(internalFirebaseUser, OnSignedIn);
+								OnPostAuthHandler(credential, OnSignedIn);
 							}
 							else
 							{
-								RefDebug.Error(nameof(FirebaseAuthService), "Failed to sign-in: {0}", null, task.Exception.Message);
-
-								var aException = task.Exception as System.AggregateException;
-								if (aException != null)
-								{
-									foreach (var inner in aException.InnerExceptions)
-									{
-										RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
-									}
-								}
-
+								HandlerError(task.Exception, "Failed to sign-in");
 								OnFailed?.Invoke();
 							}
 						});
@@ -457,12 +375,19 @@ namespace REF.Runtime.Online.Auth
 		private User FromFirebaseUser(FirebaseUser firebaseUser)
 		{
 			var user = new User();
+			
 			user.SetDisplayName(firebaseUser.DisplayName);
 			user.SetEmail(firebaseUser.Email);
 			user.SetPhoneNumber(firebaseUser.PhoneNumber);
-			user.SetPhotoUri(firebaseUser.PhotoUrl);
+			user.SetPhotoUrl(firebaseUser.PhotoUrl);
 			user.SetUid(firebaseUser.UserId);
 			user.SetProvider(firebaseUser.ProviderId);
+
+			foreach (var data in firebaseUser.ProviderData)
+			{
+				var providerData = new ProviderData(data.ProviderId, data.DisplayName, data.Email, data.PhotoUrl, data.UserId);
+				user.AddProviderData(providerData);
+			}
 
 			return user;
 		}
@@ -473,7 +398,7 @@ namespace REF.Runtime.Online.Auth
 
 			switch (provider)
 			{
-				case "EmailPassword":
+				case "password":
 				{
 					var creds = EmailAuthProvider.GetCredential(credential.GetEmail(), credential.GetPassword());
 					return creds;
@@ -493,6 +418,75 @@ namespace REF.Runtime.Online.Auth
 			}
 
 			return null;
+		}
+
+		private void OnPostAuthHandler(Credential credential, System.Action<User> callback)
+		{
+			// NOTE: Kinda hacky, but f**k this facebook
+			if (credential.GetProviderId() == "facebook.com")
+			{
+				var matchData = internalFirebaseUser.ProviderData.Where((info) => { return info.ProviderId == credential.GetProviderId(); }).ToList();
+				var data = matchData.FirstOrDefault();
+
+				if (data != null)
+				{
+					UnityWebRequest request = UnityWebRequest.Get(data.PhotoUrl + $"?width=200&height=200&access_token={credential.GetToken()}&redirect=false");
+					var op = request.SendWebRequest();
+					op.completed += (asyncOp) =>
+					{
+						var wrAsyncOp = (UnityWebRequestAsyncOperation)asyncOp;
+						var response = JsonUtility.FromJson<FacebookUrlResponse>(wrAsyncOp.webRequest.downloadHandler.text);
+						var changes = new UserProfile();
+
+						changes.DisplayName = data.DisplayName;
+						changes.PhotoUrl = new System.Uri(response.data.url);
+
+						internalFirebaseUser.UpdateUserProfileAsync(changes).ContinueWithOnMainThread((avatarTask) =>
+						{
+							UpdateUserInfo(credential, callback);
+						});
+					};
+				}
+				else
+				{
+					UpdateUserInfo(credential, callback);
+				}
+			}
+			else
+			{
+				UpdateUserInfo(credential, callback);
+			}
+		}
+
+		private void UpdateUserInfo(Credential credential, System.Action<User> callback)
+		{
+			internalUser?.SetProvider(credential.GetProviderId());
+			RequestTokenInternal(internalFirebaseUser, callback);
+		}
+
+		private void HandlerError(System.AggregateException exception, string message)
+		{
+			RefDebug.Error(nameof(FirebaseAuthService), $"{message}, exception: {exception.Message}", null);
+
+			if (exception != null)
+			{
+				foreach (var inner in exception.InnerExceptions)
+				{
+					RefDebug.Error(nameof(FirebaseAuthService), "Error: {0}", null, inner.Message);
+				}
+			}
+		}
+
+		[System.Serializable]
+		private class FacebookUrlResponse
+		{
+			[System.Serializable]
+			public class Data
+			{
+				public string url = string.Empty;
+			}
+
+			public Data data = new Data();
 		}
 	}
 }

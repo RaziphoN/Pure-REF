@@ -14,10 +14,10 @@
 
 	public interface IIosNotificationSettings : INotificationSettings
 	{
-		string Identifier { get; set; }
-		string Subtitle { get; set; }
-		bool ShowInForeground { get; set; }
-		iOSPresentationOption ForegroundPresentationOption { get; set; }
-		int Badge { get; set; }
+		string Identifier { get; }
+		string Subtitle { get; }
+		bool ShowInForeground { get; }
+		iOSPresentationOption ForegroundPresentationOption { get; }
+		int Badge { get; }
 	}
 }

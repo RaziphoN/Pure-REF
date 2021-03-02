@@ -1,6 +1,8 @@
 ﻿#if REF_ONLINE_PUSH_NOTIFICATION && REF_FIREBASE_PUSH_NOTIFICATION && REF_USE_FIREBASE
 
+using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using REF.Runtime.Core;
 using REF.Runtime.Diagnostic;
@@ -16,8 +18,8 @@ namespace REF.Runtime.Online.Notifications
 		public event System.Action<string> OnTokenReceived;
 		public event System.Action<INotification> OnNotificationReceived;
 
-		private string token = "";
-		private string[] subscriptions;
+		private string token = string.Empty;
+		private List<string> subscriptions = new List<string>();
 
 		public override void Configure(IConfiguration config)
 		{
@@ -31,7 +33,8 @@ namespace REF.Runtime.Online.Notifications
 				return;
 			}
 
-			subscriptions = configuration.GetSubscriptionTopics();
+			var topicConfig = configuration.GetSubscriptionTopics();
+			subscriptions = topicConfig.ToList();
 		}
 
 		public string GetToken()
@@ -71,7 +74,7 @@ namespace REF.Runtime.Online.Notifications
 
 				if (subscriptions != null)
 				{
-					for (int idx = 0; idx < subscriptions.Length; ++idx)
+					for (int idx = 0; idx < subscriptions.Count; ++idx)
 					{
 						var topic = subscriptions[idx];
 						Subscribe(topic);

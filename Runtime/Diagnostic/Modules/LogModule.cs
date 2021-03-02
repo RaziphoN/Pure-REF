@@ -7,6 +7,8 @@ namespace REF.Runtime.Diagnostic.Modules
 	[CreateAssetMenu(fileName = "LogModule", menuName = "REF/Diagnostic/Console/Log Module")]
 	public class LogModule : DebugModule
 	{
+		private const int logSize = 1024;
+
 		[System.NonSerialized] private int currentIdx = -1;
 		[System.NonSerialized] private int[] logCountByType = new int[(int)LogType.Exception + 1];
 
@@ -53,7 +55,7 @@ namespace REF.Runtime.Diagnostic.Modules
 		}
 
 		[SerializeField] private SystemInfo systemInfo = new SystemInfo();
-		[SerializeField] private List<Record> logs = new List<Record>();
+		[SerializeField] private List<Record> logs = new List<Record>(logSize);
 
 		public override string GetTitle()
 		{
@@ -204,13 +206,19 @@ namespace REF.Runtime.Diagnostic.Modules
 
 			log.ShowName += $"[{log.Type}][{log.Time}] {log.Message}";
 
+			if (logs.Count >= logSize)
+			{
+				logs.RemoveAt(0);
+			}
+
 			logs.Add(log);
 		}
 
 
 		private void Save()
 		{
-			var path = $"{Application.persistentDataPath}/logs.json";
+			var timestamp = System.DateTime.Now.ToString("MM-dd-yyyy_HH-mm");
+			var path = $"{Application.persistentDataPath}/log_{timestamp}.json";
 			var json = JsonUtility.ToJson(this);
 
 			if (!System.IO.File.Exists(path))

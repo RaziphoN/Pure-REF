@@ -5,7 +5,7 @@ namespace REF.Runtime.Online.Auth.Method
 {
 	public class FacebookSignInMethod : ISignInMethod
 	{
-		public static string ProviderId { get { return "facebook.com"; } }
+		public const string ProviderId = "facebook.com";
 
 		private ISocialService fb;
 

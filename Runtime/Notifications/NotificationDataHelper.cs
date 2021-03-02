@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace REF.Runtime.Notifications
@@ -25,21 +26,24 @@ namespace REF.Runtime.Notifications
 			return parsed;
 		}
 
-		public static string ToString(IDictionary<string, string> data)
+		public static string ToString(INotification notification)
 		{
 			StringBuilder builder = new StringBuilder();
 
-			if (data.Count > 0)
-			{ 
-				builder.Append("{");
-				var enumerator = data.GetEnumerator();
+			var keys = notification.GetKeys();
 
-				while (enumerator.MoveNext())
+			if (keys.Count() > 0)
+			{
+				builder.Append("{");
+
+				foreach (var key in keys)
 				{
+					var value = notification.Get(key);
+
 					if (builder.Length > 2)
 						builder.Append(',');
 
-					StringifyProperty(builder, enumerator.Current);
+					StringifyProperty(builder, new KeyValuePair<string, string>(key, value));
 				}
 
 				builder.Append("}");

@@ -17,22 +17,22 @@ namespace REF.Runtime.Notifications.Android
 
 	public interface IAndroidNotificationSettings : INotificationSettings
 	{
-		int Id { get; set; }
-		string ChannelId { get; set; }
+		int Id { get; }
+		string ChannelId { get; }
 
-		AndroidGroupAlertBehaviours GroupAlertBehaviour { get; set; }
-		bool GroupSummary { get; set; }
-		string Group { get; set; }
+		AndroidGroupAlertBehaviours GroupAlertBehaviour { get; }
+		bool GroupSummary { get; }
+		string Group { get; }
 
-		bool UsesStopwatch { get; set; }
-		bool ShouldAutoCancel { get; set; }
-		int Number { get; set; }
-		string SortKey { get; set; }
+		bool UsesStopwatch { get; }
+		bool ShouldAutoCancel { get; }
+		int Number { get; }
+		string SortKey { get; }
 
-		Color? Color { get; set; }
-		AndroidNotificationStyle Style { get; set; }
+		Color? Color { get; }
+		AndroidNotificationStyle Style { get; }
 
-		string SmallIcon { get; set; }
-		string LargeIcon { get; set; }
+		string SmallIcon { get; }
+		string LargeIcon { get; }
 	}
 }

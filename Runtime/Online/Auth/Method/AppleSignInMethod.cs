@@ -11,7 +11,7 @@ namespace REF.Runtime.Online.Auth.Method
 {
 	public class AppleSignInMethod : ISignInMethod
 	{
-		public static string ProviderId { get { return "apple.com"; } }
+		public const string ProviderId = "apple.com";
 
 		private System.Action<Credential> sucessCallback = null;
 		private System.Action failCallback = null;

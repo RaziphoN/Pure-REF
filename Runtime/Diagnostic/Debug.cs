@@ -58,7 +58,7 @@ namespace REF.Runtime.Diagnostic
 		[Conditional("REF_LOG_VERBOSE"), Conditional("REF_LOG_WARNING"), Conditional("REF_LOG_ERROR")]
 		public void Error(string tag, string format, Object context = null, params object[] args)
 		{
-			Internal(Level.Error, tag, format, context, color, args);
+			Internal(Level.Error, tag, format, context, Color.red, args);
 		}
 
 		[Conditional("REF_LOG_VERBOSE"), Conditional("REF_LOG_WARNING"), Conditional("REF_LOG_ERROR")]
@@ -70,7 +70,7 @@ namespace REF.Runtime.Diagnostic
 		[Conditional("REF_LOG_VERBOSE"), Conditional("REF_LOG_WARNING"), Conditional("REF_LOG_ERROR"), Conditional("REF_LOG_EXCEPTION")]
 		public void Exception(string tag, string format, Object context = null, params object[] args)
 		{
-			Internal(Level.Exception, tag, format, context, color, args);
+			Internal(Level.Exception, tag, format, context, Color.red, args);
 		}
 
 		[Conditional("REF_LOG_VERBOSE"), Conditional("REF_LOG_WARNING"), Conditional("REF_LOG_ERROR"), Conditional("REF_LOG_EXCEPTION")]
