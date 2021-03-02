@@ -16,13 +16,12 @@ using FirebaseCredential = Firebase.Auth.Credential;
 namespace REF.Runtime.Online.Auth
 {
 	// TODO: Make a config file to match provider ids
-	[System.Serializable]
 	public class FirebaseAuthService : FirebaseService, IAuthService
 	{
 		public event System.Action OnTokenChanged;
 
-		[SerializeField] private User internalUser;
-		[SerializeField] private bool isSignedIn = false;
+		private User internalUser;
+		private bool isSignedIn = false;
 		private FirebaseUser internalFirebaseUser;
 
 		public bool IsSignedIn()
@@ -61,8 +60,7 @@ namespace REF.Runtime.Online.Auth
 			{
 				if (task.IsCompleted && task.Exception == null)
 				{
-					internalUser.SetPhotoUrl(update.PhotoUri);
-					internalUser.SetDisplayName(update.DisplayName);
+					internalUser = FromFirebaseUser(internalFirebaseUser);
 					OnSuccess?.Invoke();
 				}
 				else
@@ -441,10 +439,12 @@ namespace REF.Runtime.Online.Auth
 						changes.DisplayName = data.DisplayName;
 						changes.PhotoUrl = new System.Uri(response.data.url);
 
-						internalFirebaseUser.UpdateUserProfileAsync(changes).ContinueWithOnMainThread((avatarTask) =>
+						internalFirebaseUser.UpdateUserProfileAsync(changes).ContinueWithOnMainThread((photoUrlTask) =>
 						{
+							internalUser = FromFirebaseUser(internalFirebaseUser);
 							UpdateUserInfo(credential, callback);
 						});
+						;
 					};
 				}
 				else

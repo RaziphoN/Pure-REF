@@ -11,6 +11,7 @@ namespace REF.Runtime.Diagnostic
 	{
 		[SerializeField] private bool enabled = true;
 		[SerializeField] private Level level = Level.Log;
+		[SerializeField] private Level stackTraceLevel = Level.Error;
 
 #if REF_ONLINE_CRASH_REPORT
 		private ICloudDebugService service;
@@ -59,7 +60,7 @@ namespace REF.Runtime.Diagnostic
 
 			var logLevel = LogLevelExtension.FromUnityDebugLevel(type);
 
-			if (level < logLevel || level == Level.None)
+			if (logLevel > level || level == Level.None)
 			{
 				return;
 			}
@@ -67,6 +68,11 @@ namespace REF.Runtime.Diagnostic
 			if (enabled && service.IsInitialized())
 			{
 				service.Log($"[{LogLevelToPrefix(logLevel)}][{System.DateTime.Now.ToString("HH:mm:ss")}] {condition}");
+
+				if (logLevel <= stackTraceLevel)
+				{
+					service.Log(stackTrace);
+				}
 			}
 #endif
 		}

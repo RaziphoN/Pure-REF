@@ -221,14 +221,9 @@ namespace REF.Runtime.Diagnostic.Modules
 			var path = $"{Application.persistentDataPath}/log_{timestamp}.json";
 			var json = JsonUtility.ToJson(this);
 
-			if (!System.IO.File.Exists(path))
-			{
-				System.IO.File.Create(path);
-			}
-
 			System.IO.File.WriteAllText(path, json);
 
-			RefDebug.Log(nameof(LogModule), "Saved logs!");
+			RefDebug.Log(nameof(LogModule), $"Logs saved at path: {path}!");
 		}
 	}
 }

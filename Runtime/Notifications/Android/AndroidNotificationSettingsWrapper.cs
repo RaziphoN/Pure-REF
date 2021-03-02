@@ -19,7 +19,7 @@ namespace REF.Runtime.Notifications.Android
 		[SerializeField] private bool groupSummary;
 
 		[SerializeField] private AndroidNotificationStyle style = AndroidNotificationStyle.None;
-		[SerializeField] private NullableColor color;
+		[SerializeField] private NullableColor color = new NullableColor();
 		[SerializeField] private string smallIcon;
 		[SerializeField] private string largeIcon;
 
