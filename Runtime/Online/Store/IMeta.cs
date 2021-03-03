@@ -1,7 +1,7 @@
 ﻿
 namespace REF.Runtime.Online.Store
 {
-	public interface IProductMeta
+	public interface IMeta
 	{
 		bool IsBestDeal();
 		void SetBestDeal(bool state);

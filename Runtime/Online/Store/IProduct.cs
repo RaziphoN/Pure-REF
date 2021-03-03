@@ -17,7 +17,7 @@ namespace REF.Runtime.Online.Store
 		bool IsAvailable();
 
 		string GetProviderId();
-		IProductMeta GetMeta();
+		IMeta GetMeta();
 		IPrice GetPrice();
 
 		bool IsDefined(string providerId);
@@ -28,7 +28,7 @@ namespace REF.Runtime.Online.Store
 		void SetAvailable(string provderId, bool state);
 
 		IEnumerable<KeyValuePair<string, string>> GetStoreIds(string providerId);
-		IProductMeta GetMeta(string providerId);
+		IMeta GetMeta(string providerId);
 		IPrice GetPrice(string providerId); // store unique identifier
 	}
 }
