@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.CrashReportHandler;
 
 #if REF_ONLINE_CRASH_REPORT
 using REF.Runtime.Online.CrashReports;
@@ -22,6 +23,7 @@ namespace REF.Runtime.Diagnostic
 #if REF_ONLINE_CRASH_REPORT
 			service?.SetUserId(userId);
 #endif
+			CrashReportHandler.SetUserMetadata("userId", userId);
 		}
 
 		public void SetCustomData(string key, string value)
@@ -29,6 +31,7 @@ namespace REF.Runtime.Diagnostic
 #if REF_ONLINE_CRASH_REPORT
 			service?.SetCustomData(key, value);
 #endif
+			CrashReportHandler.SetUserMetadata(key, value);
 		}
 
 
@@ -42,6 +45,7 @@ namespace REF.Runtime.Diagnostic
 
 		public void Initialize()
 		{
+			CrashReportHandler.logBufferSize = 20;
 			Application.logMessageReceived += OnLogReceivedHandler;
 		}
 

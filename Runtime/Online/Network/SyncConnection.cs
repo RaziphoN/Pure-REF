@@ -29,11 +29,11 @@ namespace REF.Runtime.Online.Network
 
 		~SyncConnection()
 		{
+			connection.Disconnect();
+
 			connection.OnConnect -= OnConnectHandler;
 			connection.OnDisconnect -= OnDisconnectHandler;
 			connection.OnMessage -= OnResponseHandler;
-
-			connection.Disconnect();
 		}
 
 		public T GetSocket()
@@ -105,12 +105,6 @@ namespace REF.Runtime.Online.Network
 				Stop(senderThread);
 				senderThread = null;
 			}
-
-			//if (receiverThread != null)
-			//{
-			//	Stop(receiverThread);
-			//	receiverThread = null;
-			//}
 
 			OnDisconnect?.Invoke();
 		}

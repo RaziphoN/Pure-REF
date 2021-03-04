@@ -43,6 +43,7 @@
 
 				socket?.Disconnect();
 				socket = default(T);
+				OnSocketDisconnectHandler();
 			}
 		}
 
