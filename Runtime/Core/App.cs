@@ -196,6 +196,7 @@ namespace REF.Runtime.Core
 			}
 
 			Progress = 0f;
+			initialized = false;
 			callback?.Invoke();
 		}
 
