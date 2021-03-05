@@ -97,6 +97,13 @@ namespace REF.Runtime.Diagnostic.Modules
 				Save();
 			}
 
+			if (GUILayout.Button("Copy", GUILayout.Width(40)))
+			{
+				var json = JsonUtility.ToJson(this);
+				GUIUtility.systemCopyBuffer = json;
+				RefDebug.Log(nameof(LogModule), $"Copied to buffer!");
+			}
+
 			if (GUILayout.Button("Clear", GUILayout.Width(40)))
 			{
 				currentIdx = -1;
