@@ -165,7 +165,7 @@ namespace REF.Runtime.Core
 
 		public void Update()
 		{
-			if (services != null)
+			if (services != null && IsInitialized())
 			{
 				for (int idx = 0; idx < services.Count; ++idx)
 				{
@@ -202,7 +202,7 @@ namespace REF.Runtime.Core
 
 		public void Suspend()
 		{
-			if (services != null)
+			if (services != null && IsInitialized())
 			{
 				for (int idx = 0; idx < services.Count; ++idx)
 				{
@@ -217,7 +217,7 @@ namespace REF.Runtime.Core
 
 		public void Resume()
 		{
-			if (services != null)
+			if (services != null && IsInitialized())
 			{
 				for (int idx = 0; idx < services.Count; ++idx)
 				{
