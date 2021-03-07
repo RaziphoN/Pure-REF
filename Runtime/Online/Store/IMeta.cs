@@ -1,4 +1,5 @@
-﻿
+﻿#if REF_STORE
+
 namespace REF.Runtime.Online.Store
 {
 	public interface IMeta
@@ -19,3 +20,5 @@ namespace REF.Runtime.Online.Store
 		void SetLocalizedDescription(string description);
 	}
 }
+
+#endif

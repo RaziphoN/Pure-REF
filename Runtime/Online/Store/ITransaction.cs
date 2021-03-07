@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.Store
+﻿#if REF_STORE
+
+namespace REF.Runtime.Online.Store
 {
 	public interface ITransaction
 	{
@@ -14,3 +16,5 @@
 		PurchaseFailReason GetFailReason();
 	}
 }
+
+#endif

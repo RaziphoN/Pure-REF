@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if REF_STORE
+
+using System.Collections.Generic;
 
 namespace REF.Runtime.Online.Store
 {
@@ -18,3 +20,5 @@ namespace REF.Runtime.Online.Store
 		IEnumerable<IProduct> GetProducts();
 	}
 }
+
+#endif

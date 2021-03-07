@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if REF_STORE
+
+using System.Collections.Generic;
 
 using REF.Runtime.GameSystem.Storage;
 
@@ -32,3 +34,5 @@ namespace REF.Runtime.Online.Store
 		IPrice GetPrice(string providerId); // store unique identifier
 	}
 }
+
+#endif

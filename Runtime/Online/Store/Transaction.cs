@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_STORE
+
+using UnityEngine;
 
 namespace REF.Runtime.Online.Store
 {
@@ -83,3 +85,5 @@ namespace REF.Runtime.Online.Store
 		}
 	}
 }
+
+#endif

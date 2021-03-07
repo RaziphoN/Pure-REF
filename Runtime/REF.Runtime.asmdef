@@ -1,12 +1,7 @@
 {
     "name": "REF.Runtime",
-    "references": [
-        "GUID:ac145e6b8c6034cdbadc8c6e26aedbcf",
-        "GUID:1e8e55397bd004beaba78a667566665f",
-        "GUID:a037b9f808b8c43ae91c527caf71d031",
-        "GUID:60bfecf5cb232594891bc622f40d6bed",
-        "GUID:dd4e75b465741ae4286fc35cd1a8fdfa"
-    ],
+    "rootNamespace": "",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

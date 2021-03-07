@@ -81,6 +81,14 @@
 //	//#define REF_FACEBOOK_SOCIAL
 //#endif
 
-// Concrete dependencies
+//// Store
+////#define REF_STORE
+
+//#if REF_STORE
+	//#define REF_OFFLINE_STORE
+	//#define REF_UNITY_STORE
+//#endif
+
+// Dependencies
 //#define REF_USE_FIREBASE
 //#define REF_USE_FACEBOOK
