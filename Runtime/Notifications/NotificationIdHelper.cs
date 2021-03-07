@@ -51,6 +51,8 @@ namespace REF.Runtime.Notifications
 			var id = record.GetString();
 			return new NotificationId(id);
 #endif
+
+			return new NotificationId();
 		}
 	}
 }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if REF_STORE && REF_OFFLINE_STORE
+
+using System.Collections.Generic;
 
 using REF.Runtime.Core;
 using REF.Runtime.GameSystem.Storage;
@@ -158,3 +160,5 @@ namespace REF.Runtime.Online.Store.Providers
 		protected abstract IItemContainer<T> GetInventory();
 	}
 }
+
+#endif

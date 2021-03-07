@@ -1,4 +1,5 @@
-﻿
+﻿#if REF_ONLINE_AUTH
+
 namespace REF.Runtime.Online.Auth.Method
 {
 	public interface ISignInMethod
@@ -7,3 +8,5 @@ namespace REF.Runtime.Online.Auth.Method
 		void SignOut();
 	}
 }
+
+#endif

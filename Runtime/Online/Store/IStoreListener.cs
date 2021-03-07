@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.Store
+﻿#if REF_STORE
+
+namespace REF.Runtime.Online.Store
 {
 	public enum PurchaseProcessResult
 	{
@@ -26,3 +28,5 @@
 		void OnRestoreHandler(bool isOk);
 	}
 }
+
+#endif

@@ -1,4 +1,6 @@
-﻿using REF.Runtime.GameSystem.Storage;
+﻿#if REF_STORE
+
+using REF.Runtime.GameSystem.Storage;
 
 namespace REF.Runtime.Online.Store
 {
@@ -30,3 +32,5 @@ namespace REF.Runtime.Online.Store
 		void SetCurrencyCode(string isoCountryCode);
 	}
 }
+
+#endif
