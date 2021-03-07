@@ -1,4 +1,6 @@
-﻿using REF.Runtime.Core;
+﻿#if REF_STORE
+
+using REF.Runtime.Core;
 
 namespace REF.Runtime.Online.Store
 {
@@ -6,3 +8,5 @@ namespace REF.Runtime.Online.Store
 	{
 	}
 }
+
+#endif

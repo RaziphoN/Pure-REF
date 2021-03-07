@@ -1,4 +1,6 @@
-﻿namespace REF.Runtime.Online.Store
+﻿#if REF_STORE
+
+namespace REF.Runtime.Online.Store
 {
 	public enum ProductType
 	{
@@ -7,3 +9,5 @@
 		Subscription,
 	}
 }
+
+#endif

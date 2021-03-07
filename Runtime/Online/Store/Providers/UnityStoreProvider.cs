@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if REF_STORE && REF_UNITY_STORE
+
+using UnityEngine;
 using UnityEngine.Purchasing;
 
 using REF.Runtime.Core;
@@ -419,3 +421,5 @@ namespace REF.Runtime.Online.Store.Providers
 		}
 	}
 }
+
+#endif
