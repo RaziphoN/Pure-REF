@@ -1,6 +1,7 @@
 ﻿#if REF_ONLINE_AUTH
 
 using UnityEngine;
+using UnityEngine.SignInWithApple;
 
 using System.Text;
 using System.Collections.Generic;
@@ -58,7 +59,7 @@ namespace REF.Runtime.Online.Auth.Method
 			
 		}
 
-		private void OnSignInRequestHandler(UnityEngine.SignInWithApple.SignInWithApple.CallbackArgs args)
+		private void OnSignInRequestHandler(SignInWithApple.CallbackArgs args)
 		{
 			if (!string.IsNullOrEmpty(args.error))
 			{
