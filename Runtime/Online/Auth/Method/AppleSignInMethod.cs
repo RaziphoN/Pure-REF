@@ -68,7 +68,7 @@ namespace REF.Runtime.Online.Auth.Method
 				return;
 			}
 
-			if (args.credentialState != UnityEngine.SignInWithApple.UserCredentialState.Authorized)
+			if (args.credentialState != UserCredentialState.Authorized)
 			{
 				RefDebug.Log(nameof(AppleSignInMethod), $"Credential state is invalid: {args.credentialState}");
 				//failCallback?.Invoke();
